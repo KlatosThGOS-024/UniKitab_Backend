@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoIosOptions } from "react-icons/io";
 import PdfToText from "@/pdfGeneration/PdfToText";
+import { Account } from "./SignUp";
 
 const SearchBar = () => {
   return (
@@ -25,13 +26,16 @@ export const NavBar = () => {
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const showModalSignUp = () => {
-    setShowModal2(!showModal);
+    setShowModal2(!showModal2);
   };
   const showMenuModal = () => {
     setShowModal(!showModal);
   };
   return (
     <section>
+      {showModal2 && (
+        <Account showModalSignUp={showModalSignUp} param={"signUp"} />
+      )}
       <div className="flex items-center relative justify-between px-2 py-[8px] ">
         <div className="flex items-center px-4 gap-5">
           <h2
@@ -52,10 +56,14 @@ export const NavBar = () => {
             <li className="hover:text-[#69D4F3] font-[500] text-[#423e3e]">
               Educators
             </li>
-            <li className=":block  hover:text-[#69D4F3]">Login</li>{" "}
+            <li
+              onClick={showModalSignUp}
+              className=": cursor-pointer  hover:text-[#69D4F3]"
+            >
+              Login
+            </li>{" "}
           </ul>
           <button
-            onClick={showModalSignUp}
             className=" rounded-full transition-all duration-150 ease-out
              max-lg:hidden lg:block  px-4 text-[18px] font-[500]  py-2 bg-[#EC497D] text-white
            hover:bg-[#645656] hover:text-[#EC497D]"
@@ -78,9 +86,7 @@ export const NavBar = () => {
                 <li className="hover:text-[#69D4F3]  cursor-pointer font-[500] text-[#423e3e]">
                   Educators
                 </li>
-                <li className=":block  hover:text-[#69D4F3]  cursor-pointer">
-                  Login
-                </li>{" "}
+
                 <li
                   className="  transition-all duration-150 ease-out
              max-md:block md:hidden text-[18px] font-[500] 
