@@ -19,7 +19,7 @@ if ("development" === "development") {
 
 const page = () => {
   return (
-    <section>
+    <section suppressHydrationWarning>
       <NavBar />
       <Navigation />
       <HeroSection />

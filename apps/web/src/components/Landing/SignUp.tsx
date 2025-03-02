@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { MdEmail } from "react-icons/md";
 import { MdOutlineCancel } from "react-icons/md";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 export const Account = ({
   param,
@@ -28,7 +29,6 @@ export const Account = ({
         const response = await logInUser({ username, password });
         const reduxEmail = response.data.userExisted.email;
         const reduxUsername = response.data.userExisted.username;
-        console.log(reduxEmail, reduxUsername);
         dispatch(
           addAccount({
             email: reduxEmail,
@@ -36,9 +36,26 @@ export const Account = ({
             userLoggedIn: true,
           })
         );
+        toast.success("Successfully logged in", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "dark",
+        });
       }
     } catch (error) {
-      console.log(error);
+      toast.error(`Unsuccessfull Wrong Credential! Please SignUp First!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
     }
   };
 

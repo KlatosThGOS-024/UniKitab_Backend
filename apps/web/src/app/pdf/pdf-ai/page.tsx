@@ -26,7 +26,3 @@ const page = () => {
   );
 };
 export default page;
-// "@react-pdf-viewer/default-layout": "^3.12.0",
-// "@react-pdf/renderer": "^4.2.2",
-// "pdfjs-dist": "^3.4.120",
-// "react-pdf": "^9.2.1"

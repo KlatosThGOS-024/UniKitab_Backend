@@ -13,10 +13,14 @@ export const UploadPdf = () => {
     if (event.target.files) {
       const file = event.target.files[0];
       setFiles(file);
-      const fileUrl = URL.createObjectURL(file);
-      dispatch(addFileUrl(fileUrl));
     }
   };
+  useEffect(() => {
+    if (files) {
+      const fileUrl = URL.createObjectURL(files);
+      dispatch(addFileUrl(fileUrl));
+    }
+  }, [files, dispatch]);
 
   const formatFileSize = (bytes: number | null) => {
     if (bytes) {
@@ -51,8 +55,7 @@ export const UploadPdf = () => {
           >
             <div className="flex items-center  flex-col gap-3">
               <p className="text-[21px] font-[500]">Click to upload the pdf </p>
-              {/*               <img src="/svgs/Files.svg" className="w-[96px] h-[96px]" />
-               */}
+
               <svg
                 className="w-[96px] h-[96px]"
                 xmlns="http://www.w3.org/2000/svg"
@@ -361,7 +364,7 @@ export const UploadPdf = () => {
                         handleFileChange(e);
                       }
                     }}
-                    className="hidden"
+                    style={{ display: "none" }}
                   />
                 </label>
                 <FaChevronDown />
