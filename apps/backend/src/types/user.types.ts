@@ -1,8 +1,7 @@
 import { z } from "zod";
 export interface IUser extends Document {
   _id?: string;
-  firstName: string;
-  lastName: string;
+
   password: string;
   email: string;
   username: string;
@@ -11,8 +10,6 @@ export interface IUser extends Document {
 }
 
 const userCreateSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
   password: z
     .string()
     .min(8, "Password at least 8 digit containing A-Z/a-z/symbols")

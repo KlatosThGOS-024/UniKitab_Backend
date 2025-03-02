@@ -29,8 +29,6 @@ const userCreate = asyncHandler(async (req: Request, res: Response) => {
   }
   const user = await User.create({
     username: userData?.data.username,
-    firstName: userData?.data.firstName,
-    lastName: userData?.data.lastName,
     password: userData?.data.password,
     email: userData?.data.email,
   });
@@ -65,7 +63,10 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
   userExisted.password = "";
 
   res
-    .cookie("accessToken", accessToken)
+    .cookie("accessToken", accessToken, {
+      httpOnly: true, // Prevents client-side JS from accessing the cookie
+      secure: true, // Ensures it's only sent over HTTPS
+    })
     .send(
       new ApiResponse(200, { accessToken, userExisted }, "Successfully login")
     );

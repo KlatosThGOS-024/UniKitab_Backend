@@ -96,7 +96,7 @@ const Secsubjects = [
 const FeaturedSubjects = ({ sub }: { sub: any }) => {
   return (
     <div>
-      <div className="flex items-center flex- gap-[21px]">
+      <div className="flex items-center max-md:grid grid-cols-2 max-md:px-3 flex- gap-[21px]">
         {subjects.map((value, index) => {
           return (
             <div className=" border-[1px] shadow-lg flex-1 rounded-lg">

@@ -31,6 +31,7 @@ export const NavBar = () => {
   const showMenuModal = () => {
     setShowModal(!showModal);
   };
+
   return (
     <section>
       {showModal2 && (
@@ -64,6 +65,7 @@ export const NavBar = () => {
             </li>{" "}
           </ul>
           <button
+            onClick={showModalSignUp}
             className=" rounded-full transition-all duration-150 ease-out
              max-lg:hidden lg:block  px-4 text-[18px] font-[500]  py-2 bg-[#EC497D] text-white
            hover:bg-[#645656] hover:text-[#EC497D]"

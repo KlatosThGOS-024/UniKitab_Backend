@@ -1,7 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import { addAccount } from "@/functions/userAccount/User";
+import { createAccount, logInUser } from "@/Hooks/userApi";
+import React, { useEffect, useState } from "react";
 import { MdEmail } from "react-icons/md";
 import { MdOutlineCancel } from "react-icons/md";
+import { useDispatch } from "react-redux";
 
 export const Account = ({
   param,
@@ -11,6 +14,34 @@ export const Account = ({
   showModalSignUp: any;
 }) => {
   const [action, setAction] = useState(param);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const accountLogin = async (e: any) => {
+    try {
+      e.preventDefault();
+      if (action === "signUp") {
+        const response = await createAccount({ email, username, password });
+        alert("Now u can login with same credentials");
+      } else {
+        const response = await logInUser({ username, password });
+        const reduxEmail = response.data.userExisted.email;
+        const reduxUsername = response.data.userExisted.username;
+        console.log(reduxEmail, reduxUsername);
+        dispatch(
+          addAccount({
+            email: reduxEmail,
+            username: reduxUsername,
+            userLoggedIn: true,
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     // <section className=" flex justify-center
     // items-center z-50">
@@ -62,6 +93,9 @@ export const Account = ({
                 >
                   <MdEmail className="text-[#757575] w-[21px] h-[21px]" />
                   <input
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
                     className="outline-none py-2 w-full text-[#757575]"
                     placeholder="Email"
                   ></input>
@@ -72,13 +106,18 @@ export const Account = ({
               {" "}
               <label>Username</label>
               <div
-                className="bg-[#FBFBFB] border-[#e6e6e6] border-[1px] 
+                className="bg-[#FBFBFB]
+                 border-[#e6e6e6] border-[1px] 
                 border-solid hover:shadow-md pl-2 flex items-center gap-2
                     "
               >
                 <MdEmail className="text-[#757575] w-[21px] h-[21px]" />
                 <input
-                  className="outline-none py-2 w-full text-[#757575]"
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                  }}
+                  className="outline-none py-2 
+                  w-full text-[#757575]"
                   placeholder="Username"
                 ></input>
               </div>
@@ -93,12 +132,18 @@ export const Account = ({
               >
                 <MdEmail className="text-[#757575] w-[21px] h-[21px]" />
                 <input
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
                   className="outline-none py-3 w-full text-[#757575]"
                   placeholder="Password"
                 ></input>
               </div>
             </div>
             <button
+              onClick={(e) => {
+                accountLogin(e);
+              }}
               className="bg-[#1AB9F4] cursor-pointer
             font-[500] text-white w-full py-3 px-4 rounded-md 
             hover:opacity-90"

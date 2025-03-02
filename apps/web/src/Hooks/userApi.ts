@@ -11,31 +11,26 @@ const logOutUser = async () => {
   localStorage.clear();
   return response;
 };
-const logInUser = async (params: {
-  username: string;
-
-  password: string;
-}) => {
+const logInUser = async (params: { username: string; password: string }) => {
   const response = await fetch("http://localhost:8000/api/v1/user/login", {
     method: "POST",
-
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(params),
   });
   return response.json();
 };
+
 const createAccount = async (params: {
   username: string;
-  firstName: string;
-  lastName: string;
+
   email: string;
   password: string;
 }) => {
   const response = await fetch("http://localhost:8000/api/v1/user/signUp", {
     method: "POST",
-
     headers: {
       "Content-Type": "application/json",
     },

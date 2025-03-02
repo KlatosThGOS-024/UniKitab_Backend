@@ -29,7 +29,7 @@ export const UploadPdf = () => {
     <section className="xl:w-[1200px] md:w-[900px] mx-auto">
       <div className="flex mt-[28px]  w-full flex-col gap-[64px] ">
         <h2 className=" text-[28px] whitespace-nowrap">Chat Documents</h2>
-        <div className="flex justify-between rounded-md bg-white px-[64px] py-[28px] ">
+        <div className="flex justify-between rounded-md border-[#e6e6e6] border-[1px]  bg-white px-[64px] py-[28px] ">
           <h2>{files ? files.name : "files"}</h2>
           <div className="flex gap-3 text-[19px] items-center">
             <span>

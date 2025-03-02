@@ -4,6 +4,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import createIndexedDBStorage from "redux-persist-indexeddb-storage";
 import { persistStore, persistReducer, REHYDRATE } from "redux-persist";
 import { responseSlice } from "@/functions/messages/message";
+import { userAccountSlice } from "@/functions/userAccount/User";
 const indexedDBStorage = createIndexedDBStorage("myIndexedDB", "myDataStore");
 const persistConfig = {
   key: "root",
@@ -13,7 +14,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   fileReducer,
-  responseSlice: responseSlice,
+  responseSlice,
+  userAccountSlice,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
