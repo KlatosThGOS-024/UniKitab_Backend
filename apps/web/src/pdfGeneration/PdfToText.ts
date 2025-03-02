@@ -21,14 +21,15 @@ class PdfToText {
       throw new Error("Failed to load PDF");
     }
   }
-  async getTextualData() {
+  async getTextualData(start: number, end: number) {
     try {
       const pdf = await this.pdf;
 
-      await this.getPdfPages();
+      // await this.getPdfPages();
       let textContent = "";
-      for (let i = 1; i <= this.pages; i++) {
+      for (let i = +start; i <= +end; i++) {
         let textPage = await pdf.getPage(i);
+
         let text = await textPage.getTextContent();
         textContent = text.items
           .map((item: TextItem) => {

@@ -5,9 +5,11 @@ import { CiCamera } from "react-icons/ci";
 import { FaBahai } from "react-icons/fa";
 import { UserResponse } from "./UserMessage";
 import { AiResponse } from "./AiMessage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addResponse } from "@/functions/messages/message";
 import { getAIresponse } from "@/Hooks/AiApi";
+import { IRootState } from "@/store/store";
+import PdfToText from "@/pdfGeneration/PdfToText";
 
 interface ResponseProp {
   response_frm: string;
@@ -17,17 +19,21 @@ interface ResponseProp {
 
 function InputTaker({
   setUserMessage,
+  setStartingPageNumber,
+  setEndingPageNumber,
 }: {
   setUserMessage: React.Dispatch<SetStateAction<string>>;
+  setStartingPageNumber: any;
+  setEndingPageNumber: any;
 }) {
   return (
-    <div className="w-full">
+    <div className="w-full items-center gap-2 flex">
       {" "}
       <textarea
         onChange={(e) => {
           setUserMessage(e.target.value);
         }}
-        className="w-full py-[16px] px-4 text-[21px] bg-[#676F8B] text-[#454B62] rounded-lg
+        className="w-full py-[16px] px-4 text-[21px] bg-[#fff] text-[#111] rounded-lg
         outline-none placeholder:text-[21px]
                transition-all resize-none
               "
@@ -39,6 +45,28 @@ function InputTaker({
           target.style.height = `${target.scrollHeight}px`;
         }}
       />
+      <div className="space-y-2">
+        <input
+          onChange={(e) => {
+            setStartingPageNumber(e.target.value);
+          }}
+          className="w-[64px]  bg-[#fff]
+           text-[#111] rounded-md
+        outline-none  placeholder:px-2
+               transition-all resize-none"
+          placeholder="start"
+        ></input>
+        <input
+          onChange={(e) => {
+            setEndingPageNumber(e.target.value);
+          }}
+          className="w-[64px]  bg-[#fff]
+           text-[#111] rounded-md
+        outline-none  placeholder:px-2
+               transition-all resize-none"
+          placeholder="end"
+        ></input>
+      </div>
     </div>
   );
 }
@@ -47,8 +75,27 @@ export const Input = ({
 }: {
   setResponse: React.Dispatch<SetStateAction<ResponseProp[]>>;
 }) => {
+  const selecetor = useSelector(
+    (state: IRootState) => state.fileReducer.FileUrl
+  );
+
   const [userMessage, setUserMessage] = useState("");
-  const dispatch = useDispatch();
+  const [StartingPageNumber, setStartingPageNumber] = useState<number>();
+  const [EndingPageNumber, setEndingPageNumber] = useState<number>();
+  const getPdf = async () => {
+    try {
+      if (selecetor) {
+        const response = new PdfToText(selecetor);
+        if (StartingPageNumber && EndingPageNumber) {
+          const data = await response.getTextualData(
+            StartingPageNumber,
+            EndingPageNumber
+          );
+          return data;
+        }
+      }
+    } catch (error) {}
+  };
 
   const onClickHandler = async () => {
     if (userMessage) {
@@ -57,12 +104,19 @@ export const Input = ({
         response: userMessage,
         responseId: "12333333",
       };
-
       setResponse((prevResponses) => {
         return [...prevResponses, newResponse];
       });
+      let prompt = `${userMessage}`;
 
-      const aiResponse = await getAIresponse(userMessage);
+      if (StartingPageNumber && EndingPageNumber) {
+        prompt += await getPdf();
+
+        prompt += `starting page ${StartingPageNumber} to ${EndingPageNumber} this is the bookText => ${prompt}`;
+      }
+      console.log(prompt);
+      // let aiResponse = ''
+      const aiResponse = await getAIresponse(prompt);
       if (aiResponse.success) {
         const aiMessage: ResponseProp = {
           response_frm: "Ai",
@@ -78,11 +132,15 @@ export const Input = ({
   };
 
   return (
-    <div className="py-2 rounded-lg w-full max-md:px-3 bg-[#101524] shadow-2xl">
+    <div className="py-2 rounded-lg w-full max-md:px-3 bg-[#F8F5EE] shadow-2xl">
       <div className="flex max-sm:gap-[16px] max-md:gap-3 md:gap-[21px] px-[14px] py-[8px] items-center">
         <CiCamera className="w-[28px] h-[28px] cursor-pointer hover:text-[#FF612E]" />
         <FaBahai className="w-[28px] h-[28px] cursor-pointer hover:text-[#FF612E]" />
-        <InputTaker setUserMessage={setUserMessage} />
+        <InputTaker
+          setUserMessage={setUserMessage}
+          setStartingPageNumber={setStartingPageNumber}
+          setEndingPageNumber={setEndingPageNumber}
+        />
         <IoIosSend
           onClick={onClickHandler}
           className="cursor-pointer w-[28px] h-[28px] m-2"
@@ -128,9 +186,6 @@ const responses = [
 ];
 export const ResponseBox = () => {
   const [response, setResponse] = useState<ResponseProp[]>(responses);
-  useEffect(() => {
-    console.log(response);
-  }, [response]);
 
   return (
     <section className="relative h-screen flex max-md:space-y-[96px] max-md:flex-row-reverse flex-col">

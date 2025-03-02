@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoIosOptions } from "react-icons/io";
-import PdfToText from "@/pdfGeneration/PdfToText";
 import { Account } from "./SignUp";
+import { useSelector } from "react-redux";
+import { IRootState } from "@/store/store";
+import { FaRegUserCircle } from "react-icons/fa";
 
 const SearchBar = () => {
   return (
@@ -23,6 +25,13 @@ const SearchBar = () => {
 };
 
 export const NavBar = () => {
+  const [isClient, setIsClient] = useState(false);
+  const isLoggedIn = useSelector(
+    (state: IRootState) => state.userAccountSlice.userLoggedIn
+  );
+
+  const [showProfile, setShowProfile] = useState(false);
+
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const showModalSignUp = () => {
@@ -31,6 +40,13 @@ export const NavBar = () => {
   const showMenuModal = () => {
     setShowModal(!showModal);
   };
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <section>
@@ -57,21 +73,54 @@ export const NavBar = () => {
             <li className="hover:text-[#69D4F3] font-[500] text-[#423e3e]">
               Educators
             </li>
-            <li
-              onClick={showModalSignUp}
-              className=": cursor-pointer  hover:text-[#69D4F3]"
-            >
-              Login
-            </li>{" "}
+            {!isLoggedIn && (
+              <li
+                onClick={showModalSignUp}
+                className="cursor-pointer hover:text-[#69D4F3]"
+              >
+                Login
+              </li>
+            )}
           </ul>
-          <button
-            onClick={showModalSignUp}
-            className=" rounded-full transition-all duration-150 ease-out
+          {!isLoggedIn && (
+            <button
+              onClick={showModalSignUp}
+              className=" rounded-full transition-all duration-150 ease-out
              max-lg:hidden lg:block  px-4 text-[18px] font-[500]  py-2 bg-[#EC497D] text-white
            hover:bg-[#645656] hover:text-[#EC497D]"
-          >
-            Sign Up
-          </button>
+            >
+              Sign Up
+            </button>
+          )}
+          {isLoggedIn && (
+            <div
+              onClick={() => {
+                setShowProfile(!showProfile);
+              }}
+              className=" relative"
+            >
+              <FaRegUserCircle className="w-9 h-9" />
+              <div
+                className={`${showProfile ? "block" : "hidden"} z-40 absolute   -right-[50%] mt-3`}
+              >
+                <div className=" ml-2 flex flex-col items-start">
+                  {" "}
+                  <span>Profile</span>
+                  <span>Complaint</span>
+                  <button
+                    className=" rounded-full transition-all duration-150
+                     ease-out
+            
+              px-4 text-[18px] font-[500] 
+               py-2 bg-[#EC497D] text-white
+           hover:bg-[#645656] hover:text-[#EC497D]"
+                  >
+                    LogOut
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="max-md:block hidden">
@@ -80,7 +129,7 @@ export const NavBar = () => {
             className="w-[28px] cursor-pointer h-[28px]"
           />
           {showModal && (
-            <div className="bg-white z-20  absolute left-0 -bottom-[188px] right-0  ">
+            <div className="bg-white z-20  absolute left-0 -bottom-[184px] right-0  ">
               <ul className="flex flex-col text-start gap-7 px-3 text-[18px]">
                 <li className="hover:text-[#69D4F3] cursor-pointer font-[500] text-[#423e3e]">
                   Sell Docs
@@ -88,14 +137,21 @@ export const NavBar = () => {
                 <li className="hover:text-[#69D4F3]  cursor-pointer font-[500] text-[#423e3e]">
                   Educators
                 </li>
-
                 <li
                   className="  transition-all duration-150 ease-out
              max-md:block md:hidden text-[18px] font-[500] 
-              text-black
+              text-black cursor-pointer
             hover:text-[#EC497D]"
                 >
                   Sign Up
+                </li>{" "}
+                <li
+                  className="  transition-all duration-150 ease-out
+             max-md:block md:hidden text-[18px] font-[500]  cursor-pointer
+              text-black
+            hover:text-[#EC497D]"
+                >
+                  LogOut
                 </li>
               </ul>{" "}
             </div>

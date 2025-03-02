@@ -23,15 +23,11 @@ export const PdfViewer = () => {
   return (
     <>
       <div className="h-screen overflow-hidden border w-full border-gray-300">
-        {loader && <div></div>}
-
-        {!loader && (
-          <Viewer
-            fileUrl={`${selector}`}
-            plugins={[defaultLayoutPluginInstance]}
-            onDocumentLoad={() => onLoader(false)}
-          />
-        )}
+        <Viewer
+          fileUrl={`${selector}`}
+          plugins={[defaultLayoutPluginInstance]}
+          onDocumentLoad={() => onLoader(false)}
+        />
       </div>
     </>
   );

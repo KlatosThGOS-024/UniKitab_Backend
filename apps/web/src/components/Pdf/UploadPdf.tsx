@@ -8,6 +8,7 @@ import { addFileUrl } from "@/functions/docs/file";
 
 export const UploadPdf = () => {
   const [files, setFiles] = useState<File | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const dispatch = useDispatch();
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -29,6 +30,13 @@ export const UploadPdf = () => {
       return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
     }
   };
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
   return (
     <section className="xl:w-[1200px] md:w-[900px] mx-auto">
       <div className="flex mt-[28px]  w-full flex-col gap-[64px] ">
