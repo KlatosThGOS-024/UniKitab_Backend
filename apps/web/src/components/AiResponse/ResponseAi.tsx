@@ -5,9 +5,9 @@ import { CiCamera } from "react-icons/ci";
 import { FaBahai } from "react-icons/fa";
 import { UserResponse } from "./UserMessage";
 import { AiResponse } from "./AiMessage";
-import { getAIresponse } from "../api/AiApi";
 import { useDispatch } from "react-redux";
 import { addResponse } from "@/functions/messages/message";
+import { getAIresponse } from "@/Hooks/AiApi";
 
 interface ResponseProp {
   response_frm: string;

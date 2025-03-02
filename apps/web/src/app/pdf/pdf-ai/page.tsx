@@ -1,7 +1,6 @@
 "use client";
 import { PdfViewer } from "@/components/Pdf/PdfViewer";
 import { ResponseBox } from "@/components/AiResponse/ResponseAi";
-import { useState } from "react";
 import { NavBar } from "@/components/Landing/NavBar";
 const page = () => {
   return (

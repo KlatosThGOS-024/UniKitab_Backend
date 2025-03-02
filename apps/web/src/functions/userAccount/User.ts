@@ -18,7 +18,6 @@ export const userAccountSlicer = createSlice({
       state.email = action.payload.email;
       state.username = action.payload.username;
       state.userLoggedIn = action.payload.userLoggedIn;
-      console.log(state);
     },
     removeAccount: (state, action: PayloadAction<UserAccount>) => {
       state.email = "";
