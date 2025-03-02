@@ -23,7 +23,10 @@ const SearchBar = () => {
 
 export const NavBar = () => {
   const [showModal, setShowModal] = useState(false);
-
+  const [showModal2, setShowModal2] = useState(false);
+  const showModalSignUp = () => {
+    setShowModal2(!showModal);
+  };
   const showMenuModal = () => {
     setShowModal(!showModal);
   };
@@ -52,6 +55,7 @@ export const NavBar = () => {
             <li className=":block  hover:text-[#69D4F3]">Login</li>{" "}
           </ul>
           <button
+            onClick={showModalSignUp}
             className=" rounded-full transition-all duration-150 ease-out
              max-lg:hidden lg:block  px-4 text-[18px] font-[500]  py-2 bg-[#EC497D] text-white
            hover:bg-[#645656] hover:text-[#EC497D]"
