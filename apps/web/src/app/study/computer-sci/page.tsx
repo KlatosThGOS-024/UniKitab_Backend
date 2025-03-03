@@ -4,7 +4,7 @@ import { BookSection } from "@/components/Study/BookSection";
 
 const page = () => {
   return (
-    <section>
+    <section className="">
       <NavBar />
       <Navigation />
       <BookSection />

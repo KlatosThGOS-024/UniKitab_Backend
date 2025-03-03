@@ -10,9 +10,10 @@ import { IRootState } from "@/store/store";
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
 export const PdfViewer = () => {
-  const selector = useSelector(
-    (state: IRootState) => state.fileReducer.FileUrl
-  );
+  const selector = useSelector((state: IRootState) => {
+    console.log(state.fileReducer.FileUrl);
+    return state.fileReducer.FileUrl;
+  });
   const [loader, setLooader] = useState(true);
   const onLoader = (param: boolean) => {
     setLooader(param);
