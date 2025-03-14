@@ -13,9 +13,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { IoSearchOutline } from "react-icons/io5";
-import PdfToText from "@/pdfGeneration/PdfToText";
-import { useSelector } from "react-redux";
-import { IRootState } from "@/store/store";
+
 const images = [
   "https://www.studypool.com/img/backgrounds/homepage_bg_v2/splash_4.jpg",
   "https://www.studypool.com/img/backgrounds/homepage_bg_v2/splash_5.jpg",
@@ -36,7 +34,7 @@ export const HeroSection = () => {
             {images.map((img, index) => {
               cnt++;
               const key = `hero-slide-${index}-${img}-${cnt}`;
-              console.log(key);
+
               return (
                 <div key={`hero-${key}`}>
                   {" "}

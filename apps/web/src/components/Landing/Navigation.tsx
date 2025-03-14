@@ -59,7 +59,7 @@ const HoveredSubjects = ({
       <ul>
         {Subjects.map((sub, index) => {
           const key = `${prefix}-${index}-${sub}`;
-          console.log(key); // Log the generated key
+
           return (
             <li
               key={`${prefix}-${index}-${sub}`}
