@@ -19,6 +19,7 @@ import {
   ResponseExample,
   ResponseProblem,
   ResponseTestCases,
+  TestCases,
 } from "@repo/types";
 import { TfiControlPlay } from "react-icons/tfi";
 import { FaCloudArrowUp } from "react-icons/fa6";
@@ -27,8 +28,8 @@ export const LeftSideProblemDescription = ({
   ResponseProblemProp,
   ResponseExampleProp,
 }: {
-  ResponseProblemProp: ResponseProblem;
-  ResponseExampleProp: ResponseExample[];
+  ResponseProblemProp: Problem;
+  ResponseExampleProp: Example[];
 }) => {
   // const problem = response[0];
   // const examples = response[1];
@@ -156,7 +157,7 @@ export const RightSideCodeEditor = ({
   ResponseTestCasesProp,
   starterFunctionName,
 }: {
-  ResponseTestCasesProp: ResponseTestCases[];
+  ResponseTestCasesProp: TestCases[];
   starterFunctionName: any;
 }) => {
   console.log(starterFunctionName);

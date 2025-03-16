@@ -6,6 +6,7 @@ import { Account } from "./SignUp";
 import { useSelector } from "react-redux";
 import { IRootState } from "@/store/store";
 import { FaRegUserCircle } from "react-icons/fa";
+import { addQtoDb } from "@/Hooks/problem";
 
 const SearchBar = () => {
   return (

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const AiResponse_controller_1 = require("../controllers/AiResponse.controller");
+const aiRouter = (0, express_1.Router)();
+aiRouter.route("/get-answer").post(AiResponse_controller_1.getAnswer);
+// aiRouter.route("/get-all-chat").get(userAuth, getAllChats);
+// aiRouter.route("/get-particular-chat").get(userAuth, getParticularChat);
+// aiRouter.route("/save-chat-new").post(userAuth, saveNewChatSession);
+// aiRouter.route("/save-chat-old").post(userAuth, saveChatAtCurrentSession);
+exports.default = aiRouter;

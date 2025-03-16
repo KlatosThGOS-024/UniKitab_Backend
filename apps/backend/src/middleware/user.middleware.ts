@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import ApiError from "../utils/ApiError";
-import User from "../models/user.models";
+// import User from "../models/user.models";
 
 const userAuth = (req: Request, res: Response, next: NextFunction) => {
   (async () => {
@@ -22,13 +22,13 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
 
       const decodedToken = jwt.verify(token, "process.env.accessTokenSecret");
       const userId = (decodedToken as JwtPayload)._id;
-      const user = await User.findById(userId).select("-password");
+      //.///    const user = await User.findById(userId).select("-password");
 
-      if (!user) {
-        return next(new ApiError(400, "No User Found with this token."));
-      }
+      // if (!user) {
+      //   return next(new ApiError(400, "No User Found with this token."));
+      // }
 
-      req.user = user;
+      // req.user = user;
       next();
     } catch (error: any) {
       console.error("Authorization error:", error.message || error);

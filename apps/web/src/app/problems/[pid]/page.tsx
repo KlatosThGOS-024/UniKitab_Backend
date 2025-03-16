@@ -181,6 +181,7 @@ import { getQuestions } from "@/Hooks/problem";
 import {
   Difficulty,
   Example,
+  Problem,
   ResponseExample,
   ResponseProblem,
   ResponseTestCases,
@@ -265,9 +266,7 @@ const ProblemPageSekeleton = () => {
   // ];
 
   const [selectedProblem, setSelectedProblem] =
-    useState<[ResponseProblem, ResponseExample[], ResponseTestCases[]]>(
-      defaultProblem
-    );
+    useState<[Problem]>(reverseArrayQ);
 
   const [isLoading, setSetIsLoading] = useState(false);
   const params = useSearchParams();
@@ -300,13 +299,13 @@ const ProblemPageSekeleton = () => {
       <Split className=" split  h-screen bg-[#111]">
         <div className=" my-1 overflow-auto mx-1">
           <LeftSideProblemDescription
-            ResponseExampleProp={responseData[1]}
+            ResponseExampleProp={responseData[0].examples}
             ResponseProblemProp={responseData[0]}
           />
         </div>
         <div>
           <RightSideCodeEditor
-            ResponseTestCasesProp={responseData[2]}
+            ResponseTestCasesProp={responseData[0].testCases}
             starterFunctionName={responseData[0].starterFunctionName}
           />
         </div>

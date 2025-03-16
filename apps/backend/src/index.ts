@@ -2,7 +2,7 @@ import express from "express";
 import router from "./app";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import databaseConnection from "./db/db";
+
 import cors from "cors";
 
 dotenv.config({
@@ -22,9 +22,6 @@ app.use(router);
 /////////////////////////////////////
 
 /////////////////////////////////////
-databaseConnection().then((response) => {
-  console.log(response);
-  app.listen(port, () => {
-    console.log(`Server has been started on port ${port}`);
-  });
+app.listen(port, () => {
+  console.log(`Server has been started on port ${port}`);
 });

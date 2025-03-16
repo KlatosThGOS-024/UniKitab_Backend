@@ -60,11 +60,13 @@ import { Difficulty, Example, Problem, TestCases } from "@repo/types";
 
 const examples: Example[] = [
   {
+    problemId: "reverse-array",
     inputText: "[1, 2, 3, 4, 5]",
     outputText: "[5, 4, 3, 2, 1]",
     explanation: "Reversing the array elements.",
   },
   {
+    problemId: "reverse-array",
     inputText: "[10, 20, 30]",
     outputText: "[30, 20, 10]",
     explanation: "Reversing order of elements.",
@@ -95,13 +97,17 @@ const handlerReverseArray = (fn: (arr: number[]) => number[]) => {
 };
 
 const testCases: TestCases[] = [
-  { input: [1, 2, 3, 4, 5], output: [5, 4, 3, 2, 1] },
-  { input: [10, 20, 30], output: [30, 20, 10] },
+  {
+    problemId: "reverse-array",
+    input: [1, 2, 3, 4, 5],
+    output: [5, 4, 3, 2, 1],
+  },
+  { problemId: "reverse-array", input: [10, 20, 30], output: [30, 20, 10] },
 ];
 
 export const reverseArrayQ: [Problem] = [
   {
-    problemNumber: 1,
+    problemNumber: "1111",
     problemId: "reverse-array",
     title: "Reverse the Array",
     inputText1:
@@ -110,8 +116,8 @@ export const reverseArrayQ: [Problem] = [
       "The function should return a new array with elements in reversed order.",
     inputText3: "Example: Input: [1, 2, 3, 4, 5] → Output: [5, 4, 3, 2, 1].",
     difficulty: Difficulty.Easy,
-    likesCount: 120,
-    dislikeCount: 5,
+    likesCount: "120",
+    dislikeCount: "5",
     examples,
     testCases,
     handlerFunc: handlerReverseArray,

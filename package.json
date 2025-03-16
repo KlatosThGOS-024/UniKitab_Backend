@@ -22,6 +22,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@prisma/client": "^6.5.0",
     "@react-pdf-viewer/default-layout": "^3.12.0"
   }
 }

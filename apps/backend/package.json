@@ -1,5 +1,5 @@
 {
-  "name": "UniKitabBackend",
+  "name": "unikitabbackend",
   "version": "1.0.0",
   "description": "UniKitabBackend ",
   "main": "index.js",
@@ -17,6 +17,7 @@
   "author": "Priyanshu",
   "license": "ISC",
   "dependencies": {
+    "@repo/db": "*",
     "@mirite/zod-to-mongoose": "^0.0.5",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",

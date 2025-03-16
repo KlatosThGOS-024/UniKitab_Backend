@@ -28,6 +28,7 @@ export type ResponseExample = {
 };
 
 export type Example = {
+  problemId: string;
   inputText: string;
   outputText: string;
   explanation?: string;
@@ -36,7 +37,7 @@ export type Example = {
 
 export type TestCases = {
   input: any;
-
+  problemId: string;
   output: any;
 };
 export enum Difficulty {
@@ -46,15 +47,15 @@ export enum Difficulty {
 }
 
 export type Problem = {
-  problemNumber: number;
+  problemNumber: string;
   problemId: string;
   title: string;
   inputText1: string;
   inputText2?: string;
   inputText3?: string;
   difficulty: Difficulty;
-  likesCount: number;
-  dislikeCount: number;
+  likesCount: string;
+  dislikeCount: string;
   examples: Example[];
   testCases: TestCases[];
   handlerFunc: ((fn: any) => boolean) | string;

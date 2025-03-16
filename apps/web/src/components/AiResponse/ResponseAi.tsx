@@ -5,11 +5,11 @@ import { CiCamera } from "react-icons/ci";
 import { FaBahai } from "react-icons/fa";
 import { UserResponse } from "./UserMessage";
 import { AiResponse } from "./AiMessage";
-import { useDispatch, useSelector } from "react-redux";
-import { addResponse } from "@/functions/messages/message";
+import { useSelector } from "react-redux";
+
 import { getAIresponse } from "@/Hooks/AiApi";
 import { IRootState } from "@/store/store";
-import PdfToText from "@/pdfGeneration/PdfToText";
+import PdfToText from "@/utils/pdfGeneration/PdfToText";
 
 interface ResponseProp {
   response_frm: string;

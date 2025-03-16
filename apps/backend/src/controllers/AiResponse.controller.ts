@@ -3,7 +3,7 @@ import asyncHandler from "../utils/asyncHandler";
 import ApiResponse from "../utils/ApiResponse";
 import ApiError from "../utils/ApiError";
 
-import Chat from "../models/ai.models";
+// import Chat from "../models/ai.models";
 
 const getAnswer = asyncHandler(async (req: Request, res: Response) => {
   const getQuestion = req.body.getQuestion as string;
@@ -46,152 +46,146 @@ const getAnswer = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 });
-const getAllChats = asyncHandler(async (req: Request, res: Response) => {
-  try {
-    const chat = await Chat.find({
-      userId: req.user._id,
-    });
+// const getAllChats = asyncHandler(async (req: Request, res: Response) => {
+//   try {
+//     const chat = await Chat.find({
+//       userId: req.user._id,
+//     });
 
-    if (!chat) {
-      res.status(400).send(new ApiError(400, "Chats not found", chat));
-      return;
-    }
+//     if (!chat) {
+//       res.status(400).send(new ApiError(400, "Chats not found", chat));
+//       return;
+//     }
 
-    res
-      .status(200)
-      .send(new ApiResponse(200, chat, "Successfully get the Chats"));
-  } catch (error: any) {
-    res
-      .status(400)
-      .send(new ApiError(400, "Something went wrong", error.error));
-    return;
-  }
-});
-const getParticularChat = asyncHandler(async (req: Request, res: Response) => {
-  const chatId = req.query.id;
-  if (chatId == "") {
-    res.status(404).send(new ApiError(400, "Chat with this id is not avaible"));
-    return;
-  }
-  try {
-    const chat = await Chat.findOne({
-      userId: req.user._id,
-      "sessions.sessionId": chatId,
-    });
+//     res
+//       .status(200)
+//       .send(new ApiResponse(200, chat, "Successfully get the Chats"));
+//   } catch (error: any) {
+//     res
+//       .status(400)
+//       .send(new ApiError(400, "Something went wrong", error.error));
+//     return;
+//   }
+// });
+// const getParticularChat = asyncHandler(async (req: Request, res: Response) => {
+//   const chatId = req.query.id;
+//   if (chatId == "") {
+//     res.status(404).send(new ApiError(400, "Chat with this id is not avaible"));
+//     return;
+//   }
+//   try {
+//     const chat = await Chat.findOne({
+//       userId: req.user._id,
+//       "sessions.sessionId": chatId,
+//     });
 
-    if (!chat) {
-      res.status(404).send(new ApiError(400, "Chat not found"));
-      return;
-    }
+//     if (!chat) {
+//       res.status(404).send(new ApiError(400, "Chat not found"));
+//       return;
+//     }
 
-    res
-      .status(200)
-      .send(new ApiResponse(200, chat, "Successfully get the Chats"));
-  } catch (error: any) {
-    res
-      .status(400)
-      .send(new ApiError(400, "Something went wrong", error.error));
-    return;
-  }
-});
-const saveChatAtCurrentSession = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { chat } = req.body;
-    const sessionId = req.query.id;
-    const userId = req.user._id;
-    if (chat == "") {
-      res
-        .status(400)
-        .send(
-          new ApiError(400, "Chat body please provide! Something  went wrong")
-        );
-      return;
-    }
-    const { response_frm, response, chatId } = chat.messages;
+//     res
+//       .status(200)
+//       .send(new ApiResponse(200, chat, "Successfully get the Chats"));
+//   } catch (error: any) {
+//     res
+//       .status(400)
+//       .send(new ApiError(400, "Something went wrong", error.error));
+//     return;
+//   }
+// });
+// const saveChatAtCurrentSession = asyncHandler(
+//   async (req: Request, res: Response) => {
+//     const { chat } = req.body;
+//     const sessionId = req.query.id;
+//     const userId = req.user._id;
+//     if (chat == "") {
+//       res
+//         .status(400)
+//         .send(
+//           new ApiError(400, "Chat body please provide! Something  went wrong")
+//         );
+//       return;
+//     }
+//     const { response_frm, response, chatId } = chat.messages;
 
-    try {
-      const updateChatSection = await Chat.findOneAndUpdate(
-        {
-          "sessions.sessionId": sessionId,
-          userId,
-        },
-        {
-          $push: {
-            "sessions.$.messages": {
-              response_frm,
-              response,
-              chatId,
-            },
-          },
-        },
-        { new: true }
-      );
+//     try {
+//       const updateChatSection = await Chat.findOneAndUpdate(
+//         {
+//           "sessions.sessionId": sessionId,
+//           userId,
+//         },
+//         {
+//           $push: {
+//             "sessions.$.messages": {
+//               response_frm,
+//               response,
+//               chatId,
+//             },
+//           },
+//         },
+//         { new: true }
+//       );
 
-      res
-        .status(200)
-        .send(
-          new ApiResponse(200, updateChatSection, "Successfully saved the Chat")
-        );
-      return;
-    } catch (error: any) {
-      res
-        .status(400)
-        .send(new ApiError(400, "Something went wrong", error.error));
-      return;
-    }
-  }
-);
-const saveNewChatSession = asyncHandler(async (req: Request, res: Response) => {
-  const { chat } = req.body;
-  const sessionId = req.query.id;
-  const userId = req.user._id;
-  if (chat == "") {
-    res
-      .status(400)
-      .send(
-        new ApiError(400, "Chat body please provide! Something  went wrong")
-      );
-    return;
-  }
-  const { response_frm, response, chatId } = chat.messages;
+//       res
+//         .status(200)
+//         .send(
+//           new ApiResponse(200, updateChatSection, "Successfully saved the Chat")
+//         );
+//       return;
+//     } catch (error: any) {
+//       res
+//         .status(400)
+//         .send(new ApiError(400, "Something went wrong", error.error));
+//       return;
+//     }
+//   }
+// );
+// const saveNewChatSession = asyncHandler(async (req: Request, res: Response) => {
+//   const { chat } = req.body;
+//   const sessionId = req.query.id;
+//   const userId = req.user._id;
+//   if (chat == "") {
+//     res
+//       .status(400)
+//       .send(
+//         new ApiError(400, "Chat body please provide! Something  went wrong")
+//       );
+//     return;
+//   }
+//   const { response_frm, response, chatId } = chat.messages;
 
-  try {
-    const createNewChatSession = await Chat.create({
-      userId,
-      sessions: [
-        {
-          sessionId,
-          messages: [
-            {
-              response_frm,
-              response,
-              chatId,
-            },
-          ],
-        },
-      ],
-    });
-    res
-      .status(200)
-      .send(
-        new ApiResponse(
-          200,
-          createNewChatSession,
-          "Successfully saved the Chat"
-        )
-      );
-    return;
-  } catch (error: any) {
-    res
-      .status(400)
-      .send(new ApiError(400, "Something went wrong", error.error));
-    return;
-  }
-});
-export {
-  getAnswer,
-  getAllChats,
-  getParticularChat,
-  saveNewChatSession,
-  saveChatAtCurrentSession,
-};
+//   try {
+//     const createNewChatSession = await Chat.create({
+//       userId,
+//       sessions: [
+//         {
+//           sessionId,
+//           messages: [
+//             {
+//               response_frm,
+//               response,
+//               chatId,
+//             },
+//           ],
+//         },
+//       ],
+//     });
+//     res
+//       .status(200)
+//       .send(
+//         new ApiResponse(
+//           200,
+//           createNewChatSession,
+//           "Successfully saved the Chat"
+//         )
+//       );
+//     return;
+//   } catch (error: any) {
+//     res
+//       .status(400)
+//       .send(new ApiError(400, "Something went wrong", error.error));
+//     return;
+//   }
+// });
+export { getAnswer };

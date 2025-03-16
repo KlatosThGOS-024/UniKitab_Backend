@@ -13,6 +13,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { IoSearchOutline } from "react-icons/io5";
+import { addQtoDb } from "@/Hooks/problem";
 
 const images = [
   "https://www.studypool.com/img/backgrounds/homepage_bg_v2/splash_4.jpg",
@@ -20,6 +21,7 @@ const images = [
 ];
 export const HeroSection = () => {
   let cnt = 0;
+  addQtoDb();
   return (
     <section>
       <div>
