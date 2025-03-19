@@ -1,4 +1,4 @@
-import { reverseArrayQ } from "@/components/LiteCodeComponent/MockProblem/ReverseArrayQ";
+import { problemData } from "@/components/LiteCodeComponent/MockProblem/ReverseArrayQ";
 
 export const getQuestions = async (problemId: string) => {
   try {
@@ -22,10 +22,12 @@ export const getQuestions = async (problemId: string) => {
 export async function addQtoDb() {
   try {
     console.log("fsjfshfjskdhfkj");
-    const questionData = reverseArrayQ[0];
+
+    const questionData = problemData[0];
     const {
       problemNumber,
-      title,
+      problemId,
+      problemTitle,
       inputText1,
       inputText2,
       inputText3,
@@ -35,66 +37,13 @@ export async function addQtoDb() {
       testCases,
       starterFunctionName,
       handlerFunc,
-      problemId,
       examples,
     } = questionData;
 
+    // Convert handlerFunc to string if necessary
     const handler = handlerFunc.toString();
 
-    const testCasesArray = testCases.map((testCase) => {
-      return {
-        problemId: testCase.problemId,
-        input: testCase.input,
-        output: testCase.output,
-      };
-    });
-    const examplesArray = examples.map((example) => {
-      return {
-        problemId: example.problemId,
-
-        inputText: example.inputText,
-        outputText: example.outputText,
-        explanation: example.explanation,
-      };
-    });
-    console.log({
-      problemNumber,
-      title,
-      inputText1,
-      inputText2,
-      inputText3,
-      difficulty,
-      dislikeCount,
-      likesCount,
-      testCases: testCasesArray,
-      starterFunctionName,
-      handlerFunc: handler,
-
-      problemId,
-
-      examples: examplesArray,
-    });
-    // const newProblem = await prisma.problems.create({
-    //   data: {
-    //     problemNumber,
-    //     problemId,
-    //     title,
-    //     inputText1,
-    //     inputText2,
-    //     inputText3,
-    //     difficulty,
-    //     likesCount,
-    //     dislikeCount,
-    //     handlerFunc: handler,
-    //     starterFunctionName,
-    //     examples: {
-    //       create: examplesArray,
-    //     },
-    //     testCases: {
-    //       create: testCasesArray,
-    //     },
-    //   },
-    // });
+    // Send the data to your backend API
     const response = await fetch(
       "http://localhost:8000/api/v1/problem/createQ",
       {
@@ -105,7 +54,7 @@ export async function addQtoDb() {
         body: JSON.stringify({
           problemNumber,
           problemId,
-          title,
+          problemTitle,
           inputText1,
           inputText2,
           inputText3,
@@ -114,17 +63,15 @@ export async function addQtoDb() {
           dislikeCount,
           handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""), // Remove non-ASCII characters
           starterFunctionName,
-          examples: examplesArray,
-          testCases: testCasesArray,
+          examples,
+          testCases,
         }),
       }
     );
 
     console.log(response);
     console.log("New Problem created:");
-    // return NextResponse.json(new ApiResponse(200, "Success", [newProblem]));
-  } catch (error: any) {
-    console.log(error);
-    // return NextResponse.json(new ApiResponse(400, "Failure", error));
+  } catch (error) {
+    console.error("Error while adding problem:", error);
   }
 }

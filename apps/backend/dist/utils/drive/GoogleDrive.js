@@ -12,33 +12,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Drive = void 0;
 const fs_1 = __importDefault(require("fs"));
 const googleapis_1 = require("googleapis");
-const apiKeys = require("./apiKeys.json");
+const apiKeys_json_1 = __importDefault(require("./apiKeys.json"));
 class Drive {
     constructor() { }
     authorize() {
         return __awaiter(this, void 0, void 0, function* () {
-            const jwtClient = new googleapis_1.google.auth.JWT({
-                email: apiKeys.client_email,
-                key: apiKeys.private_key,
-                keyId: apiKeys.private_key_id,
-                scopes: ["https://www.googleapis.com/auth/drive.file"],
-            });
-            yield jwtClient.authorize();
-            return jwtClient;
+            const authClient = new googleapis_1.google.auth.JWT(apiKeys_json_1.default.client_email, undefined, apiKeys_json_1.default.private_key, ["https://www.googleapis.com/auth/drive.file"]);
+            yield authClient.authorize();
+            return authClient;
         });
     }
-    uploadFile(authClient) {
+    uploadFile(authClient, bookName, filePath) {
         return __awaiter(this, void 0, void 0, function* () {
             const drive = googleapis_1.google.drive({ version: "v3", auth: authClient });
             const fileMetadata = {
-                name: "test.txt",
-                parents: ["1KVcvPwe8gOuXcgpM4zxnSJuogeD1C6OA"], // Replace with your actual Folder ID
+                name: `${bookName}.pdf`,
+                parents: ["1KVcvPwe8gOuXcgpM4zxnSJuogeD1C6OA"],
             };
             const media = {
-                mimeType: "text/plain",
-                body: fs_1.default.createReadStream("test.txt"),
+                mimeType: "application/pdf",
+                body: fs_1.default.createReadStream(filePath),
             };
             const response = yield drive.files.create({
                 requestBody: fileMetadata,
@@ -65,16 +61,16 @@ class Drive {
         });
     }
 }
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    const drive = new Drive();
-    const authClient = yield drive.authorize();
-    const fileId = "1kma8jL1DdpAyFLZZUWiT014__VIu0YK3"; // Use the actual file ID you want to download
-    const destinationPath = "./downloaded_test.txt"; // Path where you want to save the downloaded file
-    try {
-        const result = yield drive.getFile(authClient, fileId, destinationPath);
-        console.log(result);
-    }
-    catch (error) {
-        console.error("Error downloading file:", error);
-    }
-}))();
+exports.Drive = Drive;
+// (async () => {
+//   const drive = new Drive();
+//   const authClient = await drive.authorize();
+//   const fileId = "1kma8jL1DdpAyFLZZUWiT014__VIu0YK3"; // Use the actual file ID you want to download
+//   const destinationPath = "./downloaded_test.txt"; // Path where you want to save the downloaded file
+//   try {
+//     const result = await drive.getFile(authClient, fileId, destinationPath);
+//     console.log(result);
+//   } catch (error) {
+//     console.error("Error downloading file:", error);
+//   }
+// })();

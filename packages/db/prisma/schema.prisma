@@ -10,52 +10,45 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = ""
+  url      = "postgresql://postgres:NtEPpVnIwRYApCfUiDrDuBzGOkXlzHyl@gondola.proxy.rlwy.net:51857/railway"
 }
 enum Difficulty {
-  easy
-  medium
-  hard
+  Easy
+  Medium
+  Hard
 }
 
-model Example  {
-  problemId String @unique
-  inputText String
-  outputText String
+model Example {
+  id Int @default(autoincrement()) @unique
+
+  problemId   String
+  inputText   String
+  outputText  String
   explanation String?
-  img String?
-  problem Problem @relation(fields: [problemId], references: [problemId])
-
-
-}
-model TestCases  {
-  problemId String @unique
-  input String
-  output String
-  problem Problem @relation(fields: [problemId], references: [problemId])
-
+  img         String?
+  problem     Problem @relation(fields: [problemId], references: [problemId])
 }
 
+model TestCases {
+  id Int @default(autoincrement()) @unique
+  problemId   String
+  input       String
+  output      String
+  problem     Problem @relation(fields: [problemId], references: [problemId])
+}
 
-model Problem{
-  problemNumber String?
-  problemId String @unique
-  problemTitle String
-  inputText1  String
-  inputText2  String
-  inputText3  String
-  difficulty Difficulty
-  likesCount Int
-  dislikeCount Int
-  examples Example[]
-  testCases TestCases[]
-  handlerFunc String
+model Problem {
+  problemNumber   String?
+  problemId       String @unique
+  problemTitle    String
+  inputText1      String
+  inputText2      String
+  inputText3      String
+  difficulty      Difficulty
+  likesCount      Int
+  dislikeCount    Int
+  examples        Example[]
+  testCases       TestCases[]
+  handlerFunc     String
   starterFunctionName String
-
 }
-
-
-
-
-
-

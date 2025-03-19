@@ -26,7 +26,6 @@ const SearchBar = () => {
 };
 
 export const NavBar = () => {
-  const [isClient, setIsClient] = useState(false);
   const isLoggedIn = useSelector(
     (state: IRootState) => state.userAccountSlice.userLoggedIn
   );
@@ -41,20 +40,13 @@ export const NavBar = () => {
   const showMenuModal = () => {
     setShowModal(!showModal);
   };
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null;
-  }
 
   return (
     <section>
       {showModal2 && (
         <Account showModalSignUp={showModalSignUp} param={"signUp"} />
       )}
-      <div className="flex items-center relative justify-between px-2 py-[8px] ">
+      <div className="flex items-center relative justify-between bg-[#111111] px-2 py-[8px] ">
         <div className="flex items-center px-4 gap-5">
           <h2
             className=" text-[#C34326] hover:scale-110  text-[28px]
