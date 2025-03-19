@@ -13,22 +13,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProblemFromDb = exports.addProblemToDb = void 0;
-const express_1 = require("express");
 const asyncHandler_1 = __importDefault(require("../utils/asyncHandler"));
 const db_1 = __importDefault(require("@repo/db"));
 const ApiResponse_1 = __importDefault(require("../utils/ApiResponse"));
 const addProblemToDb = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { problemNumber, problemId, inputText1, inputText2, inputText3, title, testCases, examples, difficulty, handlerFunc, likesCount, dislikeCount, starterFunctionName, } = req.body;
-        console.log(req.body);
-        // if (!problem) {
-        //   const error = new ApiError(
-        //     400,
-        //     "Problem statement are not here",
-        //     problem
-        //   );
-        //   throw error;
-        // }
+        const { problemNumber, problemId, problemTitle, inputText1, inputText2, inputText3, testCases, examples, difficulty, handlerFunc, likesCount, dislikeCount, starterFunctionName, } = req.body;
+        // Validate the required fields
+        // In your validation, you're checking for title
+        if (!problemNumber ||
+            !problemId ||
+            !problemTitle ||
+            !testCases ||
+            !examples ||
+            !difficulty) {
+            res.send(new ApiResponse_1.default(400, null, "Missing required fields"));
+            return;
+        }
+        // Log incoming data for debugging (remove in production)
+        console.log("Received data:", req.body);
+        // Create the problem and its related data
+        // Create the problem and its related data
         const createProblem = yield db_1.default.problem.create({
             data: {
                 starterFunctionName,
@@ -40,29 +45,36 @@ const addProblemToDb = (0, asyncHandler_1.default)((req, res) => __awaiter(void 
                 inputText1,
                 inputText2,
                 inputText3,
-                problemTitle: title,
+                problemTitle,
                 difficulty,
                 examples: {
                     create: examples.map((example) => ({
                         inputText: example.inputText,
                         outputText: example.outputText,
                         explanation: example.explanation,
-                        problemId: problemId, // Ensure problemId is included
+                        // Remove the problem connect field here
                     })),
                 },
                 testCases: {
                     create: testCases.map((testCase) => ({
                         input: testCase.input,
                         output: testCase.output,
-                        problemId: problemId, // Ensure problemId is included
+                        // Remove the problem connect field here
                     })),
                 },
             },
         });
-        console.log(express_1.response);
+        // Send success response
+        res.send(new ApiResponse_1.default(201, createProblem, "Successfully added the problem"));
     }
     catch (error) {
-        res.send(error);
+        // Log the error for debugging (remove in production)
+        console.error("Database error:", error);
+        // Send error response with detailed message
+        const errorMessage = error instanceof Error
+            ? error.message
+            : "An unexpected error occurred while adding the problem.";
+        res.send(new ApiResponse_1.default(500, null, errorMessage));
     }
 }));
 exports.addProblemToDb = addProblemToDb;
