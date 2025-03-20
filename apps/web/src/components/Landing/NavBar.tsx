@@ -7,14 +7,22 @@ import { useSelector } from "react-redux";
 import { IRootState } from "@/store/store";
 import { FaRegUserCircle } from "react-icons/fa";
 import { addQtoDb } from "@/Hooks/problem";
+import { getPdfBook } from "@/Hooks/pdfBook";
 
 const SearchBar = () => {
+  const onSearchHandler = async (e: any) => {
+    const data = await getPdfBook(e.target.value);
+    console.log(data);
+  };
   return (
     <div
       className=" rounded-lg  flex items-center bg-[#FFFFFF] border-[1px]
      hover:shadow-[#69D4F3] hover:shadow-sm  "
     >
       <input
+        onChange={(e) => {
+          return onSearchHandler(e);
+        }}
         className="placeholder:text-gray-500 px-4 py-3 rounded-lg outline-none bg-[#FFFFFF]"
         placeholder="Search study resources"
       ></input>

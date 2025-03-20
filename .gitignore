@@ -5,7 +5,7 @@ node_modules
 .pnp
 .pnp.js
 dist
-
+.history
 # Local env files
 .env
 .env.local

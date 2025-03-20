@@ -52,3 +52,10 @@ model Problem {
   handlerFunc     String
   starterFunctionName String
 }
+model PdfBook {
+  id String @id @default(uuid()) 
+  name String
+  bookFrontImgSrc String
+  fileId      String 
+  createdAt   DateTime @default(now())
+}

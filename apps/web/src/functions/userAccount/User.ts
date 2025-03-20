@@ -29,4 +29,4 @@ export const userAccountSlicer = createSlice({
 
 export const { addAccount, removeAccount } = userAccountSlicer.actions;
 
-export const userAccountSlice = userAccountSlicer.reducer;
+export const userAccountReducer = userAccountSlicer.reducer;

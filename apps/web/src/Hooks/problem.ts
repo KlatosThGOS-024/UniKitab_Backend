@@ -45,7 +45,7 @@ export async function addQtoDb() {
 
     // Send the data to your backend API
     const response = await fetch(
-      "http://localhost:8000/api/v1/problem/createQ",
+      "http://localhost:8000/api/v1/problem/problem-add",
       {
         method: "POST",
         headers: {

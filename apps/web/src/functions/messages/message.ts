@@ -22,4 +22,4 @@ export const responseSlicer = createSlice({
 
 export const { addResponse } = responseSlicer.actions;
 
-export const responseSlice = responseSlicer.reducer;
+export const responseReducer = responseSlicer.reducer;
