@@ -5,6 +5,7 @@ import { MdDelete } from "react-icons/md";
 import { IoIosLink } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { addFileUrl } from "@/functions/docs/file";
+import { addPdfBook } from "@/Hooks/pdfBook";
 
 export const UploadPdf = () => {
   const [files, setFiles] = useState<File | null>(null);
@@ -19,6 +20,14 @@ export const UploadPdf = () => {
   useEffect(() => {
     if (files) {
       const fileUrl = URL.createObjectURL(files);
+
+      addPdfBook({
+        file: files,
+        imgSrc:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNJlT_41ndeZufmIJRuaH7WA-7weI6bdhrTw&s",
+        fileId: "sss",
+      });
+
       dispatch(addFileUrl(fileUrl));
     }
   }, [files, dispatch]);

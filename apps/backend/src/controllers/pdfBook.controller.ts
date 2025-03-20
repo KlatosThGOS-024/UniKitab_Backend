@@ -6,28 +6,31 @@ import prisma from "@repo/db";
 
 const addPdfBookToDrive = asyncHandler(async (req: Request, res: Response) => {
   try {
-    if (!req.file?.originalname) {
-      res.status(400).json({ message: "No PDF file uploaded." });
-    }
-
-    const pdfFile = req.file;
+    const pdfFile = req.files;
     const pdfData = req.body;
+
     const drive = new Drive();
     const authClient = await drive.authorize();
-    const uploadPath = pdfFile?.path || "";
-
+    //@ts-ignore
+    const file = pdfFile?.PdfFile[0];
+    const uploadPath = file?.path;
     const fileIdD = await drive.uploadFile(
       authClient,
       uploadPath,
-      pdfFile?.originalname || ""
+      file?.originalname || ""
     );
-
+    console.log("upload", uploadPath, req.body.imgSrc);
     fs.unlinkSync(uploadPath);
+    console.log("djkfshfdfhdf", {
+      name: file?.originalname,
+      bookFrontImgSrc: pdfData.imgSrc,
+      fileId: pdfData.fileId,
+    });
     const pdfCreate = await prisma.pdfBook.create({
       data: {
-        name: pdfFile?.originalname || "",
+        name: file?.originalname,
         bookFrontImgSrc: pdfData.imgSrc,
-        fileId: fileIdD || "",
+        fileId: pdfData.fileId,
       },
     });
 
@@ -39,8 +42,11 @@ const addPdfBookToDrive = asyncHandler(async (req: Request, res: Response) => {
 });
 const getPdfBook = asyncHandler(async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
     const { name } = req.body;
+
+    if (!name) {
+      res.status(400).json({ message: "Name parameter is required" });
+    }
 
     const getPDf = await prisma.pdfBook.findMany({
       where: {
@@ -53,8 +59,9 @@ const getPdfBook = asyncHandler(async (req: Request, res: Response) => {
 
     res.json({ message: "PDF get successfully!", getPDf });
   } catch (error) {
-    console.error("Error while getting pdf:", error);
-    res.status(500).json({ message: "Failed to get PDF", error });
+    res
+      .status(500)
+      .json({ message: "Failed to get PDF", error: String(error) });
   }
 });
 

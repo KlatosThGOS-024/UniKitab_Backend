@@ -1,5 +1,3 @@
-// studyBg1: "#152832",
-// studyBg2: "#15272F",
 export const LiteCode75Header = () => {
   return (
     <section className="w-full  ">

@@ -9,8 +9,8 @@ export class ApiError extends Error {
   }
 
   static badRequest(
-    p0: boolean,
-    p1: null,
+    success: boolean = false,
+
     message: string,
     details?: unknown
   ): ApiError {

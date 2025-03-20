@@ -1,7 +1,7 @@
 import fs from "fs";
 import { google } from "googleapis";
 
-const apiKeys = require("./apiKeys.json");
+import apiKeys from "./apiKeys.json";
 
 export class Drive {
   constructor() {}

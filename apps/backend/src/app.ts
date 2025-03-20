@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: ".env" });
 import express, { NextFunction, Request, Response } from "express";
 import { ApiError } from "./utils/ApiError";
 import { ApiResponse } from "./utils/ApiResponse";
@@ -9,8 +9,9 @@ import pdfBookRouter from "./routes/pdfBook.routes";
 
 import cors from "cors";
 import QuestionDbRouter from "./routes/question.routes";
+import aiRouter from "./routes/Ai.routes";
 const app = express();
-
+app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
@@ -22,5 +23,5 @@ app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
 // app.use("/api/v1/user", userRouter);
 app.use("/api/v1/problem", QuestionDbRouter);
 app.use("/api/v1/book", pdfBookRouter);
-
+app.use("/api/v1/ai", aiRouter);
 export default app;

@@ -2,66 +2,8 @@ import React from "react";
 import { BsCheck2Circle } from "react-icons/bs";
 
 import Link from "next/link";
-const problems = [
-  {
-    problemId: "be511e3c-2936-4bf4-84f9-fd984e513250",
-    status: true,
-    title: "Two-Sum",
-    Categorie: "String/Array",
-    Difficulty: "Easy",
-    Solution: "Solution",
-  },
-  {
-    problemId: "41204888-9af6-4e7d-9baf-81926c78edf4",
-    status: true,
-    title: "Greatest Common Divisor of Strings",
-    Categorie: "String/Array",
-    Difficulty: "Easy",
-    Solution: "Solution",
-  },
-  {
-    problemId: "51204888-9af6-4e7d-9baf-81926c78edf4",
-    status: true,
-    title: "Delete Middle Node OF LL",
-    Categorie: "String/LinkedList",
-    Difficulty: "Medium",
-    Solution: "Solution",
-  },
-  {
-    problemId: "51204888-9af6-4e7d-9baf-81926c78edf3",
-    status: true,
-    title: "Bank Robbery Problem",
-    Categorie: "String/Array",
-    Difficulty: "Easy",
-    Solution: "Solution",
-  },
-  {
-    problemId: "a8b328d5-dc7b-4fcf-b1db-97cd575032f7",
-    status: false,
-    title: "Bank Robbery Problem 2",
-    Categorie: "String/Array",
-    Difficulty: "Easy",
-    Solution: "Solution",
-  },
-  {
-    problemId: "51204888-9af6-4e7d-9baf-81926c78edf0",
-    status: false,
-    title: "ZigzagConversioNproblem",
-    Categorie: "String/Array",
-    Difficulty: "Medium",
-    Solution: "Solution",
-  },
-  {
-    problemId: "51204888-9af6-4e7d-9baf-81926c78edf6",
-    status: false,
-    title: "Phone Number problem",
-    Categorie: "String/Array",
-    Difficulty: "Medium",
-    Solution: "Solution",
-  },
-];
-export default problems;
 
+import { UploadSheet } from "./UploadSheet";
 interface problemType {
   problemId?: string;
   status: boolean;
@@ -71,9 +13,12 @@ interface problemType {
   Categorie: string;
 }
 
+const problems: problemType[] = [];
+export default problems;
+
 const Problems = () => {
   return (
-    <div className="overflow-x-auto rounded-xl">
+    <div className="overflow-x-auto rounded-xl ">
       <table className="table-auto w-full  rounded-xl border-collapse border border-gray-600">
         <thead>
           <tr className="bg-gray-800 text-white">
@@ -84,6 +29,7 @@ const Problems = () => {
             <th className="border border-gray-600 px-4 py-2">Solution</th>
           </tr>
         </thead>
+
         <tbody>
           {problems.map((value: problemType, index) => {
             return (
@@ -133,9 +79,22 @@ const Problems = () => {
 
 export const TopBarCompOfProblems = () => {
   return (
-    <section className="w-full   bg-[#1A1A1A]">
-      <div className="max-w-[1020px] py-[28px] w-full h-screen mx-auto ">
-        <Problems />
+    <section
+      className=" h-screen
+    bg-[#1A1A1A]"
+    >
+      <div className="w-[1496px] mx-auto grid xl:grid-cols-2 max-lg:grid-rows-2 gap-2">
+        {problems.length > 0 && (
+          <div
+            className="max-w-[1020px] py-[28px] w-full 
+       mx-auto "
+          >
+            <Problems />
+          </div>
+        )}
+        <div className=" place-items-center">
+          <UploadSheet />
+        </div>
       </div>
     </section>
   );

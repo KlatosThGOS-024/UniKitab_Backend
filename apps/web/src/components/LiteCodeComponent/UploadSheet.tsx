@@ -1,65 +1,19 @@
 "use client";
 import { FaChevronDown } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { MdDelete } from "react-icons/md";
-import { IoIosLink } from "react-icons/io";
-import { useDispatch } from "react-redux";
-import { addFileUrl } from "@/functions/docs/file";
+import { useState } from "react";
 
 export const UploadSheet = () => {
   const [files, setFiles] = useState<File | null>(null);
-  const [isClient, setIsClient] = useState(false);
-  const dispatch = useDispatch();
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0];
       setFiles(file);
     }
   };
-  useEffect(() => {
-    if (files) {
-      const fileUrl = URL.createObjectURL(files);
 
-      dispatch(addFileUrl(fileUrl));
-    }
-  }, [files, dispatch]);
-
-  const formatFileSize = (bytes: number | null) => {
-    if (bytes) {
-      if (bytes < 1024) return `${bytes} B`;
-      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-    }
-  };
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null;
-  }
   return (
-    <section className="xl:w-[1200px] md:w-[900px] mx-auto">
-      <div className="flex mt-[28px]  w-full flex-col gap-[64px] ">
-        <h2 className=" text-[28px] whitespace-nowrap">Chat Documents</h2>
-        <div className="flex justify-between rounded-md border-[#e6e6e6] border-[1px]  bg-white px-[64px] py-[28px] ">
-          <h2>{files ? files.name : "files"}</h2>
-          <div className="flex gap-3 text-[19px] items-center">
-            <span>
-              <span>{files ? formatFileSize(files.size) : "N/A"}</span>
-            </span>
-            {files && (
-              <a
-                href="/study/litecode"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <IoIosLink className="cursor-pointer w-7 h-7" />
-              </a>
-            )}
-            <MdDelete className="cursor-pointer w-7 h-7" />
-          </div>
-        </div>
+    <section className="xl:w-[600px] mt-5 md:w-[500px] mx-auto">
+      <div className="flex  w-full flex-col gap-[64px] ">
         <div className=" shadow-md shadow-[#4864FF] flex-shrink rounded-xl px-[64px] py-8">
           {" "}
           <div

@@ -8,9 +8,17 @@ import { upload } from "../middlewares/multer.middleware";
 
 const pdfBookRouter = Router();
 
-pdfBookRouter
-  .route("/pdf-add")
-  .post(upload.single("PdfFile"), addPdfBookToDrive);
+pdfBookRouter.route("/pdf-add").post(
+  upload.fields([
+    { name: "PdfFile", maxCount: 1 },
+    { name: "imgSrc", maxCount: 1 },
+    {
+      name: "fileId",
+      maxCount: 1,
+    },
+  ]),
+  addPdfBookToDrive
+);
 pdfBookRouter.route("/pdf-get").post(getPdfBook);
 
 export default pdfBookRouter;

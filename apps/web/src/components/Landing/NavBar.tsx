@@ -8,24 +8,40 @@ import { IRootState } from "@/store/store";
 import { FaRegUserCircle } from "react-icons/fa";
 import { addQtoDb } from "@/Hooks/problem";
 import { getPdfBook } from "@/Hooks/pdfBook";
-
+import { SearchBooks } from "./SearchBooks";
+interface propType {
+  id: string;
+  bookFrontImgSrc: string;
+  fileId: string;
+  name: string;
+  createdAt: Date;
+}
 const SearchBar = () => {
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchProp, setSearchProp] = useState<propType[]>([]);
   const onSearchHandler = async (e: any) => {
     const data = await getPdfBook(e.target.value);
-    console.log(data);
+    console.log(data.getPDf);
+    setSearchProp(data.getPDf);
   };
   return (
     <div
-      className=" rounded-lg  flex items-center bg-[#FFFFFF] border-[1px]
+      className=" relative rounded-lg  flex items-center bg-[#FFFFFF] border-[1px]
      hover:shadow-[#69D4F3] hover:shadow-sm  "
     >
       <input
         onChange={(e) => {
+          setShowSearch(!showSearch);
           return onSearchHandler(e);
         }}
         className="placeholder:text-gray-500 px-4 py-3 rounded-lg outline-none bg-[#FFFFFF]"
         placeholder="Search study resources"
       ></input>
+      {showSearch && (
+        <div className=" w-full border-t-[1px]  break-words z-50  absolute top-11">
+          <SearchBooks searchProp={searchProp} />
+        </div>
+      )}
       <div className=" px-4 border-l-[1px] rounded-l-none py-2">
         <IoSearchOutline className=" w-[21px] h-[21px] text-[#69D4F3]" />
       </div>
@@ -35,7 +51,7 @@ const SearchBar = () => {
 
 export const NavBar = () => {
   const isLoggedIn = useSelector(
-    (state: IRootState) => state.userAccountSlice.userLoggedIn
+    (state: IRootState) => state.userAccountReducer.userLoggedIn
   );
 
   const [showProfile, setShowProfile] = useState(false);

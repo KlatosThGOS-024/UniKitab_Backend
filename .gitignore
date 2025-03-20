@@ -4,8 +4,8 @@
 node_modules
 .pnp
 .pnp.js
+
 dist
-.history
 # Local env files
 .env
 .env.local
@@ -38,3 +38,4 @@ yarn-error.log*
 .DS_Store
 *.pem
 apps/backend/src/utils/drive/apiKeys.json
+.history

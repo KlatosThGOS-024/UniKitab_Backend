@@ -85,7 +85,7 @@ const addProblemToDb = asyncHandler(async (req: Request, res: Response) => {
       error instanceof Error
         ? error.message
         : "An unexpected error occurred while adding the problem.";
-    res.send(ApiError.badRequest(false, null, errorMessage));
+    res.send(ApiError.badRequest(false, errorMessage));
   }
 });
 export default addProblemToDb;
