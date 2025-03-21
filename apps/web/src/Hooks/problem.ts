@@ -21,8 +21,6 @@ export const getQuestions = async (problemId: string) => {
 
 export async function addQtoDb() {
   try {
-    console.log("fsjfshfjskdhfkj");
-
     const questionData = problemData[0];
     const {
       problemNumber,
@@ -40,10 +38,8 @@ export async function addQtoDb() {
       examples,
     } = questionData;
 
-    // Convert handlerFunc to string if necessary
     const handler = handlerFunc.toString();
 
-    // Send the data to your backend API
     const response = await fetch(
       "http://localhost:8000/api/v1/problem/problem-add",
       {
@@ -61,7 +57,40 @@ export async function addQtoDb() {
           difficulty,
           likesCount,
           dislikeCount,
-          handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""), // Remove non-ASCII characters
+          handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""),
+          starterFunctionName,
+          examples,
+          testCases,
+        }),
+      }
+    );
+
+    console.log(response);
+    console.log("New Problem created:");
+  } catch (error) {
+    console.error("Error while adding problem:", error);
+  }
+}
+export async function CreateQ(QuestionArray: string[]) {
+  try {
+    const response = await fetch(
+      "http://localhost:8000/api/v1/problem/get-answer-byproblem",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          problemNumber,
+          problemId,
+          problemTitle,
+          inputText1,
+          inputText2,
+          inputText3,
+          difficulty,
+          likesCount,
+          dislikeCount,
+          handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""),
           starterFunctionName,
           examples,
           testCases,

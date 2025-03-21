@@ -1,11 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # Dependencies
-node_modules
+
 .pnp
 .pnp.js
-
 dist
+
 # Local env files
 .env
 .env.local
@@ -39,3 +39,4 @@ yarn-error.log*
 *.pem
 apps/backend/src/utils/drive/apiKeys.json
 .history
+node_modules

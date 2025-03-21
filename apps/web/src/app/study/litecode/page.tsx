@@ -7,7 +7,7 @@ const page = () => {
   return (
     <section>
       <NavBar />
-      <LiteCode75Header />
+
       <TopBarCompOfProblems />
     </section>
   );

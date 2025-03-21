@@ -17,6 +17,7 @@
   "author": "Priyanshu",
   "license": "ISC",
   "dependencies": {
+    "@repo/types": "*",
     "@mirite/zod-to-mongoose": "^0.0.5",
     "@repo/db": "*",
     "@types/bcrypt": "^5.0.2",

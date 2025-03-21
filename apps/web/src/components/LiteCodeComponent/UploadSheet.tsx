@@ -1,345 +1,135 @@
 "use client";
-import { FaChevronDown } from "react-icons/fa";
-import { useState } from "react";
+import { getAIresponse2 } from "@/Hooks/AiApi";
+import React, { useState } from "react";
 
-export const UploadSheet = () => {
+const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   const [files, setFiles] = useState<File | null>(null);
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const [loader, setLoader] = useState<boolean>(false);
+  const [uploadStatus, setUploadStatus] = useState<string>("");
+  const [problems, setProblems] = useState<any[]>([]);
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files) {
       const file = event.target.files[0];
+      setLoader(true);
       setFiles(file);
+      setUploadStatus("Processing file...");
+
+      try {
+        const fileContent = await extractQuestionsFromFile(file);
+
+        const questionArrayJson = await sendQuestionsToBackend(fileContent);
+        const questionArray = questionArrayJson
+          .replace("```json", "")
+          .replace("```", "");
+        console.log(questionArray);
+        setArrayOfQs(questionArray);
+        setUploadStatus(`Successfully processed the file.`);
+      } catch (error) {
+        console.error("Error processing file:", error);
+        setUploadStatus("Error processing file. Please try again.");
+      } finally {
+        setLoader(false);
+      }
+    }
+  };
+
+  const extractQuestionsFromFile = async (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const fileContent = reader.result as string;
+        resolve(fileContent);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+      reader.readAsText(file);
+    });
+  };
+
+  const sendQuestionsToBackend = async (questions: string) => {
+    try {
+      const response = await getAIresponse2(questions);
+      return response;
+    } catch (error) {
+      console.error("Error sending questions to backend:", error);
+      throw error;
     }
   };
 
   return (
-    <section className="xl:w-[600px] mt-5 md:w-[500px] mx-auto">
-      <div className="flex  w-full flex-col gap-[64px] ">
-        <div className=" shadow-md shadow-[#4864FF] flex-shrink rounded-xl px-[64px] py-8">
-          {" "}
+    <section className="flex items-center xl:w-[600px] md:w-[500px] mx-auto">
+      <div className="flex px-6 w-full flex-col gap-[64px]">
+        <div className="max-lg:h-[296px] shadow-md shadow-[#111] flex-shrink rounded-xl px-[64px] py-8">
           <div
-            className=" max-w-[696px] h-[396px]
-         mx-auto flex items-center justify-center rounded-xl border-dotted border-[4px] border-[#5972FE] "
+            className="max-lg:max-w-[296px] max-w-[396px] h-[396px] max-lg:h-[196px] 
+                      mx-auto flex items-center justify-center rounded-xl  
+                      border-dotted mt-4 max-lg:py-[109px] border-[4px] border-[#e4e4e762]"
           >
-            <div className="flex items-center  flex-col gap-3">
-              <p className="text-[21px] font-[500]">Click to upload the pdf </p>
-
-              <svg
-                className="w-[96px] h-[96px]"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 68 83"
-              >
-                <g filter="url(#UploadFileIcon_svg_inline__a)">
-                  <path
-                    fill="#224E94"
-                    d="M12.2 16.4c0-1.7 1.4-3.1 3.2-3.1h21.4q2.8 0 4.8 2L53.3 27q2 2 2 4.8v35c0 1.8-1.4 3.2-3.2 3.2H15.4a3 3 0 0 1-3.2-3.2z"
-                  ></path>
-                </g>
-                <g filter="url(#UploadFileIcon_svg_inline__b)">
-                  <path
-                    fill="#A026FF"
-                    fillOpacity="0.3"
-                    d="M11.3 15c0-1.7 1.4-3 3.2-3H37q2.8 0 4.8 2l12.4 12.4q2 2 2 4.7v36.7c0 1.8-1.4 3.2-3.2 3.2H14.5a3 3 0 0 1-3.2-3.2z"
-                  ></path>
-                </g>
-                <path
-                  fill="url(#UploadFileIcon_svg_inline__c)"
-                  d="M9.8 12.2c0-1.8 1.4-3.2 3.1-3.2h24.5q2.9 0 4.8 2l13.6 13.6q1.9 2 2 4.7V69c0 1.8-1.5 3.2-3.2 3.2H12.9A3 3 0 0 1 9.7 69z"
-                ></path>
-                <path
-                  fill="url(#UploadFileIcon_svg_inline__d)"
-                  d="M9.8 12.2c0-1.8 1.4-3.2 3.1-3.2h24.5q2.9 0 4.8 2l13.6 13.6q1.9 2 2 4.7V69c0 1.8-1.5 3.2-3.2 3.2H12.9A3 3 0 0 1 9.7 69z"
-                ></path>
-                <mask
-                  id="UploadFileIcon_svg_inline__f"
-                  width="49"
-                  height="65"
-                  x="9"
-                  y="8"
-                  maskUnits="userSpaceOnUse"
-                >
-                  <path
-                    fill="url(#UploadFileIcon_svg_inline__e)"
-                    d="M9.8 12.2c0-1.8 1.4-3.2 3.1-3.2h24.5q2.9 0 4.8 2l13.6 13.6q1.9 2 2 4.7V69c0 1.8-1.5 3.2-3.2 3.2H12.9A3 3 0 0 1 9.7 69z"
-                  ></path>
-                </mask>
-                <g mask="url(#UploadFileIcon_svg_inline__f)">
-                  <g filter="url(#UploadFileIcon_svg_inline__g)">
-                    <path
-                      fill="#000"
-                      fillOpacity="0.5"
-                      d="M40.2 26.5 43.4 10 57 23.2z"
-                    ></path>
-                  </g>
-                  <path
-                    fill="url(#UploadFileIcon_svg_inline__h)"
-                    stroke="url(#UploadFileIcon_svg_inline__i)"
-                    strokeWidth="0.3"
-                    d="m40.2 8-.2-.2v15.4c0 1.8 1.4 3.3 3.2 3.3h15.6l-.2-.2z"
-                  ></path>
-                  <path d="M-6.3.3H74v80.5H-6.3z"></path>
-                  <path
-                    fill="url(#UploadFileIcon_svg_inline__j)"
-                    fillOpacity="0.1"
-                    d="M-6.3.3H74v80.5H-6.3z"
-                  ></path>
-                </g>
-                <g filter="url(#UploadFileIcon_svg_inline__k)">
-                  <path d="M9.8 12.2c0-1.8 1.4-3.2 3.1-3.2h24.5q2.9 0 4.8 2l13.6 13.6q1.9 2 2 4.7V69c0 1.8-1.5 3.2-3.2 3.2H12.9A3 3 0 0 1 9.7 69z"></path>
-                </g>
-                <path
-                  stroke="#000"
-                  strokeWidth="0.3"
-                  d="M12.9 8.9a3.3 3.3 0 0 0-3.3 3.3v56.7c0 1.9 1.5 3.3 3.3 3.3h41.7c1.8 0 3.3-1.4 3.3-3.3V29.3q0-2.8-2-4.8L42.3 10.9q-2-2-4.9-2z"
-                ></path>
-                <rect
-                  width="36"
-                  height="36"
-                  x="30.3"
-                  y="44.5"
-                  fill="#070D1B"
-                  rx="18"
-                ></rect>
-                <path
-                  fill="#fff"
-                  d="M54.5 62a1 1 0 0 1-1.3 0l-4-4v11.4a1 1 0 1 1-1.9 0V58l-4 4a1 1 0 1 1-1.3-1.3l5.6-5.6a1 1 0 0 1 1.3 0l5.6 5.6a1 1 0 0 1 0 1.4"
-                ></path>
-                <defs>
-                  <radialGradient
-                    id="UploadFileIcon_svg_inline__c"
-                    cx="0"
-                    cy="0"
-                    r="1"
-                    gradientTransform="rotate(126.8 26 19)scale(76.9642 58.6605)"
-                    gradientUnits="userSpaceOnUse"
+            {loader ? (
+              <div className="flex items-center flex-col gap-3">
+                <p className="text-[21px] font-[500]">{uploadStatus}</p>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+              </div>
+            ) : (
+              <div className="flex items-center flex-col gap-3">
+                {uploadStatus && !loader ? (
+                  <p className="text-[16px] text-green-400 mb-2">
+                    {uploadStatus}
+                  </p>
+                ) : null}
+                {problems.length > 0 ? (
+                  <p className="text-[16px] text-green-400 mb-2">
+                    {problems.length} problems extracted
+                  </p>
+                ) : null}
+                <p className="text-[21px] font-[500]">
+                  Click to upload your file
+                </p>
+                <div className="animate-pulse">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-file-up h-14 w-14 text-muted-foreground/70 animate-float"
                   >
-                    <stop stopColor="#EFEFEF"></stop>
-                    <stop offset="1" stopColor="#FDFDFD"></stop>
-                  </radialGradient>
-                  <radialGradient
-                    id="UploadFileIcon_svg_inline__d"
-                    cx="0"
-                    cy="0"
-                    r="1"
-                    gradientTransform="matrix(34.47886 -45.07038 34.35658 26.2828 7.3 76)"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stopColor="#fff"></stop>
-                    <stop offset="1" stopColor="#F9FBFF"></stop>
-                  </radialGradient>
-                  <radialGradient
-                    id="UploadFileIcon_svg_inline__e"
-                    cx="0"
-                    cy="0"
-                    r="1"
-                    gradientTransform="rotate(126.8 26 19)scale(76.9642 58.6605)"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stopColor="#EFEFEF"></stop>
-                    <stop offset="1" stopColor="#FDFDFD"></stop>
-                  </radialGradient>
-                  <radialGradient
-                    id="UploadFileIcon_svg_inline__h"
-                    cx="0"
-                    cy="0"
-                    r="1"
-                    gradientTransform="matrix(14.15804 -14.77666 46.04192 44.11438 40.2 26.6)"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stopColor="#fff"></stop>
-                    <stop offset="0.5" stopColor="#F9FBFF"></stop>
-                    <stop offset="0.6" stopColor="#fff"></stop>
-                  </radialGradient>
-                  <radialGradient
-                    id="UploadFileIcon_svg_inline__i"
-                    cx="0"
-                    cy="0"
-                    r="1"
-                    gradientTransform="rotate(-47.7 51.7 -27.5)scale(20.1006 20.3394)"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stopOpacity="0.1"></stop>
-                    <stop offset="1" stopOpacity="0"></stop>
-                  </radialGradient>
-                  <filter
-                    id="UploadFileIcon_svg_inline__a"
-                    width="52.1"
-                    height="65.8"
-                    x="7.7"
-                    y="8.8"
-                    colorInterpolationFilters="sRGB"
-                    filterUnits="userSpaceOnUse"
-                  >
-                    <feFlood
-                      floodOpacity="0"
-                      result="BackgroundImageFix"
-                    ></feFlood>
-                    <feBlend
-                      in="SourceGraphic"
-                      in2="BackgroundImageFix"
-                      result="shape"
-                    ></feBlend>
-                    <feGaussianBlur
-                      result="effect1_foregroundBlur_171_3567"
-                      stdDeviation="2.3"
-                    ></feGaussianBlur>
-                  </filter>
-                  <filter
-                    id="UploadFileIcon_svg_inline__b"
-                    width="67.4"
-                    height="81.6"
-                    x="0.1"
-                    y="0.7"
-                    colorInterpolationFilters="sRGB"
-                    filterUnits="userSpaceOnUse"
-                  >
-                    <feFlood
-                      floodOpacity="0"
-                      result="BackgroundImageFix"
-                    ></feFlood>
-                    <feBlend
-                      in="SourceGraphic"
-                      in2="BackgroundImageFix"
-                      result="shape"
-                    ></feBlend>
-                    <feGaussianBlur
-                      result="effect1_foregroundBlur_171_3567"
-                      stdDeviation="5.6"
-                    ></feGaussianBlur>
-                  </filter>
-                  <filter
-                    id="UploadFileIcon_svg_inline__g"
-                    width="34.9"
-                    height="34.5"
-                    x="31.2"
-                    y="1"
-                    colorInterpolationFilters="sRGB"
-                    filterUnits="userSpaceOnUse"
-                  >
-                    <feFlood
-                      floodOpacity="0"
-                      result="BackgroundImageFix"
-                    ></feFlood>
-                    <feBlend
-                      in="SourceGraphic"
-                      in2="BackgroundImageFix"
-                      result="shape"
-                    ></feBlend>
-                    <feGaussianBlur
-                      result="effect1_foregroundBlur_171_3567"
-                      stdDeviation="4.5"
-                    ></feGaussianBlur>
-                  </filter>
-                  <filter
-                    id="UploadFileIcon_svg_inline__k"
-                    width="48.5"
-                    height="64.3"
-                    x="9.5"
-                    y="8.3"
-                    colorInterpolationFilters="sRGB"
-                    filterUnits="userSpaceOnUse"
-                  >
-                    <feFlood
-                      floodOpacity="0"
-                      result="BackgroundImageFix"
-                    ></feFlood>
-                    <feBlend
-                      in="SourceGraphic"
-                      in2="BackgroundImageFix"
-                      result="shape"
-                    ></feBlend>
-                    <feColorMatrix
-                      in="SourceAlpha"
-                      result="hardAlpha"
-                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                    ></feColorMatrix>
-                    <feOffset dy="0.2"></feOffset>
-                    <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
-                    <feComposite
-                      in2="hardAlpha"
-                      k2="-1"
-                      k3="1"
-                      operator="arithmetic"
-                    ></feComposite>
-                    <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"></feColorMatrix>
-                    <feBlend
-                      in2="shape"
-                      result="effect1_innerShadow_171_3567"
-                    ></feBlend>
-                    <feColorMatrix
-                      in="SourceAlpha"
-                      result="hardAlpha"
-                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                    ></feColorMatrix>
-                    <feOffset></feOffset>
-                    <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
-                    <feComposite
-                      in2="hardAlpha"
-                      k2="-1"
-                      k3="1"
-                      operator="arithmetic"
-                    ></feComposite>
-                    <feColorMatrix values="0 0 0 0 0.768924 0 0 0 0 0.802984 0 0 0 0 0.858333 0 0 0 1 0"></feColorMatrix>
-                    <feBlend
-                      in2="effect1_innerShadow_171_3567"
-                      result="effect2_innerShadow_171_3567"
-                    ></feBlend>
-                    <feColorMatrix
-                      in="SourceAlpha"
-                      result="hardAlpha"
-                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                    ></feColorMatrix>
-                    <feOffset dy="-0.7"></feOffset>
-                    <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
-                    <feComposite
-                      in2="hardAlpha"
-                      k2="-1"
-                      k3="1"
-                      operator="arithmetic"
-                    ></feComposite>
-                    <feColorMatrix values="0 0 0 0 0.86566 0 0 0 0 0.880943 0 0 0 0 0.891667 0 0 0 1 0"></feColorMatrix>
-                    <feBlend
-                      in2="effect2_innerShadow_171_3567"
-                      result="effect3_innerShadow_171_3567"
-                    ></feBlend>
-                  </filter>
-                  <pattern
-                    id="UploadFileIcon_svg_inline__j"
-                    width="1.4"
-                    height="1.4"
-                    patternContentUnits="objectBoundingBox"
-                  >
-                    <use transform="scale(.0028)"></use>
-                  </pattern>
-                </defs>
-              </svg>
-              <button
-                className="bg-[#4864FF]  items-center flex gap-3
-             rounded-lg text-white px-[38px] hover:opacity-90
-             py-[12px] text-[21px]"
-              >
-                <label
-                  className="cursor-pointer
-               text-white px-4 py-2 
-               rounded-lg "
-                >
-                  Choose Files
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        handleFileChange(e);
-                      }
-                    }}
-                    style={{ display: "none" }}
-                  />
-                </label>
-                <FaChevronDown />
-              </button>
-            </div>
+                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                    <path d="M12 12v6"></path>
+                    <path d="m15 15-3-3-3 3"></path>
+                  </svg>
+                </div>
+                <button className="items-center flex gap-3 rounded-lg px-[38px] hover:opacity-90 py-[12px] text-[16px]">
+                  <label className="cursor-pointer px-4 py-2 text-[#e4e4e762] rounded-lg">
+                    Upload your DSA questions file (CSV, JSON, or Excel)
+                    <input
+                      type="file"
+                      accept=".csv,.json,.xlsx,.xls,.txt"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          handleFileChange(e);
+                        }
+                      }}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </section>
   );
 };
+
+export default FileUpload;
