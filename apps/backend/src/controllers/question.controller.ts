@@ -19,7 +19,7 @@ const addProblemToDb = asyncHandler(async (req: Request, res: Response) => {
       handlerFunc,
       likesCount,
       dislikeCount,
-      starterFunctionName,
+      starterFunction,
     } = req.body;
 
     if (
@@ -35,7 +35,7 @@ const addProblemToDb = asyncHandler(async (req: Request, res: Response) => {
 
     const createProblem = await prisma.problem.create({
       data: {
-        starterFunctionName,
+        starterFunction,
         handlerFunc,
         likesCount,
         dislikeCount,

@@ -27,14 +27,14 @@ const ProblemPageSekeleton = () => {
     likesCount: 0,
     dislikeCount: 0,
     handlerFunc: "",
-    starterFunctionName: "",
+    starterFunction: "",
     examples: [],
     testCases: [],
   };
 
   const [selectedProblem, setSelectedProblem] =
     useState<Problem>(defaultProblem);
-  const [isLoading, setIsLoading] = useState(false); // Fix name
+  const [isLoading, setIsLoading] = useState(false);
 
   const selectQuestionById = useSelector(
     (state: IRootState) => state.QuestionReducer
@@ -43,7 +43,6 @@ const ProblemPageSekeleton = () => {
   const params = useSearchParams();
   const problemId = params.get("problemId") || "";
 
-  // Fix re-render issue
   useEffect(() => {
     const foundProblem = selectQuestionById.find(
       (item: Problem) => item.problemId === problemId
@@ -51,7 +50,7 @@ const ProblemPageSekeleton = () => {
     if (foundProblem) {
       setSelectedProblem(foundProblem);
     }
-  }, [problemId, selectQuestionById]); // Dependencies
+  }, [problemId, selectQuestionById]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -72,8 +71,9 @@ const ProblemPageSekeleton = () => {
         </div>
         <div>
           <RightSideCodeEditor
+            ProblemDescription={`${selectedProblem.inputText1} ${selectedProblem.inputText2} ${selectedProblem.inputText3}`}
             ResponseTestCasesProp={selectedProblem.testCases}
-            starterFunctionName={selectedProblem.starterFunctionName}
+            starterFunction={selectedProblem.starterFunction}
           />
         </div>
       </Split>

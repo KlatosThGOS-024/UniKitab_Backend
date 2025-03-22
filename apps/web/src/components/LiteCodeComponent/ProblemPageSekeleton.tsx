@@ -17,6 +17,10 @@ import { IoIosSettings } from "react-icons/io";
 import { TfiControlPlay } from "react-icons/tfi";
 import { FaCloudArrowUp } from "react-icons/fa6";
 import { Example, Problem, TestCases } from "./MockProblem/types/types";
+import { useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { IRootState } from "@/store/store";
+import { testCodeRunner } from "@/Hooks/codeRunner";
 
 // Add a loading component to display during initial load
 const LoadingSpinner = () => (
@@ -175,11 +179,13 @@ export const LeftSideProblemDescription = ({
 };
 
 export const RightSideCodeEditor = ({
+  ProblemDescription,
   ResponseTestCasesProp,
-  starterFunctionName,
+  starterFunction,
 }: {
+  ProblemDescription: string;
   ResponseTestCasesProp: TestCases[];
-  starterFunctionName: any;
+  starterFunction: any;
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
@@ -190,7 +196,6 @@ export const RightSideCodeEditor = ({
   const [targetValue, setTargetValue] = useState("");
   const [userCode, setUserCode] = useState("");
 
-  // Handle mounting and data loading
   useEffect(() => {
     setIsMounted(true);
 
@@ -207,10 +212,10 @@ export const RightSideCodeEditor = ({
       setTargetCases(formattedTargets);
       setInputValue(formattedTestCases[0] || "");
       setTargetValue(formattedTargets[0] || "");
-      setUserCode(starterFunctionName || "");
+      setUserCode(starterFunction || "");
       setIsLoading(false);
     }
-  }, [ResponseTestCasesProp, starterFunctionName]);
+  }, [ResponseTestCasesProp, starterFunction]);
 
   const handleCaseChange = (index: number) => {
     setCaseCount(index);
@@ -221,22 +226,19 @@ export const RightSideCodeEditor = ({
   const onChangeHandler = () => {
     try {
       const cb = new Function(`return ${userCode}`)();
-      // Use a safer approach - this eval was potentially dangerous
-      // Instead of direct eval, consider a more structured approach
-      // For now, showing an alert for demonstration
-      alert("Code submitted successfully!");
+      console.log(cb, testCases, targetCases);
+      testCodeRunner(cb, ProblemDescription);
+      //    alert("Code submitted successfully!");
     } catch (error) {
       console.error(error);
       alert("Error in your code. Check the console for details.");
     }
   };
 
-  // Handle server-side rendering
   if (!isMounted) {
     return <div className="w-full h-full bg-[#1E1E1E]"></div>;
   }
 
-  // Show loading state
   if (isLoading) {
     return (
       <div className="bg-[#1E1E1E] h-full">

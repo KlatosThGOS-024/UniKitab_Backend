@@ -18,7 +18,7 @@ interface ResponseProblem {
   likesCount: number;
   dislikeCount: number;
   handlerFunc: ((fn: any) => boolean) | string;
-  starterFunctionName: string;
+  starterFunction: string;
 }
 
 interface ResponseTestCases {
@@ -64,7 +64,7 @@ interface Problem {
   examples: Example[];
   testCases: TestCases[];
   handlerFunc: ((fn: any) => boolean) | string;
-  starterFunctionName: string;
+  starterFunction: string;
 }
 export {
   Problem,
@@ -148,7 +148,7 @@ function processGeminiResponse(responseText: string): Problem {
       examples,
       testCases,
       handlerFunc,
-      starterFunctionName: metadata.starterFunctionName,
+      starterFunction: metadata.starterFunction,
     };
   } catch (error) {
     console.error("Error processing Gemini response:", error);
@@ -212,16 +212,19 @@ export async function processProblemDescription(
                     }
                   ],
                   "handlerFunc": "Function that validates the user's solution, dont use backticks use double "" for enraping it as string ",
-                  "starterFunctionName": "Name of the function to implement"
+                  "starterFunction": "Starter function to implement"
                 }
               }
               
               Make sure:
+              0. send all the things according to javascript like handlerFunc , startFunction 
               1. Dont change problem id
-         
               2. Generate good test cases that cover edge cases
               3. The handlerFunc should be valid JavaScript that correctly tests the solution
-              4. All JSON is properly formatted and valid`,
+              4. All JSON is properly formatted and valid
+              5. starterFunction should be good like a real starterFunction so i can easily run my codeRunner like with params, function name and like a real function
+              dont write solution i want starterFunction not solution  
+              `,
             },
           ],
         },

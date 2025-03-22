@@ -35,7 +35,7 @@ export async function addQtoDb(problem: Problem) {
       dislikeCount,
       likesCount,
       testCases,
-      starterFunctionName,
+      starterFunction,
       handlerFunc,
       examples,
     } = questionData;
@@ -60,7 +60,7 @@ export async function addQtoDb(problem: Problem) {
           likesCount,
           dislikeCount,
           handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""),
-          starterFunctionName,
+          starterFunction,
           examples,
           testCases,
         }),
@@ -170,7 +170,7 @@ export const getQuestionsByDocumentId = async (documentId: string) => {
     return { success: false, message: "Failed to fetch questions", error };
   }
 };
-export const getAllDocuments = async () => {
+export const getAllDocs = async () => {
   try {
     const url = "http://localhost:8000/api/v1/questions/documents";
 

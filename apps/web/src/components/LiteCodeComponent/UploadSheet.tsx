@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ProblemType } from "./ProblemTable";
 import {
   createQuestionArray,
-  getAllDocuments,
+  getAllDocs,
   getQuestionsByDocumentId,
   saveQuestionArray,
 } from "@/Hooks/problem";
@@ -81,7 +81,7 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   useEffect(() => {
     const fetchDocs = async () => {
       try {
-        const data = await getAllDocuments();
+        const data = await getAllDocs();
         if (data.data && data.data.length > 0) {
           const transformedData = data.data.map(
             (

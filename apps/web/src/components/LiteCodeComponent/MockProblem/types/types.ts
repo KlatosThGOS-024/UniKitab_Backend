@@ -9,7 +9,7 @@ export interface ResponseProblem {
   likesCount: number;
   dislikeCount: number;
   handlerFunc: ((fn: any) => boolean) | string;
-  starterFunctionName: string;
+  starterFunction: string;
 }
 
 export interface ResponseTestCases {
@@ -61,5 +61,5 @@ export interface Problem {
   examples: Example[];
   testCases: TestCases[];
   handlerFunc: ((fn: any) => boolean) | string;
-  starterFunctionName: string;
+  starterFunction: string;
 }
