@@ -13,16 +13,10 @@ import { IoIosAdd } from "react-icons/io";
 
 import { BsFullscreen } from "react-icons/bs";
 import { IoIosSettings } from "react-icons/io";
-import {
-  Example,
-  Problem,
-  ResponseExample,
-  ResponseProblem,
-  ResponseTestCases,
-  TestCases,
-} from "@repo/types";
+
 import { TfiControlPlay } from "react-icons/tfi";
 import { FaCloudArrowUp } from "react-icons/fa6";
+import { Example, Problem } from "./MockProblem/types/types";
 
 export const LeftSideProblemDescription = ({
   ResponseProblemProp,

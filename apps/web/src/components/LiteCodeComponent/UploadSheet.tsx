@@ -1,6 +1,9 @@
 "use client";
-import { getAIresponse2 } from "@/Hooks/AiApi";
+import { createQuestionArray } from "@/Hooks/AiApi";
 import React, { useState } from "react";
+import { Problem } from "./MockProblem/types/types";
+import { problemType } from "./ProblemTable";
+const { v4 } = require("uuid");
 
 const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   const [files, setFiles] = useState<File | null>(null);
@@ -21,10 +24,22 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
         const fileContent = await extractQuestionsFromFile(file);
 
         const questionArrayJson = await sendQuestionsToBackend(fileContent);
-        const questionArray = questionArrayJson
+        var questionArray = questionArrayJson
           .replace("```json", "")
           .replace("```", "");
-        console.log(questionArray);
+        try {
+          if (questionArray) {
+            questionArray = JSON.parse(questionArray);
+          }
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          questionArray = [];
+        }
+
+        questionArray.map((item: problemType) => {
+          const uuid = v4();
+          item["id"] = uuid;
+        });
         setArrayOfQs(questionArray);
         setUploadStatus(`Successfully processed the file.`);
       } catch (error) {
@@ -52,7 +67,7 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
 
   const sendQuestionsToBackend = async (questions: string) => {
     try {
-      const response = await getAIresponse2(questions);
+      const response = await createQuestionArray(questions);
       return response;
     } catch (error) {
       console.error("Error sending questions to backend:", error);

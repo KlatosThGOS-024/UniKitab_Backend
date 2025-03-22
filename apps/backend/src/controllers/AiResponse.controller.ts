@@ -2,12 +2,79 @@ import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asynchHandler";
 import { ApiResponse } from "../utils/ApiResponse";
-import QuestionType from "@repo/types";
 enum Difficulty {
   Easy = "Easy",
   Medium = "Medium",
   Hard = "Hard",
 }
+interface ResponseProblem {
+  problemNumber: number;
+  problemId: string;
+  title: string;
+  inputText1: string;
+  inputText2?: string;
+  inputText3?: string;
+  difficulty: Difficulty;
+  likesCount: number;
+  dislikeCount: number;
+  handlerFunc: ((fn: any) => boolean) | string;
+  starterFunctionName: string;
+}
+
+interface ResponseTestCases {
+  id: string;
+  problemId: string;
+  input: any;
+  output: any;
+}
+
+interface ResponseExample {
+  id: string;
+  problemId: string;
+  inputText: string;
+  outputText: string;
+  explanation?: string;
+  img?: string;
+}
+
+interface Example {
+  problemId: string;
+  inputText: string;
+  outputText: string;
+  explanation?: string;
+  img?: string;
+}
+
+interface TestCases {
+  input: any;
+  problemId: string;
+  output: any;
+}
+
+interface Problem {
+  problemNumber: string;
+  problemId: string;
+  problemTitle: string;
+  inputText1: string;
+  inputText2?: string;
+  inputText3?: string;
+  difficulty: Difficulty;
+  likesCount: number;
+  dislikeCount: number;
+  examples: Example[];
+  testCases: TestCases[];
+  handlerFunc: ((fn: any) => boolean) | string;
+  starterFunctionName: string;
+}
+export {
+  Problem,
+  ResponseExample,
+  ResponseTestCases,
+  ResponseProblem,
+  Example,
+  TestCases,
+  Difficulty,
+};
 
 interface GeminiProblemResponse {
   candidates: [
@@ -37,14 +104,14 @@ function mapDifficulty(difficultyString: string) {
   return difficultyMap[difficultyString] || Difficulty.Medium;
 }
 
-function processGeminiResponse(responseText: string): QuestionType["Problem"] {
+function processGeminiResponse(responseText: string): Problem {
   try {
     const jsonText = extractJsonFromCodeBlock(responseText);
     const parsedData = JSON.parse(jsonText);
 
     const metadata = parsedData.problemMetadata;
 
-    const examples: QuestionType["Example"][] = metadata.examples.map(
+    const examples: Example[] = metadata.examples.map(
       (ex: any, index: number) => ({
         problemId: metadata.problemId,
         inputText: ex.inputText,
@@ -54,13 +121,11 @@ function processGeminiResponse(responseText: string): QuestionType["Problem"] {
       })
     );
 
-    const testCases: QuestionType["TestCases"][] = metadata.testCases.map(
-      (tc: any) => ({
-        problemId: metadata.problemId,
-        input: tc.input,
-        output: tc.output,
-      })
-    );
+    const testCases: TestCases[] = metadata.testCases.map((tc: any) => ({
+      problemId: metadata.problemId,
+      input: tc.input,
+      output: tc.output,
+    }));
 
     let handlerFunc = metadata.handlerFunc;
     if (handlerFunc.includes("```")) {
@@ -92,8 +157,9 @@ function processGeminiResponse(responseText: string): QuestionType["Problem"] {
 }
 
 export async function processProblemDescription(
-  problemDescription: string
-): Promise<QuestionType["Problem"]> {
+  problemDescription: string,
+  id: string
+): Promise<Problem> {
   if (!problemDescription || problemDescription.trim() === "") {
     throw new Error("Problem description is required");
   }
@@ -124,7 +190,7 @@ export async function processProblemDescription(
               {
                 "problemMetadata": {
                   "problemNumber": number,
-                  "problemId": "kebab-case-id",
+                  "problemId": ${id},
                   "problemTitle": "Problem Title",
                   "inputText1": "Main problem description",
                   "inputText2": "Input/output specifications and constraints",
@@ -151,7 +217,7 @@ export async function processProblemDescription(
               }
               
               Make sure:
-              1. The problemId is in kebab-case (lowercase with hyphens)
+              1. Dont change problem id
               2. All arrays have at least 2-3 items
               3. Generate good test cases that cover edge cases
               4. The handlerFunc should be valid JavaScript that correctly tests the solution
@@ -183,40 +249,32 @@ export async function processProblemDescription(
   }
 
   const rawProblemData = data.candidates[0].content.parts[0].text;
-  console.log("fds", rawProblemData);
+
   return processGeminiResponse(rawProblemData);
 }
 
 const parseDSASheet = asyncHandler(async (req: Request, res: Response) => {
-  const { sheetContent } = req.body;
+  const { dsaQ, id } = req.body;
 
-  if (!sheetContent || !sheetContent.length) {
+  if (!dsaQ || dsaQ.trim() == "") {
     throw new ApiError("Sheet content is required", 400);
   }
 
   try {
-    const problems: QuestionType["Problem"][] = [];
+    const problems: Problem[] = [];
 
-    for (const description of sheetContent) {
-      try {
-        const problem = await processProblemDescription(description);
-        problems.push(problem);
-        if (problems.length > 7) {
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-        }
-      } catch (err) {
-        console.error(
-          `Error processing problem "${description.substring(0, 50)}...":`,
-          err
-        );
-      }
+    try {
+      const problem = await processProblemDescription(dsaQ, id);
+      problems.push(problem);
+    } catch (err) {
+      console.error(`Error processing problem "${dsaQ}...":`, err);
     }
 
     res.send(
       new ApiResponse(
         200,
         true,
-        `Successfully parsed ${problems.length} problems from the sheet`,
+        `Successfully parsed ${dsaQ} problems from the request`,
         problems
       )
     );
@@ -236,18 +294,16 @@ const parseDSASheet = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 });
-import * as fs from "fs";
-import * as path from "path";
 
 const generateProblemArray = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { problemDescriptions } = req.body as any;
-    console.log("3");
+
     if (problemDescriptions == "") {
       throw new ApiError("Problem description is required", 400);
     }
     const api = process.env.AiAPI;
-    console.log("3");
+
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
 
@@ -305,10 +361,6 @@ const generateProblemArray = asyncHandler(
       }
 
       const rawProblemData = data.candidates[0].content.parts[0].text;
-
-      // Create a file and save the rawProblemData
-      const filePath = path.join(__dirname, "rawProblemData.json");
-      fs.writeFileSync(filePath, rawProblemData);
 
       res.send(
         new ApiResponse(

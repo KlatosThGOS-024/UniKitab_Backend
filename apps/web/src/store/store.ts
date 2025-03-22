@@ -6,6 +6,7 @@ import { persistStore, persistReducer, REHYDRATE } from "redux-persist";
 import { responseReducer } from "@/functions/messages/message";
 import { userAccountReducer } from "@/functions/userAccount/User";
 import { pdfBookReducer } from "@/functions/pdfBooks/pdfbooks";
+import { QuestionReducer } from "@/functions/dsaQuestions/question";
 const indexedDBStorage = createIndexedDBStorage("myIndexedDB", "myDataStore");
 const persistConfig = {
   key: "root",
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   responseReducer,
   userAccountReducer,
   pdfBookReducer,
+  QuestionReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

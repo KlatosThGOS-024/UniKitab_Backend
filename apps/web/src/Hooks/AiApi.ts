@@ -17,7 +17,7 @@ const getAIresponse = async (message: string) => {
     console.log(error);
   }
 };
-export const getAIresponse2 = async (message: string) => {
+export const createQuestionArray = async (message: string) => {
   try {
     const url = `http://localhost:8000/api/v1/ai/generate-Qarray
 `;
@@ -37,7 +37,28 @@ export const getAIresponse2 = async (message: string) => {
     console.log(error);
   }
 };
+export const createQuestion = async (question: string, id: string) => {
+  try {
+    const url = `http://localhost:8000/api/v1/ai/get-answer-bysheet
+`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        dsaQ: question,
+        id: id,
+      }),
+    });
 
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
 // console.log(
 //   getAIresponse2(`Questions by Love Babbar:
 // 	Youtube Channel: https: //www.youtube.com/channel/UCQHLxxBFrbfdrk1jF0moTpw

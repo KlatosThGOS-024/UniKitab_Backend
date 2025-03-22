@@ -6,28 +6,44 @@ import { RiArrowUpDownLine } from "react-icons/ri";
 import Link from "next/link";
 
 import FileUpload from "./UploadSheet";
-interface problemType {
-  id: number;
+export interface problemType {
+  id: string;
 
   questionTitle: string;
   difficulty: string;
 
   category: string;
 }
-
+// export const selectQuestionById = (state: Problem[], problemId: string) =>
+//   state.find((item) => item.problemId === problemId) || null;
 import { CiSearch } from "react-icons/ci";
+import { createQuestion } from "@/Hooks/AiApi";
+import { Problem } from "./MockProblem/types/types";
+import { useDispatch, useSelector } from "react-redux";
+import { IRootState } from "@/store/store";
+import { addQ } from "@/functions/dsaQuestions/question";
 
 const Problems = ({ arrayOfQs }: { arrayOfQs: any }) => {
-  let arrayOfqs: any = [];
+  const selectQuestionById = useSelector(
+    (state: IRootState) => state.QuestionReducer
+  );
+  const dispatch = useDispatch();
 
-  try {
-    if (arrayOfQs) {
-      arrayOfqs = JSON.parse(arrayOfQs);
+  const QuestionHandler = async (title: string, id: string) => {
+    const Q_is_Present = selectQuestionById.find((item: Problem) => {
+      if (id === item.problemId) {
+        return item;
+      }
+    });
+
+    if (Q_is_Present) {
+      return Q_is_Present;
     }
-  } catch (error) {
-    console.error("Error parsing JSON:", error);
-    arrayOfqs = [];
-  }
+
+    const response = await createQuestion(title, id);
+
+    dispatch(addQ(response[0]));
+  };
 
   return (
     <div className="overflow-x-auto rounded-xl ">
@@ -120,8 +136,8 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: any }) => {
             </thead>
 
             <tbody>
-              {arrayOfqs &&
-                arrayOfqs.map((value: problemType, index: number) => (
+              {arrayOfQs &&
+                arrayOfQs.map((value: problemType, index: number) => (
                   <tr
                     key={index}
                     className={`${
@@ -129,11 +145,17 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: any }) => {
                     } text-white cursor-pointer `}
                   >
                     <td className="text-[18px] font-[500] px-4 py-4">
-                      <Link
+                      {/* //   <Link
                         href={`/problems/${value.questionTitle}?problemId=${value.id}`}
+                      > */}
+                      <a
+                        onClick={() => {
+                          QuestionHandler(value.questionTitle, value.id);
+                        }}
                       >
+                        {" "}
                         {value.questionTitle}
-                      </Link>
+                      </a>
                     </td>
                     <td
                       className={`text-[18px] font-[500] px-4 py-4 ${
@@ -163,7 +185,7 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: any }) => {
   );
 };
 
-export const TopBarCompOfProblems = () => {
+export const LiteCodeBody = () => {
   const [arrayOfQs, setArrayOfQs] = useState("");
   return (
     <section

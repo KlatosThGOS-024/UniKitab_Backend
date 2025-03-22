@@ -1,4 +1,4 @@
-export type ResponseProblem = {
+export interface ResponseProblem {
   problemNumber: number;
   problemId: string;
   title: string;
@@ -10,44 +10,48 @@ export type ResponseProblem = {
   dislikeCount: number;
   handlerFunc: ((fn: any) => boolean) | string;
   starterFunctionName: string;
-};
-export type ResponseTestCases = {
+}
+
+export interface ResponseTestCases {
   id: string;
   problemId: string;
   input: any;
   output: any;
-};
+}
 
-export type ResponseExample = {
+export interface ResponseExample {
   id: string;
   problemId: string;
   inputText: string;
   outputText: string;
   explanation?: string;
   img?: string;
-};
+}
 
-export type Example = {
+export interface Example {
+  problemId: string;
   inputText: string;
   outputText: string;
   explanation?: string;
   img?: string;
-};
+}
 
-export type TestCases = {
+export interface TestCases {
   input: any;
+  problemId: string;
   output: any;
-};
+}
+
 export enum Difficulty {
   Easy = "Easy",
   Medium = "Medium",
   Hard = "Hard",
 }
 
-export type Problem = {
-  problemNumber: number;
+export interface Problem {
+  problemNumber: string;
   problemId: string;
-  title: string;
+  problemTitle: string;
   inputText1: string;
   inputText2?: string;
   inputText3?: string;
@@ -58,4 +62,4 @@ export type Problem = {
   testCases: TestCases[];
   handlerFunc: ((fn: any) => boolean) | string;
   starterFunctionName: string;
-};
+}
