@@ -21,7 +21,7 @@ app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
 });
 
 // app.use("/api/v1/user", userRouter);
-app.use("/api/v1/problem", QuestionDbRouter);
+app.use("/api/v1/questions", QuestionDbRouter);
 app.use("/api/v1/book", pdfBookRouter);
 app.use("/api/v1/ai", aiRouter);
 export default app;

@@ -33,9 +33,6 @@ const addProblemToDb = asyncHandler(async (req: Request, res: Response) => {
       res.status(400).send(ApiResponse.failure(400, "Missing required fields"));
     }
 
-    // Log incoming data for debugging (remove in production)
-    console.log("Received data:", req.body);
-
     // Create the problem and its related data
     const createProblem = await prisma.problem.create({
       data: {
@@ -88,4 +85,36 @@ const addProblemToDb = asyncHandler(async (req: Request, res: Response) => {
     res.send(ApiError.badRequest(false, errorMessage));
   }
 });
-export default addProblemToDb;
+const getProblemFromDb = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    const { problemId } = req.query;
+    if (!problemId) {
+      res.send(ApiResponse.failure(400, "Missing required fields ProblemId"));
+    }
+
+    //Create the problem and its related data
+    const findProblem = await prisma.problem.findFirst({
+      where: {
+        //@ts-ignore
+        problemId,
+      },
+    });
+
+    // Send success response
+    res.send(
+      ApiResponse.success(201, "Successfully added the problem", findProblem)
+    );
+  } catch (error) {
+    // Log the error for debugging (remove in production)
+    console.error("Database error:", error);
+
+    // Send error response with detailed message
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "An unexpected error occurred while adding the problem.";
+    res.send(ApiError.badRequest(false, errorMessage));
+  }
+});
+
+export { addProblemToDb, getProblemFromDb };

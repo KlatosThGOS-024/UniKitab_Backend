@@ -1,9 +1,9 @@
-import { problemData } from "@/components/LiteCodeComponent/MockProblem/ReverseArrayQ";
+import { Problem } from "@/components/LiteCodeComponent/MockProblem/types/types";
 
 export const getQuestions = async (problemId: string) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/problems?problemId=${problemId}`,
+      `http://localhost:8000/api/v1/questions/question-get?problemId=${problemId}`,
       {
         method: "GET",
         headers: {
@@ -13,15 +13,17 @@ export const getQuestions = async (problemId: string) => {
     );
 
     const data = await response.json();
-    return await data;
+    return data.data;
   } catch (error) {
     console.log(error);
+    return error;
   }
 };
 
-export async function addQtoDb() {
+export async function addQtoDb(problem: Problem) {
   try {
-    const questionData = problemData[0];
+    const questionData = problem;
+
     const {
       problemNumber,
       problemId,
@@ -41,7 +43,7 @@ export async function addQtoDb() {
     const handler = handlerFunc.toString();
 
     const response = await fetch(
-      "http://localhost:8000/api/v1/problem/problem-add",
+      "http://localhost:8000/api/v1/questions/question-add",
       {
         method: "POST",
         headers: {
@@ -71,36 +73,36 @@ export async function addQtoDb() {
     console.error("Error while adding problem:", error);
   }
 }
-export async function CreateQ(QuestionArray: string[]) {
-  try {
-    const response = await fetch(
-      "http://localhost:8000/api/v1/problem/get-answer-byproblem",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          problemNumber,
-          problemId,
-          problemTitle,
-          inputText1,
-          inputText2,
-          inputText3,
-          difficulty,
-          likesCount,
-          dislikeCount,
-          handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""),
-          starterFunctionName,
-          examples,
-          testCases,
-        }),
-      }
-    );
+// export async function CreateQ(QuestionArray: string[]) {
+//   try {
+//     const response = await fetch(
+//       "http://localhost:8000/api/v1/problem/get-answer-byproblem",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           problemNumber,
+//           problemId,
+//           problemTitle,
+//           inputText1,
+//           inputText2,
+//           inputText3,
+//           difficulty,
+//           likesCount,
+//           dislikeCount,
+//           handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""),
+//           starterFunctionName,
+//           examples,
+//           testCases,
+//         }),
+//       }
+//     );
 
-    console.log(response);
-    console.log("New Problem created:");
-  } catch (error) {
-    console.error("Error while adding problem:", error);
-  }
-}
+//     console.log(response);
+//     console.log("New Problem created:");
+//   } catch (error) {
+//     console.error("Error while adding problem:", error);
+//   }
+// }

@@ -1,7 +1,7 @@
 export interface ResponseProblem {
-  problemNumber: number;
+  problemNumber: string;
   problemId: string;
-  title: string;
+  problemTitle: string;
   inputText1: string;
   inputText2?: string;
   inputText3?: string;

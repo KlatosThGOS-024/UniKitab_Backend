@@ -16,7 +16,7 @@ import { IoIosSettings } from "react-icons/io";
 
 import { TfiControlPlay } from "react-icons/tfi";
 import { FaCloudArrowUp } from "react-icons/fa6";
-import { Example, Problem } from "./MockProblem/types/types";
+import { Example, Problem, TestCases } from "./MockProblem/types/types";
 
 export const LeftSideProblemDescription = ({
   ResponseProblemProp,
@@ -53,7 +53,8 @@ export const LeftSideProblemDescription = ({
           <div className="mt-[28px] pb-[28px] px-[28px]">
             <div>
               <h2 className=" text-white text-[38px] font-[600] mb-2">
-                {ResponseProblemProp.problemNumber}.{ResponseProblemProp.title}
+                {ResponseProblemProp.problemNumber}.
+                {ResponseProblemProp.problemTitle}
               </h2>
               <span className="text-green-500 bg-[#3C3C3C] px-3 py-[2px] rounded-full">
                 {ResponseProblemProp.difficulty}

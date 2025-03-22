@@ -11,7 +11,6 @@ export const QuestionSlicer = createSlice({
   reducers: {
     addQ: (state, action: PayloadAction<Problem>) => {
       state.push(action.payload);
-      console.log("Updated State:", JSON.stringify(state, null, 2));
     },
   },
 });
