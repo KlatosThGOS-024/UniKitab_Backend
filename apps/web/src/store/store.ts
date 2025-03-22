@@ -18,9 +18,9 @@ import { pdfBookReducer } from "@/functions/pdfBooks/pdfbooks";
 import { QuestionReducer } from "@/functions/dsaQuestions/question";
 
 const logger = (store: any) => (next: any) => (action: any) => {
-  console.log("dispatching", action);
+  // console.log("dispatching", action);
   let result = next(action);
-  console.log("next state", store.getState());
+  //.log("next state", store.getState());
   return result;
 };
 
@@ -28,10 +28,9 @@ const indexedDBStorage = createIndexedDBStorage("myIndexedDB", "myDataStore");
 
 const debugStorage = {
   getItem: async (key: any) => {
-    console.log("Getting from storage:", key);
+    //.log("Getting from storage:", key);
     try {
       const result = await indexedDBStorage.getItem(key);
-      console.log("Retrieved from storage:", key, result);
       return result;
     } catch (error) {
       console.error("Error getting from storage:", key, error);

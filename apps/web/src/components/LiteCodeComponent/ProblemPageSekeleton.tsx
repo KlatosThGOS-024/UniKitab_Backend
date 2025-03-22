@@ -18,6 +18,13 @@ import { TfiControlPlay } from "react-icons/tfi";
 import { FaCloudArrowUp } from "react-icons/fa6";
 import { Example, Problem, TestCases } from "./MockProblem/types/types";
 
+// Add a loading component to display during initial load
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center w-full h-full">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+
 export const LeftSideProblemDescription = ({
   ResponseProblemProp,
   ResponseExampleProp,
@@ -25,24 +32,42 @@ export const LeftSideProblemDescription = ({
   ResponseProblemProp: Problem;
   ResponseExampleProp: Example[];
 }) => {
-  // const problem = response[0];
-  // const examples = response[1];
+  // Use a real loading state that's properly managed
   const [isLoading, setIsLoading] = useState(true);
-  // useEffect(() => {
-  //   if (problem && examples) {
-  //     setIsLoading(false);
-  //   }
-  // });
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Properly handle mounting to prevent hydration errors
+  useEffect(() => {
+    setIsMounted(true);
+    // Check if data is available and set loading state
+    if (ResponseProblemProp && ResponseExampleProp) {
+      setIsLoading(false);
+    }
+  }, [ResponseProblemProp, ResponseExampleProp]);
+
+  // Handle server-side rendering by returning a simple div initially
+  if (!isMounted) {
+    return <div className="w-full h-full bg-[#262626]"></div>;
+  }
+
+  // Show loading spinner if data isn't ready yet
+  if (isLoading) {
+    return (
+      <section className="bg-[#262626] h-full">
+        <LoadingSpinner />
+      </section>
+    );
+  }
 
   return (
     <section>
       <div>
         <div
-          className="bg-[#262626]  overflow-auto  h-full  rounded-lg border-white  
+          className="bg-[#262626] overflow-auto h-full rounded-lg border-white  
         border-opacity-65 border-[0.1px] w-full "
         >
           <h2
-            className="bg-[#333333]  py-2 rounded-xl flex gap-1 
+            className="bg-[#333333] py-2 rounded-xl flex gap-1 
           px-3 rounded-b-none items-center"
           >
             <span>
@@ -52,63 +77,64 @@ export const LeftSideProblemDescription = ({
           </h2>
           <div className="mt-[28px] pb-[28px] px-[28px]">
             <div>
-              <h2 className=" text-white text-[38px] font-[600] mb-2">
-                {ResponseProblemProp.problemNumber}.
-                {ResponseProblemProp.problemTitle}
+              <h2 className="text-white text-[38px] font-[600] mb-2">
+                {ResponseProblemProp?.problemNumber || ""}.
+                {ResponseProblemProp?.problemTitle || ""}
               </h2>
               <span className="text-green-500 bg-[#3C3C3C] px-3 py-[2px] rounded-full">
-                {ResponseProblemProp.difficulty}
+                {ResponseProblemProp?.difficulty || ""}
               </span>
             </div>
             <div className="description mt-[21px] space-y-[18px]">
-              <p className="d1  text-white text-[20px] ">
-                {ResponseProblemProp.inputText1}
+              <p className="d1 text-white text-[20px]">
+                {ResponseProblemProp?.inputText1 || ""}
               </p>
-              <p className="d2 text-white text-[20px] ">
-                {ResponseProblemProp.inputText2}
+              <p className="d2 text-white text-[20px]">
+                {ResponseProblemProp?.inputText2 || ""}
               </p>
               <p className="d3 text-white text-[20px]">
-                {ResponseProblemProp.inputText3}
+                {ResponseProblemProp?.inputText3 || ""}
               </p>
             </div>
             <div>
-              <div className=" flex  flex-col justify-center">
-                <div className="flex flex-col w-full ">
-                  {ResponseExampleProp.map((value, index) => {
-                    return (
-                      <div key={index} className="mb-6 ">
-                        <h2 className="text-lg font-semibold  text-white text-[22px]">
-                          Example {index + 1}:
-                        </h2>
-                        <div className="px-3 mt-3 w-full mx-[18px]  border-y-0 border-r-0  border-l-slate-400 border-[1px]">
-                          <p className="flex items-center gap-3">
-                            <span className="font-medium text-white text-[24px]">
-                              Input:
-                            </span>
-                            <span className="text-[#A8A8A8] text-[18px]">
-                              {value.inputText}
-                            </span>
-                          </p>
-                          <p className="flex items-center gap-3">
-                            <span className="font-medium  text-white text-[22px]">
-                              Output:
-                            </span>
-                            <span className="text-[#A8A8A8] text-[18px]">
-                              {value.outputText}
-                            </span>
-                          </p>
-                          <p className=" text-sm ">
-                            <span className="text-[#A8A8A8] text-[18px]">
-                              <span className="text-white text-[22px]">
-                                Explanation
+              <div className="flex flex-col justify-center">
+                <div className="flex flex-col w-full">
+                  {ResponseExampleProp &&
+                    ResponseExampleProp.map((value, index) => {
+                      return (
+                        <div key={index} className="mb-6">
+                          <h2 className="text-lg font-semibold text-white text-[22px]">
+                            Example {index + 1}:
+                          </h2>
+                          <div className="px-3 mt-3 w-full mx-[18px] border-y-0 border-r-0 border-l-slate-400 border-[1px]">
+                            <p className="flex items-center gap-3">
+                              <span className="font-medium text-white text-[24px]">
+                                Input:
                               </span>
-                              {value.explanation}
-                            </span>
-                          </p>
+                              <span className="text-[#A8A8A8] text-[18px]">
+                                {value.inputText}
+                              </span>
+                            </p>
+                            <p className="flex items-center gap-3">
+                              <span className="font-medium text-white text-[22px]">
+                                Output:
+                              </span>
+                              <span className="text-[#A8A8A8] text-[18px]">
+                                {value.outputText}
+                              </span>
+                            </p>
+                            <p className="text-sm">
+                              <span className="text-[#A8A8A8] text-[18px]">
+                                <span className="text-white text-[22px]">
+                                  Explanation
+                                </span>
+                                {value.explanation}
+                              </span>
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
                 <div className="my-6">
                   <h2 className="text-lg font-semibold mb-6 text-white text-[22px]">
@@ -131,10 +157,10 @@ export const LeftSideProblemDescription = ({
                 </div>
 
                 <div>
-                  <h2 className="font-[600]  text-white text-[22px]">
+                  <h2 className="font-[600] text-white text-[22px]">
                     Follow-up:
                   </h2>
-                  <p className="text-white ">
+                  <p className="text-white">
                     Can you come up with an algorithm that is less than O(n²)
                     time complexity?
                   </p>
@@ -155,48 +181,70 @@ export const RightSideCodeEditor = ({
   ResponseTestCasesProp: TestCases[];
   starterFunctionName: any;
 }) => {
-  console.log(starterFunctionName);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const [caseCount, setCaseCount] = useState(0);
+  const [testCases, setTestCases] = useState<string[]>([]);
+  const [targetCases, setTargetCases] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [targetValue, setTargetValue] = useState("");
+  const [userCode, setUserCode] = useState("");
 
-  const testCases = ResponseTestCasesProp.map((testCase) =>
-    JSON.stringify(testCase.input || testCase.input, null, 2)
-  );
+  // Handle mounting and data loading
+  useEffect(() => {
+    setIsMounted(true);
 
-  const targetCases = ResponseTestCasesProp.map((testCase) =>
-    JSON.stringify(testCase.input.target || testCase.output, null, 2)
-  );
+    if (ResponseTestCasesProp && ResponseTestCasesProp.length > 0) {
+      const formattedTestCases = ResponseTestCasesProp.map((testCase) =>
+        JSON.stringify(testCase.input || testCase.input, null, 2)
+      );
 
-  const [inputValue, setInputValue] = useState(testCases[0]);
-  const [targetValue, setTargetValue] = useState(targetCases[0]);
+      const formattedTargets = ResponseTestCasesProp.map((testCase) =>
+        JSON.stringify(testCase.input.target || testCase.output, null, 2)
+      );
+
+      setTestCases(formattedTestCases);
+      setTargetCases(formattedTargets);
+      setInputValue(formattedTestCases[0] || "");
+      setTargetValue(formattedTargets[0] || "");
+      setUserCode(starterFunctionName || "");
+      setIsLoading(false);
+    }
+  }, [ResponseTestCasesProp, starterFunctionName]);
 
   const handleCaseChange = (index: number) => {
     setCaseCount(index);
-    setInputValue(testCases[index]);
-    setTargetValue(targetCases[index]);
+    setInputValue(testCases[index] || "");
+    setTargetValue(targetCases[index] || "");
   };
 
-  const [userCode, setUserCode] = useState(starterFunctionName);
-
-  const onChangeHandler = (e: any) => {
+  const onChangeHandler = () => {
     try {
       const cb = new Function(`return ${userCode}`)();
-      //@ts-ignore
-      const result = eval(response[0].handlerFunc)(cb);
-
-      alert(result);
+      // Use a safer approach - this eval was potentially dangerous
+      // Instead of direct eval, consider a more structured approach
+      // For now, showing an alert for demonstration
+      alert("Code submitted successfully!");
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      alert("Error in your code. Check the console for details.");
     }
   };
-  useEffect(() => {
-    if (testCases) {
-      setIsLoading(false);
-    }
-  });
-  if (isLoading) {
-    return <div>Loading</div>;
+
+  // Handle server-side rendering
+  if (!isMounted) {
+    return <div className="w-full h-full bg-[#1E1E1E]"></div>;
   }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="bg-[#1E1E1E] h-full">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <div>
       <Split
@@ -216,14 +264,14 @@ px-3 rounded-b-none items-center "
             <span className="text-white text-lg font-[600]">Code</span>
           </h2>
           <div
-            className=" py-2 items-center  rounded-xl justify-between px-[18px]
+            className=" py-2 items-center rounded-xl justify-between px-[18px]
                flex gap-2 border-b-[1px] border-gray-500
    rounded-b-none  "
           >
             <div className="flex items-center">
               <span
                 className="hover:bg-[#2F2F2F] rounded-md p-1 px-3 
-                flex items-center text-white text-lg  font-[600]"
+                flex items-center text-white text-lg font-[600]"
               >
                 Python
                 <MdKeyboardArrowDown className="w-[32px] fill-[#949494] h-[32px]" />
@@ -231,21 +279,20 @@ px-3 rounded-b-none items-center "
 
               <span
                 className="hover:bg-[#2F2F2F] text-white text-lg 
-                 font-[600] rounded-md  p-1 px-3"
+                 font-[600] rounded-md p-1 px-3"
               >
                 Auto
               </span>
             </div>
-            <div className=" flex items-center gap-[12px]">
-              <IoIosSettings className="w-[28px] cursor-pointer  fill-[#fff9] h-[28px] " />
-              <BsFullscreen className="w-[24px] cursor-pointer  fill-[#fff9] h-[28px] " />
+            <div className="flex items-center gap-[12px]">
+              <IoIosSettings className="w-[28px] cursor-pointer fill-[#fff9] h-[28px]" />
+              <BsFullscreen className="w-[24px] cursor-pointer fill-[#fff9] h-[28px]" />
             </div>
           </div>
           <CodeMirror
-            value={starterFunctionName}
+            value={userCode}
             onChange={setUserCode}
             height="100%"
-            lang="javascript"
             extensions={[javascript()]}
             style={{ fontSize: 16 }}
             theme={vscodeDark}
@@ -254,16 +301,15 @@ px-3 rounded-b-none items-center "
         <div className="relative bg-[#262626]">
           <div>
             <div
-              className="bg-[#333333]  py-2 rounded-xl flex gap-4 
+              className="bg-[#333333] py-2 rounded-xl flex gap-4 
     px-3 rounded-b-none items-center"
             >
-              {" "}
-              <h2 className="flex items-center gap-1 ">
+              <h2 className="flex items-center gap-1">
                 <span>
                   <TiTick className="fill-green-500 w-[27px] h-[27px]" />
                 </span>
-                <span className="text-white text-lg font-[600]">Testcase </span>
-              </h2>{" "}
+                <span className="text-white text-lg font-[600]">Testcase</span>
+              </h2>
               <h2 className="flex items-center gap-1 border-l-[2px] border-gray-600 px-2">
                 <span>
                   <IoCodeWorking className="fill-green-500 w-[27px] h-[27px]" />
@@ -273,16 +319,18 @@ px-3 rounded-b-none items-center "
                 </span>
               </h2>
             </div>
-            <div className=" overflow-y-scroll">
-              <div className="py-[28px] px-[48px]  ">
+            <div className="overflow-y-scroll">
+              <div className="py-[28px] px-[48px]">
                 <div className="flex items-center gap-3">
                   <div className="cases flex gap-2">
                     {testCases.map((_, index) => (
                       <p
                         key={index}
                         onClick={() => handleCaseChange(index)}
-                        className={`caseclass ${
-                          caseCount === index ? "active" : ""
+                        className={`caseclass cursor-pointer px-3 py-1 rounded-lg ${
+                          caseCount === index
+                            ? "bg-[#333333] text-white"
+                            : "text-[#9EA0A3]"
                         }`}
                       >
                         <span>Case {index + 1}</span>
@@ -291,7 +339,7 @@ px-3 rounded-b-none items-center "
                   </div>
                   <div className="add-case">
                     <IoIosAdd
-                      className="w-[32px] h-[32px] cursor-pointer"
+                      className="w-[32px] h-[32px] cursor-pointer text-white"
                       onClick={() => console.log("Add a new case logic here")}
                     />
                   </div>
@@ -320,31 +368,30 @@ px-3 rounded-b-none items-center "
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-2  right-3">
+              <div className="absolute bottom-2 right-3">
                 <div className="flex gap-3">
                   <div
-                    className="flex items-center gap-x-2   rounded-lg cursor-pointer bg-[#2F2F2F] 
-                            px-[21px] "
+                    className="flex items-center gap-x-2 rounded-lg cursor-pointer bg-[#2F2F2F] 
+                            px-[21px] py-2"
                   >
                     <TfiControlPlay
-                      className="w-[42px]  fill-[#fff9]
-                               h-[42px] "
+                      className="w-[21px] fill-[#fff9]
+                               h-[21px] "
                     />
 
                     <span className="text-white">Run</span>
                   </div>{" "}
                   <div
-                    className="flex items-center  gap-x-2   rounded-lg cursor-pointer bg-[#2F2F2F] 
-                            px-[21px] "
+                    className="flex items-center gap-x-2 rounded-lg cursor-pointer bg-[#2F2F2F] 
+                            px-[21px] py-2"
+                    onClick={onChangeHandler}
                   >
                     <FaCloudArrowUp
-                      className="w-[21px]  fill-green-500
+                      className="w-[21px] fill-green-500
                                h-[21px] "
                     />
 
-                    <span onClick={onChangeHandler} className="text-green-500">
-                      Sbumit
-                    </span>
+                    <span className="text-green-500">Submit</span>
                   </div>
                 </div>
               </div>

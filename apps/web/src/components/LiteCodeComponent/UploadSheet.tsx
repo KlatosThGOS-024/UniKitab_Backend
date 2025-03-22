@@ -1,30 +1,56 @@
 "use client";
-import { createQuestionArray } from "@/Hooks/AiApi";
-import React, { useState } from "react";
-import { Problem } from "./MockProblem/types/types";
-import { problemType } from "./ProblemTable";
-const { v4 } = require("uuid");
+
+import React, { useEffect, useState } from "react";
+import { ProblemType } from "./ProblemTable";
+import {
+  createQuestionArray,
+  getAllDocuments,
+  getQuestionsByDocumentId,
+  saveQuestionArray,
+} from "@/Hooks/problem";
+// Removing the server-side import that could cause hydration issues
+// import { count } from "console";
+import { v4 as uuidv4 } from "uuid"; // Better import format for uuid
 
 const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   const [files, setFiles] = useState<File | null>(null);
   const [loader, setLoader] = useState<boolean>(false);
   const [uploadStatus, setUploadStatus] = useState<string>("");
   const [problems, setProblems] = useState<any[]>([]);
+  const [docSheet, setDocSheets] = useState<
+    { img: string; sheetName: string | number; id: string }[]
+  >([]);
+
+  const documentHandler = async (id: string) => {
+    try {
+      const response = await getQuestionsByDocumentId(id);
+      setArrayOfQs(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (event.target.files) {
+    if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       setLoader(true);
       setFiles(file);
       setUploadStatus("Processing file...");
+      const uuid = uuidv4();
+      const newSheet = {
+        id: uuid,
+        img: "/doc1.png",
+        sheetName: `Sheet ${docSheet.length + 1}`,
+      };
 
+      setDocSheets((prevState) => [...prevState, newSheet]);
       try {
         const fileContent = await extractQuestionsFromFile(file);
 
         const questionArrayJson = await sendQuestionsToBackend(fileContent);
-        var questionArray = questionArrayJson
+        let questionArray = questionArrayJson
           .replace("```json", "")
           .replace("```", "");
         try {
@@ -36,11 +62,12 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
           questionArray = [];
         }
 
-        questionArray.map((item: problemType) => {
-          const uuid = v4();
-          item["id"] = uuid;
+        questionArray.map((item: ProblemType) => {
+          item["id"] = uuidv4();
+          return item; // Return item to satisfy map function
         });
         setArrayOfQs(questionArray);
+        saveQuestionArray(uuid, questionArray);
         setUploadStatus(`Successfully processed the file.`);
       } catch (error) {
         console.error("Error processing file:", error);
@@ -50,6 +77,32 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
       }
     }
   };
+
+  useEffect(() => {
+    const fetchDocs = async () => {
+      try {
+        const data = await getAllDocuments();
+        if (data.data && data.data.length > 0) {
+          const transformedData = data.data.map(
+            (
+              doc: { img: string; sheetName: number; documentId: string },
+              index: number
+            ) => ({
+              img: `/doc1.png`,
+              sheetName: `Sheet ${index + 1}`,
+              id: doc.documentId,
+            })
+          );
+
+          setDocSheets((prevState) => [...prevState, ...transformedData]);
+        }
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+      }
+    };
+
+    fetchDocs();
+  }, []);
 
   const extractQuestionsFromFile = async (file: File) => {
     return new Promise<string>((resolve, reject) => {
@@ -76,7 +129,7 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   };
 
   return (
-    <section className="flex items-center xl:w-[600px] md:w-[500px] mx-auto">
+    <section className="flex flex-col items-start xl:w-[600px] md:w-[500px] mx-auto">
       <div className="flex px-6 w-full flex-col gap-[64px]">
         <div className="max-lg:h-[296px] shadow-md shadow-[#111] flex-shrink rounded-xl px-[64px] py-8">
           <div
@@ -129,11 +182,7 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
                     <input
                       type="file"
                       accept=".csv,.json,.xlsx,.xls,.txt"
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          handleFileChange(e);
-                        }
-                      }}
+                      onChange={handleFileChange}
                       style={{ display: "none" }}
                     />
                   </label>
@@ -142,6 +191,22 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
             )}
           </div>
         </div>
+      </div>
+      <div className="px-[48px] mt-12 flex items-center">
+        {docSheet.map((item, index) => (
+          <div
+            key={index}
+            onClick={() => documentHandler(item.id)}
+            className="flex gap-1 flex-col items-center"
+          >
+            <img
+              src={item.img}
+              alt={`Document ${index + 1}`}
+              className="w-[96px] cursor-pointer"
+            />
+            <span>{item.sheetName}</span>
+          </div>
+        ))}
       </div>
     </section>
   );

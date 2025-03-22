@@ -218,10 +218,10 @@ export async function processProblemDescription(
               
               Make sure:
               1. Dont change problem id
-              2. All arrays have at least 2-3 items
-              3. Generate good test cases that cover edge cases
-              4. The handlerFunc should be valid JavaScript that correctly tests the solution
-              5. All JSON is properly formatted and valid`,
+         
+              2. Generate good test cases that cover edge cases
+              3. The handlerFunc should be valid JavaScript that correctly tests the solution
+              4. All JSON is properly formatted and valid`,
             },
           ],
         },
@@ -330,7 +330,7 @@ const generateProblemArray = asyncHandler(
                   },]
                    
                   Make sure:
-                  1.Remove the garbage which is not question
+                  1. Remove the garbage which is not question
                   2. All objects have at least 4 items
                   3. All JSON is properly formatted and valid
                   4. if id increases 100 stop the execution there and send only 100s question only

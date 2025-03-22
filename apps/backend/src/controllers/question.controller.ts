@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
 import { asyncHandler } from "../utils/asynchHandler";
@@ -33,7 +33,6 @@ const addProblemToDb = asyncHandler(async (req: Request, res: Response) => {
       res.status(400).send(ApiResponse.failure(400, "Missing required fields"));
     }
 
-    // Create the problem and its related data
     const createProblem = await prisma.problem.create({
       data: {
         starterFunctionName,
@@ -69,15 +68,12 @@ const addProblemToDb = asyncHandler(async (req: Request, res: Response) => {
       },
     });
 
-    // Send success response
     res.send(
       ApiResponse.success(201, "Successfully added the problem", createProblem)
     );
   } catch (error) {
-    // Log the error for debugging (remove in production)
     console.error("Database error:", error);
 
-    // Send error response with detailed message
     const errorMessage =
       error instanceof Error
         ? error.message
@@ -92,7 +88,6 @@ const getProblemFromDb = asyncHandler(async (req: Request, res: Response) => {
       res.send(ApiResponse.failure(400, "Missing required fields ProblemId"));
     }
 
-    //Create the problem and its related data
     const findProblem = await prisma.problem.findFirst({
       where: {
         //@ts-ignore
@@ -100,15 +95,12 @@ const getProblemFromDb = asyncHandler(async (req: Request, res: Response) => {
       },
     });
 
-    // Send success response
     res.send(
       ApiResponse.success(201, "Successfully added the problem", findProblem)
     );
   } catch (error) {
-    // Log the error for debugging (remove in production)
     console.error("Database error:", error);
 
-    // Send error response with detailed message
     const errorMessage =
       error instanceof Error
         ? error.message
@@ -117,4 +109,131 @@ const getProblemFromDb = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-export { addProblemToDb, getProblemFromDb };
+const saveQuestionArray = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { documentId, questions } = req.body as {
+      documentId: string;
+      questions: {
+        id: number;
+        questionTitle: string;
+        difficulty: "Easy" | "Medium" | "Hard";
+        category: string;
+        status: boolean;
+        solution: string;
+      }[];
+    };
+
+    if (!documentId) {
+      throw new ApiError("documentId is required", 400);
+    }
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+      throw new ApiError(
+        "Questions array is required and must not be empty",
+        400
+      );
+    }
+
+    try {
+      const document = await prisma.questionDocument.upsert({
+        where: { documentId },
+        update: {},
+        create: { documentId },
+      });
+
+      const response = await prisma.question.createMany({
+        data: questions.map(
+          (question: {
+            id: number;
+            questionTitle: string;
+            difficulty: "Easy" | "Medium" | "Hard";
+            category: string;
+            status: boolean;
+            solution: string;
+          }) => ({
+            id: question.id.toString(),
+            questionTitle: question.questionTitle,
+            difficulty: question.difficulty,
+            category: question.category,
+            status: question.status,
+            solution: question.solution,
+            documentId: documentId,
+          })
+        ),
+        skipDuplicates: true,
+      });
+
+      res.json(
+        new ApiResponse(200, true, "Questions saved successfully", response)
+      );
+    } catch (error: any) {
+      console.error("Error saving questions:", error);
+      throw new ApiError(error.message || "Failed to save questions", 500);
+    }
+  }
+);
+
+const getQuestionArray = asyncHandler(async (req: Request, res: Response) => {
+  const { documentId } = req.query;
+
+  if (!documentId) {
+    throw new ApiError("documentId is required", 400);
+  }
+
+  try {
+    const questions = await prisma.question.findMany({
+      //@ts-ignore
+      where: { documentId },
+    });
+
+    if (questions.length === 0) {
+      throw new ApiError("No questions found for this document", 404);
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          true,
+          "Questions retrieved successfully",
+          questions
+        )
+      );
+  } catch (error: any) {
+    console.error("Error fetching questions:", error);
+    throw new ApiError(error.message || "Failed to fetch questions", 500);
+  }
+});
+const getAllDocuments = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const documents = await prisma.questionDocument.findMany({
+        select: {
+          documentId: true,
+          createdAt: true,
+        },
+      });
+
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            true,
+            "Documents retrieved successfully",
+            documents
+          )
+        );
+    } catch (error: any) {
+      console.error("Error fetching documents:", error);
+      throw new ApiError(error.message || "Failed to fetch documents", 500);
+    }
+  }
+);
+export {
+  addProblemToDb,
+  getProblemFromDb,
+  saveQuestionArray,
+  getQuestionArray,
+  getAllDocuments,
+};
