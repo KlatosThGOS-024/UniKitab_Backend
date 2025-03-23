@@ -1,17 +1,14 @@
 export const addPdfBook = async ({
   file,
   imgSrc,
-  fileId,
 }: {
   file: File;
   imgSrc: string;
-  fileId: string;
 }) => {
   try {
     const formData = new FormData();
     formData.append("PdfFile", file);
     formData.append("imgSrc", imgSrc);
-    formData.append("fileId", fileId);
 
     const response = await fetch("http://localhost:8000/api/v1/book/pdf-add", {
       method: "POST",
@@ -57,6 +54,7 @@ export const fetchPdfUrl = async (fileId: string) => {
     }
 
     const data = await response.json();
+    console.log(data);
     return data;
   } catch (error) {
     console.error("Error fetching PDF URL:", error);

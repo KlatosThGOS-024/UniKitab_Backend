@@ -4,6 +4,7 @@ import {
   addPdfBookToDrive,
   getPdfBookName,
   getPdfBookUrl,
+  streamPdfFile,
 } from "../controllers/pdfBook.controller";
 import { upload } from "../middlewares/multer.middleware";
 
@@ -22,5 +23,7 @@ pdfBookRouter.route("/pdf-add").post(
 );
 pdfBookRouter.route("/pdf-get").post(getPdfBookName);
 pdfBookRouter.route("/url-get").post(getPdfBookUrl);
+
+pdfBookRouter.route("/pdf-stream/:fileId").get(streamPdfFile);
 
 export default pdfBookRouter;

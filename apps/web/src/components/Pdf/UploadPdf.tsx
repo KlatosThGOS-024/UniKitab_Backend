@@ -59,9 +59,7 @@ export const UploadPdf = () => {
 
       addPdfBook({
         file: file,
-        imgSrc:
-          "https://m.media-amazon.com/images/I/61paYArml3L._AC_UF1000,1000_QL80_.jpg",
-        fileId: Math.random().toString(36).substring(2, 9),
+        imgSrc: "https://m.media-amazon.com/images/I/61CVP-MfUoL.jpg",
       });
 
       dispatch(addFileUrl(fileUrl));

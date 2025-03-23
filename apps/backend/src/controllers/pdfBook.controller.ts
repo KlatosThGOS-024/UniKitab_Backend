@@ -14,27 +14,20 @@ const addPdfBookToDrive = asyncHandler(async (req: Request, res: Response) => {
     //@ts-ignore
     const file = pdfFile?.PdfFile[0];
     const uploadPath = file?.path;
-    const fileIdD = await drive.uploadFile(
-      authClient,
-      uploadPath,
-      file?.originalname || ""
-    );
-    console.log("upload", uploadPath, req.body.imgSrc);
+    const fileIdD =
+      (await drive.uploadFile(authClient, uploadPath, file?.originalname)) ||
+      "";
     fs.unlinkSync(uploadPath);
-    console.log("djkfshfdfhdf", {
-      name: file?.originalname,
-      bookFrontImgSrc: pdfData.imgSrc,
-      fileId: pdfData.fileId,
-    });
+
     const pdfCreate = await prisma.pdfBook.create({
       data: {
         name: file?.originalname,
         bookFrontImgSrc: pdfData.imgSrc,
-        fileId: pdfData.fileId,
+        fileId: fileIdD,
       },
     });
 
-    res.json({ message: "PDF uploaded successfully!", pdfCreate });
+    res.json({ message: "PDF uploaded successfully!", fileIdD });
   } catch (error) {
     console.error("Error uploading PDF:", error);
     res.status(500).json({ message: "Failed to upload PDF", error });
@@ -85,17 +78,14 @@ const getPdfBookUrl = asyncHandler(async (req: Request, res: Response) => {
     const drive = new Drive();
     const authClient = await drive.authorize();
 
-    const fileUrl = await drive.getFileUrl(authClient, fileId);
-    console.log("fileUrlfileUrlfileUrl", fileUrl);
-    if (!fileUrl) {
-      res.status(400).json({ message: "Failed to get file URL" });
-    }
-    console.log("fileUrlfileUrlfileUrl", "dff");
+    const proxyUrl = `api/v1/book/pdf-stream/${fileId}`;
 
     res.json({
       message: "PDF URL retrieved successfully!",
       data: {
-        downloadUrl: fileUrl,
+        downloadUrl: proxyUrl,
+        fileName: pdfBook?.name || "document.pdf",
+        fileId: fileId,
       },
     });
   } catch (error) {
@@ -106,5 +96,58 @@ const getPdfBookUrl = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 });
+const streamPdfFile = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    const { fileId } = req.params;
 
-export { addPdfBookToDrive, getPdfBookName, getPdfBookUrl };
+    if (!fileId) {
+      res.status(400).json({ message: "File ID parameter is required" });
+    }
+
+    const drive = new Drive();
+    const authClient = await drive.authorize();
+
+    const fileMetadata = await drive.getFile(authClient, fileId);
+
+    if (!fileMetadata) {
+      res.status(404).json({ message: "File not found" });
+    }
+
+    const fileStream = await drive.getFileStream(authClient, fileId);
+
+    if (!fileStream) {
+      res.status(404).json({ message: "File stream could not be created" });
+    }
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+
+      `inline; filename="${fileMetadata?.name || "document.pdf"}"`
+    );
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    fileStream?.pipe(res);
+
+    fileStream?.on("error", (error) => {
+      console.error("Error streaming file:", error);
+      if (!res.headersSent) {
+        res
+          .status(500)
+          .json({ message: "Error streaming file", error: String(error) });
+      } else {
+        res.end();
+      }
+    });
+  } catch (error) {
+    console.error("Error streaming PDF:", error);
+    res.status(500).json({
+      message: "Failed to stream PDF",
+      error: String(error),
+    });
+  }
+});
+
+export { addPdfBookToDrive, getPdfBookName, getPdfBookUrl, streamPdfFile };

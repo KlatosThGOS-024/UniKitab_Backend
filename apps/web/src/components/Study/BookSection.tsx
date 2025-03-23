@@ -10,7 +10,6 @@ import {
   DSbooks,
 } from "../../../public/constants";
 
-// Book interface
 interface Book {
   subject: string;
   title: string;
@@ -19,7 +18,6 @@ interface Book {
   description: string;
 }
 
-// Book Card Component
 const BookCard = ({ book }: { book: Book }) => {
   const dispatch = useDispatch();
 

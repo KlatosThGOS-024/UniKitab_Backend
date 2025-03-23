@@ -49,29 +49,101 @@ export class Drive {
   async getFileUrl(auth: any, fileId: string): Promise<string | null> {
     try {
       const drive = google.drive({ version: "v3", auth });
-      console.log("responseresponseresponseresponse", "response1");
+      console.log("Getting file info for ID:", fileId);
 
-      await drive.files.get({
+      // First, verify the file exists and get its metadata
+      const fileMetadata = await drive.files.get({
         fileId: fileId,
-        fields: "id, name, mimeType",
+        fields: "id, name, mimeType, webViewLink",
       });
-      console.log("responseresponseresponseresponse", "response2");
+
+      // The webViewLink is already provided in the metadata
+      if (fileMetadata.data.webViewLink) {
+        return fileMetadata.data.webViewLink;
+      }
+
+      // If no webViewLink in metadata, construct one
+      const webViewLink = `https://drive.google.com/file/d/${fileId}/view`;
+      return webViewLink;
+    } catch (error) {
+      console.error("Error getting file URL:", error);
+      return null;
+    }
+  }
+
+  async getFileStream(auth: any, fileId: string) {
+    try {
+      const drive = google.drive({ version: "v3", auth });
 
       const response = await drive.files.get(
         {
           fileId: fileId,
           alt: "media",
         },
-        {
-          responseType: "stream",
-        }
+        { responseType: "stream" }
       );
-      console.log("responseresponseresponseresponse", response);
-      const webViewLink = `https://drive.google.com/file/d/${response}/view`;
 
-      return webViewLink;
+      return response.data;
     } catch (error) {
-      console.error("Error getting file URL:", error);
+      console.error("Error getting file stream:", error);
+      return null;
+    }
+  }
+
+  async getFile(auth: any, fileId: string) {
+    try {
+      const drive = google.drive({ version: "v3", auth });
+
+      // Get the file metadata with more fields for better information
+      const response = await drive.files.get({
+        fileId: fileId,
+        fields: "id,name,mimeType,webContentLink,webViewLink",
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error getting file metadata:", error);
+      return null;
+    }
+  }
+
+  // Method to generate a direct download URL for PDF viewer compatibility
+  async getDirectDownloadUrl(
+    auth: any,
+    fileId: string
+  ): Promise<string | null> {
+    try {
+      const drive = google.drive({ version: "v3", auth });
+
+      // Make sure the file is publicly accessible (optional)
+      // This step is only needed if your files aren't already shared
+      await drive.permissions.create({
+        fileId: fileId,
+        requestBody: {
+          role: "reader",
+          type: "anyone",
+        },
+      });
+
+      // Get the web content link
+      const file = await drive.files.get({
+        fileId: fileId,
+        fields: "webContentLink",
+      });
+
+      if (file.data.webContentLink) {
+        // Convert the webContentLink to a direct download URL
+        // by removing the "export=download" parameter
+        const directUrl = file.data.webContentLink.replace(
+          "&export=download",
+          ""
+        );
+        return directUrl;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error generating direct download URL:", error);
       return null;
     }
   }
