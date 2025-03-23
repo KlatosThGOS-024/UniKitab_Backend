@@ -27,7 +27,6 @@ async function runCodeWithGemini(options: any) {
 
     return response.data;
   } catch (error) {
-    // Error handling (unchanged)
     throw error;
   }
 }
@@ -53,7 +52,6 @@ export async function testCodeRunner(code: string, problemDescription: string) {
     console.log(code);
     console.table(formattedResult);
 
-    // Display failed test cases
     if (summary.failed > 0) {
       console.log("\n🔍 Failed Test Cases:");
       //@ts-ignore

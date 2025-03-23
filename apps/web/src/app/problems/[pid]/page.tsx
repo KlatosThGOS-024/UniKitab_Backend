@@ -8,6 +8,7 @@ import {
   LeftSideProblemDescription,
   RightSideCodeEditor,
 } from "@/components/LiteCodeComponent/ProblemPageSekeleton";
+import CodeTestResults from "@/components/LiteCodeComponent/TestResult";
 import { IRootState } from "@/store/store";
 
 import { useSearchParams } from "next/navigation";
@@ -85,6 +86,7 @@ const Page = () => {
   return (
     <section>
       <ProblemPageSekeleton />
+      <CodeTestResults />
     </section>
   );
 };

@@ -7,10 +7,8 @@ interface IUser {
 }
 
 const runTimeUserSchemaSignUp = z.object({
-  fullName: z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-  }),
+  username: z.string(),
+
   email: z.string().email("Not a valid email"),
   password: z
     .string()
@@ -20,7 +18,8 @@ const runTimeUserSchemaSignUp = z.object({
     ),
 });
 const runTimeUserSchemaLogin = z.object({
-  email: z.string().email("Not a valid email"),
+  username: z.string(),
+
   password: z.string(),
 });
 

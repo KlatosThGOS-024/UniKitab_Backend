@@ -18,9 +18,10 @@ import { TfiControlPlay } from "react-icons/tfi";
 import { FaCloudArrowUp } from "react-icons/fa6";
 import { Example, Problem, TestCases } from "./MockProblem/types/types";
 import { useSearchParams } from "next/navigation";
-import { useSelector } from "react-redux";
-import { IRootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, IRootState } from "@/store/store";
 import { testCodeRunner } from "@/Hooks/codeRunner";
+import { runCodeTest } from "@/functions/code/code";
 
 // Add a loading component to display during initial load
 const LoadingSpinner = () => (
@@ -222,13 +223,20 @@ export const RightSideCodeEditor = ({
     setInputValue(testCases[index] || "");
     setTargetValue(targetCases[index] || "");
   };
+  const dispatch = useDispatch<AppDispatch>();
 
   const onChangeHandler = () => {
     try {
       const cb = new Function(`return ${userCode}`)();
       console.log(cb, testCases, targetCases);
-      testCodeRunner(cb, ProblemDescription);
-      //    alert("Code submitted successfully!");
+
+      // Dispatch the Redux action instead of directly calling testCodeRunner
+      dispatch(
+        runCodeTest({
+          code: cb,
+          problemDescription: ProblemDescription,
+        })
+      );
     } catch (error) {
       console.error(error);
       alert("Error in your code. Check the console for details.");

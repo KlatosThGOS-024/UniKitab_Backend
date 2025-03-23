@@ -29,11 +29,15 @@ const LoadingSpinner = () => (
   </div>
 );
 
-const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
+// Create a client-only wrapper component for Redux interactions
+const ClientSideProblems = ({
+  arrayOfQs,
+}: {
+  arrayOfQs: ProblemType[] | string;
+}) => {
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [difficultyFilter, setDifficultyFilter] =
     useState<string>("All levels");
@@ -41,22 +45,19 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
   const [categoryFilter, setCategoryFilter] =
     useState<string>("All Categories");
 
-  const questionsInStore = useSelector(
+  // Call useSelector at the top level of the component
+  const storeQuestions = useSelector(
     (state: IRootState) => state.QuestionReducer
   );
-
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const QuestionHandler = async (title: string, id: string) => {
     try {
       setLoading(true);
       setError(null);
 
-      const questionInStore = questionsInStore.find(
+      // Now we can safely use storeQuestions
+      const questionInStore = storeQuestions.find(
         (item: Problem) => item.problemId === id
       );
 
@@ -100,10 +101,6 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
         .catch((err) => console.error("Error saving to DB:", err));
     }
   }, [problem]);
-
-  if (!isMounted) {
-    return <div className="min-h-[400px] bg-[#1A1A1A]"></div>;
-  }
 
   const problemsList = Array.isArray(arrayOfQs) ? arrayOfQs : [];
 
@@ -248,7 +245,7 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
               <tbody>
                 {filteredProblems.map((value: ProblemType, index: number) => (
                   <tr
-                    key={index}
+                    key={value.id || index} // Use unique ID for key if available
                     className={`${index % 2 === 0 ? "bg-[#2C2C2D]" : "bg-[#111]"} text-white hover:bg-gray-700 transition-colors`}
                   >
                     <td className="text-[18px] font-[500] px-4 py-4">
@@ -303,8 +300,42 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
   );
 };
 
+// Create a server-safe wrapper component that delays rendering the client component
+const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Server-side rendering placeholder
+  if (!isMounted) {
+    return <div className="min-h-[400px] bg-[#1A1A1A]"></div>;
+  }
+
+  // Client-side rendering with Redux
+  return <ClientSideProblems arrayOfQs={arrayOfQs} />;
+};
+
 const LiteCodeBody = () => {
   const [arrayOfQs, setArrayOfQs] = useState<ProblemType[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Return minimal structure during SSR
+  if (!isMounted) {
+    return (
+      <section className="min-h-screen bg-[#1A1A1A]">
+        <div className="max-lg:grid-cols-1 lg:px-[96px] px-[38px] grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="min-h-[400px]"></div>
+          <div className="min-h-[400px]"></div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="min-h-screen bg-[#1A1A1A]">

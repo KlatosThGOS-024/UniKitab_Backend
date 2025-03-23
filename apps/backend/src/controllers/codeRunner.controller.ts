@@ -16,6 +16,7 @@ interface CodeRunRequest {
   timeLimit?: number;
   memoryLimit?: number;
   problemId?: string;
+  problemType?: string;
 }
 
 interface TestCaseResult {
@@ -43,24 +44,20 @@ const geminiFormatAndRunCode = asyncHandler(
         code,
         problemDescription,
         problemId = "custom",
+        problemType,
         timeLimit = 3000,
         memoryLimit = 512,
       }: CodeRunRequest = req.body;
 
-      console.log("Request body:", req.body);
-
-      // Validate inputs
       if (!code || typeof code !== "string" || code.trim() === "") {
         throw new ApiError("Code is required and must not be empty", 400);
       }
 
-      // Format the code using Gemini API
       const formattedCode = await formatCodeWithGemini(
         code,
         problemDescription
       );
 
-      // Generate test cases using the problem description or code analysis
       const testCases = await generateTestCasesWithGemini(
         formattedCode,
         problemDescription ||
@@ -72,15 +69,14 @@ const geminiFormatAndRunCode = asyncHandler(
         throw new ApiError("Failed to generate test cases", 400);
       }
 
-      // Run the code against generated test cases
       const runResults = await runCodeWithTestCases(
         formattedCode,
         testCases,
         timeLimit,
-        memoryLimit
+        memoryLimit,
+        problemType
       );
 
-      // Return response with formatted code and results
       res.json(
         new ApiResponse(200, true, "Code optimized and executed successfully", {
           originalCode: code,
@@ -108,9 +104,6 @@ const geminiFormatAndRunCode = asyncHandler(
   }
 );
 
-/**
- * Format and optimize code using Gemini AI API
- */
 async function formatCodeWithGemini(
   code: string,
   problemDescription?: string
@@ -179,24 +172,19 @@ IMPORTANT: Return only the formatted code, no explanations or markdown. The code
 
   let formattedCode = data.candidates[0].content.parts[0].text;
 
-  // Remove any markdown code blocks if present
   formattedCode = formattedCode.replace(
     /```(?:javascript|js)?\n([\s\S]*?)\n```/g,
     "$1"
   );
 
-  // Ensure code has a solution function
   if (!formattedCode.includes("function solution")) {
-    // Extract function name if another function exists
     const functionMatch = formattedCode.match(/function\s+(\w+)/);
     if (functionMatch && functionMatch[1] !== "solution") {
-      // Rename the function to solution
       formattedCode = formattedCode.replace(
         new RegExp(`function\\s+${functionMatch[1]}`, "g"),
         "function solution"
       );
     } else {
-      // Wrap code in a solution function if no function exists
       formattedCode = `function solution(input) {
   ${formattedCode.trim().split("\n").join("\n  ")}
 }`;
@@ -206,12 +194,6 @@ IMPORTANT: Return only the formatted code, no explanations or markdown. The code
   return formattedCode;
 }
 
-/**
- * Generate test cases from problem description or code using Gemini AI API
- */
-/**
- * Generate test cases from problem description or code using Gemini AI API
- */
 async function generateTestCasesWithGemini(
   code: string,
   description: string,
@@ -225,6 +207,9 @@ async function generateTestCasesWithGemini(
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
 
+  const functionNameMatch = code.match(/function\s+(\w+)/);
+  const functionName = functionNameMatch ? functionNameMatch[1] : "solution";
+
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -235,7 +220,7 @@ async function generateTestCasesWithGemini(
         {
           parts: [
             {
-              text: `Given this code and description:
+              text: `Generate test cases for this algorithm problem:
 
 CODE:
 ${code}
@@ -243,35 +228,50 @@ ${code}
 DESCRIPTION:
 ${description}
 
-Generate a comprehensive JSON array of test cases that cover normal cases and edge cases for this solution.
+TASK:
+Generate a comprehensive JSON array of test cases for the function "${functionName}" that cover normal cases, edge cases, and specific boundary conditions.
 
-Generate test cases in this format:
+IMPORTANT INSTRUCTIONS:
+1. FIRST, identify the EXACT purpose of the function by analyzing the code and description. What problem is it solving?
+2. SECOND, manually solve 3 small examples step-by-step to understand the algorithm.
+3. For each test case, VERIFY your expected output by tracing through the code logic with the input.
+
+FORMAT REQUIREMENTS:
 [
   {
-    "input": "Value that will be passed to the solution function",
-    "expected": "Expected output from the solution function"
+    "input": <value that matches the function's expected parameter type>,
+    "expected": <value that would be the correct output for this input>
   }
 ]
 
-Make sure to:
-1. Include at least 5 test cases covering different scenarios
-2. Include edge cases (empty inputs, large values, etc.)
-3. Return valid JSON only, no explanations
-4. Format the inputs and expected outputs as VALID JSON (not JavaScript)
-   - Use actual numeric values instead of JavaScript constants like Number.MAX_SAFE_INTEGER
-   - For extremely large numbers, use numeric values within safe integer range
-   - All property names and string values must be in double quotes
-5. Analyze the code to determine the correct expected outputs
-6. Make sure the input format matches what the solution function expects
+INCLUDE THESE TEST CASE TYPES:
+1. Simple cases (2-3 examples)
+2. Edge cases: empty arrays/strings, single elements, duplicates
+3. Large valid inputs (within reasonable bounds)
+4. Cases with negative numbers, zeros, or special patterns
+5. Boundary cases that test key algorithm transitions
 
-IMPORTANT: Your response should be ONLY the JSON array with no additional text.
+VERIFICATION CHECKLIST:
+- Does each expected value match what the function would actually return?
+- Are array inputs and outputs properly formatted as arrays?
+- Are numeric outputs properly formatted as numbers, not strings?
+- For sequence problems: have you correctly counted the sequence length rather than listing elements?
+- For graph problems: have you validated the exact structure required?
+
+VALIDATION EXAMPLE:
+For "longest consecutive sequence" problem:
+- Input [100, 4, 200, 1, 3, 2], Expected: 4 (because [1,2,3,4] is the longest)
+- Input [0, 3, 7, 2, 5, 8, 4, 6, 1], Expected: 9 (because [0,1,2,3,4,5,6,7,8] is the longest)
+
+EXPECTED OUTPUT FORMAT: 
+Return ONLY the JSON array containing 6-10 test cases with NO additional text or explanations.
 `,
             },
           ],
         },
       ],
       generationConfig: {
-        temperature: 0.2,
+        temperature: 0.1,
         maxOutputTokens: 2048,
       },
     }),
@@ -295,13 +295,11 @@ IMPORTANT: Your response should be ONLY the JSON array with no additional text.
 
   let testCasesText = data.candidates[0].content.parts[0].text;
 
-  // Remove any markdown code blocks if present
   testCasesText = testCasesText.replace(
     /```(?:json|js)?\n([\s\S]*?)\n```/g,
     "$1"
   );
 
-  // Replace JavaScript constants with their actual values before parsing
   testCasesText = testCasesText
     .replace(/Number\.MAX_SAFE_INTEGER/g, "9007199254740991")
     .replace(/Number\.MIN_SAFE_INTEGER/g, "-9007199254740991")
@@ -311,14 +309,70 @@ IMPORTANT: Your response should be ONLY the JSON array with no additional text.
     .replace(/Number\.NEGATIVE_INFINITY/g, "null")
     .replace(/Infinity/g, "null")
     .replace(/NaN/g, "null")
-    .replace(/undefined/g, "null");
+    .replace(/undefined/g, "null")
+    .replace(/'/g, '"')
+    .replace(/,(\s*[}\]])/g, "$1");
 
   try {
-    const testCases = JSON.parse(testCasesText);
+    let testCases;
+    try {
+      testCases = JSON.parse(testCasesText);
+    } catch (parseError) {
+      const jsonMatch = testCasesText.match(/\[\s*{[\s\S]*}\s*\]/);
+      if (jsonMatch) {
+        testCases = JSON.parse(jsonMatch[0]);
+      } else {
+        throw parseError;
+      }
+    }
+
     if (!Array.isArray(testCases)) {
       throw new Error("Generated test cases are not in an array format");
     }
-    return testCases;
+
+    const validatedTestCases = testCases.map((testCase) => {
+      if (!("input" in testCase) || !("expected" in testCase)) {
+        throw new Error(
+          "Test case missing required 'input' or 'expected' property"
+        );
+      }
+
+      return {
+        input: JSON.parse(JSON.stringify(testCase.input)),
+        expected: JSON.parse(JSON.stringify(testCase.expected)),
+      };
+    });
+
+    if (validatedTestCases.length < 3) {
+      console.warn("Generated fewer than 3 test cases, adding default cases");
+
+      if (code.includes("Array") || code.includes("[]")) {
+        validatedTestCases.push({
+          input: [],
+          expected: extractExpectedEmptyOutput(code),
+        });
+        validatedTestCases.push({
+          input: [1],
+          expected: extractExpectedSingleOutput(code),
+        });
+      }
+      if (
+        code.includes("String") ||
+        code.includes("''") ||
+        code.includes('""')
+      ) {
+        validatedTestCases.push({
+          input: "",
+          expected: extractExpectedEmptyOutput(code),
+        });
+        validatedTestCases.push({
+          input: "a",
+          expected: extractExpectedSingleOutput(code),
+        });
+      }
+    }
+
+    return validatedTestCases;
   } catch (error) {
     console.error("Failed to parse test cases:", testCasesText);
     throw new Error(
@@ -327,21 +381,51 @@ IMPORTANT: Your response should be ONLY the JSON array with no additional text.
   }
 }
 
-/**
- * Run code with generated test cases
- */
+function extractExpectedEmptyOutput(code: string): any {
+  if (code.includes("return 0") || code.includes("= 0")) return 0;
+  if (code.includes("return []") || code.includes("= []")) return [];
+  if (code.includes('return ""') || code.includes('= ""')) return "";
+  if (code.includes("return false") || code.includes("= false")) return false;
+  if (code.includes("return null") || code.includes("= null")) return null;
+
+  if (code.includes("Array") || code.includes("[")) return 0;
+
+  if (code.includes("String") || code.includes("'") || code.includes('"'))
+    return "";
+
+  return 0;
+}
+
+function extractExpectedSingleOutput(code: string): any {
+  if (code.includes("return 1") || code.includes("= 1")) return 1;
+  if (code.includes("length") || code.includes("size")) return 1;
+
+  if (code.includes("Array") || code.includes("[")) return 1;
+
+  if (code.includes("String") || code.includes("'") || code.includes('"'))
+    return 1;
+
+  return 1;
+}
+
 async function runCodeWithTestCases(
   code: string,
   testCases: TestCase[],
   timeLimit: number,
-  memoryLimit: number
+  memoryLimit: number,
+  problemType?: string
 ): Promise<{ results: TestCaseResult[]; summary: TestSummary }> {
   const results: TestCaseResult[] = [];
   let passedCount = 0;
   let totalExecutionTime = 0;
 
   for (const testCase of testCases) {
-    const result = await runSingleTestCase(code, testCase, timeLimit);
+    const result = await runSingleTestCase(
+      code,
+      testCase,
+      timeLimit,
+      problemType
+    );
     results.push(result);
 
     if (result.passed) {
@@ -364,13 +448,11 @@ async function runCodeWithTestCases(
   return { results, summary };
 }
 
-/**
- * Run a single test case
- */
 async function runSingleTestCase(
   code: string,
   testCase: TestCase,
-  timeLimit: number
+  timeLimit: number,
+  problemType?: string
 ): Promise<TestCaseResult> {
   const result: TestCaseResult = {
     input: testCase.input,
@@ -380,7 +462,6 @@ async function runSingleTestCase(
     consoleOutput: [],
   };
 
-  // Create a sandbox context with limited capabilities
   const consoleOutput: string[] = [];
   const sandbox = {
     console: {
@@ -426,10 +507,8 @@ async function runSingleTestCase(
     Promise,
   };
 
-  // Create VM context
   const context = vm.createContext(sandbox);
 
-  // Wrap user code in a function that we can call with the test case input
   const wrappedCode = `
     (function userCodeRunner(input) {
       try {
@@ -449,20 +528,15 @@ async function runSingleTestCase(
   `;
 
   try {
-    // Compile the script
     const script = new vm.Script(wrappedCode, {
       filename: "usercode.js",
     });
 
-    // Set up manual timeout
     const timeoutPromise = new Promise<never>((_, reject) => {
       const timeoutId = setTimeout(() => {
         reject(new Error(`Execution timed out after ${timeLimit}ms`));
       }, timeLimit);
-      // Store timeoutId somewhere if you need to clear it later
     });
-
-    // Execute the code with timeout
     const startTime = performance.now();
 
     const executionPromise = Promise.resolve().then(() => {
@@ -481,8 +555,7 @@ async function runSingleTestCase(
     } else {
       result.actual = output;
 
-      // Compare output with expected result using deep comparison
-      result.passed = deepEqual(output, testCase.expected);
+      result.passed = smartCompare(output, testCase.expected, problemType);
     }
   } catch (error) {
     result.error = error instanceof Error ? error.message : "Execution error";
@@ -492,27 +565,163 @@ async function runSingleTestCase(
   return result;
 }
 
-/**
- * Deep equality check for comparing expected and actual values
- */
+function smartCompare(
+  actual: any,
+  expected: any,
+  problemType?: string
+): boolean {
+  if (problemType) {
+    switch (problemType.toLowerCase()) {
+      case "permutation":
+      case "combination":
+      case "powerset":
+      case "subset":
+        return compareSetOfSets(actual, expected);
+      case "graph":
+      case "tree":
+        return compareGraphStructures(actual, expected);
+      case "sort":
+      case "dp":
+      case "exact":
+        return deepEqual(actual, expected);
+    }
+  }
+
+  if (isArrayOfArrays(actual) && isArrayOfArrays(expected)) {
+    return compareSetOfSets(actual, expected);
+  } else if (isSimpleArray(actual) && isSimpleArray(expected)) {
+    if (
+      actual.length === expected.length &&
+      areAllPrimitives(actual) &&
+      areAllPrimitives(expected)
+    ) {
+      return compareUnorderedArrays(actual, expected);
+    }
+  } else if (typeof actual === "object" && typeof expected === "object") {
+    return compareObjects(actual, expected);
+  }
+
+  return deepEqual(actual, expected);
+}
+
+function isArrayOfArrays(value: any): boolean {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every((item) => Array.isArray(item))
+  );
+}
+
+function isSimpleArray(value: any): boolean {
+  return Array.isArray(value);
+}
+
+function areAllPrimitives(arr: any[]): boolean {
+  return arr.every(
+    (item) =>
+      typeof item === "string" ||
+      typeof item === "number" ||
+      typeof item === "boolean" ||
+      item === null
+  );
+}
+
+function compareUnorderedArrays(actual: any[], expected: any[]): boolean {
+  if (actual.length !== expected.length) return false;
+
+  const countMap = new Map();
+
+  for (const item of expected) {
+    const key = JSON.stringify(item);
+    countMap.set(key, (countMap.get(key) || 0) + 1);
+  }
+
+  for (const item of actual) {
+    const key = JSON.stringify(item);
+    const count = countMap.get(key) || 0;
+    if (count === 0) return false;
+    countMap.set(key, count - 1);
+  }
+
+  return true;
+}
+
+function compareSetOfSets(actual: any[][], expected: any[][]): boolean {
+  if (actual.length !== expected.length) return false;
+
+  const normalizeSet = (set: any[]) => {
+    if (areAllPrimitives(set)) {
+      return JSON.stringify([...set].sort());
+    }
+    return JSON.stringify(set.map((item) => JSON.stringify(item)).sort());
+  };
+
+  const actualNormalized = new Set(actual.map(normalizeSet));
+  const expectedNormalized = new Set(expected.map(normalizeSet));
+
+  if (actualNormalized.size !== expectedNormalized.size) return false;
+
+  for (const item of actualNormalized) {
+    if (!expectedNormalized.has(item)) return false;
+  }
+
+  return true;
+}
+
+function compareObjects(actual: any, expected: any): boolean {
+  if (deepEqual(actual, expected)) return true;
+
+  const actualKeys = Object.keys(actual);
+  const expectedKeys = Object.keys(expected);
+
+  if (actualKeys.length !== expectedKeys.length) return false;
+
+  for (const key of actualKeys) {
+    if (!expected.hasOwnProperty(key)) return false;
+
+    if (isSimpleArray(actual[key]) && isSimpleArray(expected[key])) {
+      if (areAllPrimitives(actual[key]) && areAllPrimitives(expected[key])) {
+        if (!compareUnorderedArrays(actual[key], expected[key])) return false;
+        continue;
+      }
+    }
+
+    if (!compareObjects(actual[key], expected[key])) return false;
+  }
+
+  return true;
+}
+
+function compareGraphStructures(actual: any, expected: any): boolean {
+  return compareObjects(actual, expected);
+}
+
 function deepEqual(a: any, b: any): boolean {
   if (a === b) return true;
 
-  if (
-    a === null ||
-    b === null ||
-    typeof a !== "object" ||
-    typeof b !== "object"
-  ) {
-    return a === b;
+  if (a === null || b === null || a === undefined || b === undefined)
+    return false;
+
+  if (typeof a !== typeof b) {
+    if (
+      (typeof a === "number" && typeof b === "string" && a === Number(b)) ||
+      (typeof a === "string" && typeof b === "number" && Number(a) === b)
+    ) {
+      return true;
+    }
+    return false;
   }
 
-  // Handle Date objects
+  if (typeof a === "number" && isNaN(a) && isNaN(b)) return true;
+
   if (a instanceof Date && b instanceof Date) {
     return a.getTime() === b.getTime();
   }
 
-  // Handle Array objects
+  if (a instanceof RegExp && b instanceof RegExp) {
+    return a.toString() === b.toString();
+  }
+
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
     for (let i = 0; i < a.length; i++) {
@@ -521,31 +730,39 @@ function deepEqual(a: any, b: any): boolean {
     return true;
   }
 
-  // Handle plain objects
-  const keysA = Object.keys(a);
-  const keysB = Object.keys(b);
+  if (typeof a === "object" && typeof b === "object") {
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
 
-  if (keysA.length !== keysB.length) return false;
+    if (keysA.length !== keysB.length) return false;
 
-  for (let key of keysA) {
-    if (!keysB.includes(key)) return false;
-    if (!deepEqual(a[key], b[key])) return false;
+    for (const key of keysA) {
+      if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
+
+      if (!deepEqual(a[key], b[key])) return false;
+    }
+
+    return true;
   }
 
-  return true;
+  return a == b;
 }
 
-// Keeping the original runCode function for backward compatibility
 const runCode = asyncHandler(async (req: Request, res: Response) => {
   try {
-    const { code, testCases, timeLimit = 3000, memoryLimit = 512 } = req.body;
+    const {
+      code,
+      testCases,
+      timeLimit = 3000,
+      memoryLimit = 512,
+      problemType,
+    } = req.body;
 
     if (!code || typeof code !== "string" || code.trim() === "") {
       throw new ApiError("Code is required and must not be empty", 400);
     }
 
     if (!testCases || !Array.isArray(testCases) || testCases.length === 0) {
-      // If no test cases provided, generate them
       const generatedTestCases = await generateTestCasesWithGemini(
         code,
         "Generate test cases for the following code: " + code,
@@ -560,7 +777,8 @@ const runCode = asyncHandler(async (req: Request, res: Response) => {
         code,
         generatedTestCases,
         timeLimit,
-        memoryLimit
+        memoryLimit,
+        problemType
       );
 
       res.json(
@@ -572,12 +790,12 @@ const runCode = asyncHandler(async (req: Request, res: Response) => {
         )
       );
     } else {
-      // Use provided test cases
       const results = await runCodeWithTestCases(
         code,
         testCases,
         timeLimit,
-        memoryLimit
+        memoryLimit,
+        problemType
       );
 
       res.json(

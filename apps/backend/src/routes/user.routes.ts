@@ -1,10 +1,15 @@
-// import { Router } from "express";
-// import { userRegister } from "../controllers/user.controller";
+import { Router } from "express";
+import {
+  getProfile,
+  userLogin,
+  userLogout,
+  userRegister,
+} from "../controllers/user.controller";
 
-// const userRouter = Router();
+const userRouter = Router();
 
-// userRouter.route("/signUp").post(userRegister);
-// userRouter.route("/login").post(userRegister);
-// userRouter.route("/logout").delete(userRegister);
-// userRouter.route("/get-profile").get(userRegister);
-// export default userRouter;
+userRouter.route("/signUp").post(userRegister);
+userRouter.route("/login").post(userLogin);
+userRouter.route("/logout").delete(userLogout);
+userRouter.route("/get-profile").get(getProfile);
+export default userRouter;

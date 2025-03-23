@@ -8,11 +8,12 @@ import {
   getQuestionsByDocumentId,
   saveQuestionArray,
 } from "@/Hooks/problem";
-// Removing the server-side import that could cause hydration issues
-// import { count } from "console";
-import { v4 as uuidv4 } from "uuid"; // Better import format for uuid
+import { v4 as uuidv4 } from "uuid";
 
 const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
+  // Add suppression for hydration warnings during development
+  const [suppressHydrationWarning, setSuppressHydrationWarning] =
+    useState(false);
   const [files, setFiles] = useState<File | null>(null);
   const [loader, setLoader] = useState<boolean>(false);
   const [uploadStatus, setUploadStatus] = useState<string>("");
@@ -20,6 +21,37 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   const [docSheet, setDocSheets] = useState<
     { img: string; sheetName: string | number; id: string }[]
   >([]);
+  const [isClient, setIsClient] = useState(false);
+
+  // Fix for hydration: Only run client-side code after component mounts
+  useEffect(() => {
+    setIsClient(true);
+    setSuppressHydrationWarning(true);
+
+    const fetchDocs = async () => {
+      try {
+        const data = await getAllDocs();
+        if (data.data && data.data.length > 0) {
+          const transformedData = data.data.map(
+            (
+              doc: { img: string; sheetName: number; documentId: string },
+              index: number
+            ) => ({
+              img: `/doc1.png`,
+              sheetName: `Sheet ${index + 1}`,
+              id: doc.documentId,
+            })
+          );
+
+          setDocSheets(transformedData); // Replace instead of append to prevent hydration issues
+        }
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+      }
+    };
+
+    fetchDocs();
+  }, []);
 
   const documentHandler = async (id: string) => {
     try {
@@ -62,12 +94,12 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
           questionArray = [];
         }
 
-        questionArray.map((item: ProblemType) => {
-          item["id"] = uuidv4();
-          return item; // Return item to satisfy map function
+        const processedArray = questionArray.map((item: ProblemType) => {
+          return { ...item, id: uuidv4() };
         });
-        setArrayOfQs(questionArray);
-        saveQuestionArray(uuid, questionArray);
+
+        setArrayOfQs(processedArray);
+        saveQuestionArray(uuid, processedArray);
         setUploadStatus(`Successfully processed the file.`);
       } catch (error) {
         console.error("Error processing file:", error);
@@ -77,32 +109,6 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
       }
     }
   };
-
-  useEffect(() => {
-    const fetchDocs = async () => {
-      try {
-        const data = await getAllDocs();
-        if (data.data && data.data.length > 0) {
-          const transformedData = data.data.map(
-            (
-              doc: { img: string; sheetName: number; documentId: string },
-              index: number
-            ) => ({
-              img: `/doc1.png`,
-              sheetName: `Sheet ${index + 1}`,
-              id: doc.documentId,
-            })
-          );
-
-          setDocSheets((prevState) => [...prevState, ...transformedData]);
-        }
-      } catch (error) {
-        console.error("Error fetching documents:", error);
-      }
-    };
-
-    fetchDocs();
-  }, []);
 
   const extractQuestionsFromFile = async (file: File) => {
     return new Promise<string>((resolve, reject) => {
@@ -128,8 +134,16 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
     }
   };
 
+  // Don't render anything on the server side
+  if (!isClient) {
+    return null; // Return minimal structure for SSR to prevent hydration mismatch
+  }
+
   return (
-    <section className="flex flex-col items-start xl:w-[600px] md:w-[500px] mx-auto">
+    <section
+      className="flex flex-col items-start xl:w-[600px] md:w-[500px] mx-auto"
+      suppressHydrationWarning={suppressHydrationWarning}
+    >
       <div className="flex px-6 w-full flex-col gap-[64px]">
         <div className="max-lg:h-[296px] shadow-md shadow-[#111] flex-shrink rounded-xl px-[64px] py-8">
           <div

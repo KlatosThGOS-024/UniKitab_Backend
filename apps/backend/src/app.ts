@@ -3,7 +3,7 @@ dotenv.config({ path: ".env" });
 import express, { NextFunction, Request, Response } from "express";
 import { ApiError } from "./utils/ApiError";
 import { ApiResponse } from "./utils/ApiResponse";
-// import userRouter from "./routes/user.routes";
+import userRouter from "./routes/user.routes";
 
 import pdfBookRouter from "./routes/pdfBook.routes";
 
@@ -21,7 +21,7 @@ app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
   res.status(statusCode).json(response);
 });
 
-// app.use("/api/v1/user", userRouter);
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1/questions", QuestionDbRouter);
 app.use("/api/v1/book", pdfBookRouter);
 app.use("/api/v1/ai", aiRouter);

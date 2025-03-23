@@ -16,6 +16,7 @@ import { responseReducer } from "@/functions/messages/message";
 import { userAccountReducer } from "@/functions/userAccount/User";
 import { pdfBookReducer } from "@/functions/pdfBooks/pdfbooks";
 import { QuestionReducer } from "@/functions/dsaQuestions/question";
+import { codeTestResultsReducer } from "@/functions/code/code";
 
 const logger = (store: any) => (next: any) => (action: any) => {
   // console.log("dispatching", action);
@@ -74,6 +75,7 @@ const rootReducer = combineReducers({
   userAccountReducer,
   pdfBookReducer,
   QuestionReducer,
+  codeTestResultsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -94,3 +96,5 @@ export const persistor = persistStore(store, null, () => {
 });
 
 export type IRootState = ReturnType<typeof store.getState>;
+
+export type AppDispatch = typeof store.dispatch;
