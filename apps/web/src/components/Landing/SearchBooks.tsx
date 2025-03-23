@@ -1,3 +1,4 @@
+import { fetchPdfUrl } from "@/Hooks/pdfBook";
 import React from "react";
 interface propType {
   id: string;
@@ -6,25 +7,24 @@ interface propType {
   name: string;
   createdAt: Date;
 }
-// ery result: [
-//   {
-//     id: '28895819-434d-488c-ac06-4b330fb729a7',
-//     name: 'Generative-AI-and-LLMs-for-Dummies.pdf',
-//     bookFrontImgSrc: 'https://www.snowflake.com/wp-content/uploads/2024/01/Generative-AI-and-LLMs-for-Dummies.png',
-//     fileId: '1CATQ1SBuC9rf0Zhh1D_zq0SHh31xiITc',
-//     createdAt: 2025-03-20T07:55:09.643Z
-//   }
-// ]
 
 export const SearchBooks = ({ searchProp }: { searchProp: propType[] }) => {
   if (!searchProp?.length) {
     return null;
   }
+  const onClickHandler = async (fileid: string) => {
+    const response = await fetchPdfUrl(fileid);
+    console.log("djkfshfdsfdsfhjkl");
+    console.log(response);
+  };
   return (
     <div className="border-b-[1px] rounded-lg break-words">
       {searchProp.map((value: propType, index: number) => {
         return (
           <div
+            onClick={() => {
+              onClickHandler(value.fileId);
+            }}
             className="bg-white w-full cursor-pointer gap-4 rounded-lg mb-1 flex items-center px-3 py-4"
             key={index}
           >

@@ -1,80 +1,123 @@
 "use client";
-import { Swiper, SwiperSlide } from "swiper/react";
-import {
-  Navigation,
-  Pagination,
-  Scrollbar,
-  A11y,
-  Autoplay,
-} from "swiper/modules";
-
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
+import React, { useState, useEffect, useCallback } from "react";
 import { IoSearchOutline } from "react-icons/io5";
-import { addQtoDb } from "@/Hooks/problem";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
 const images = [
   "https://www.studypool.com/img/backgrounds/homepage_bg_v2/splash_4.jpg",
   "https://www.studypool.com/img/backgrounds/homepage_bg_v2/splash_5.jpg",
 ];
+
 export const HeroSection = () => {
-  let cnt = 0;
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const nextSlide = useCallback(() => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+
+    setTimeout(() => setIsTransitioning(false), 500);
+  }, [isTransitioning]);
+
+  const prevSlide = useCallback(() => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+
+    setTimeout(() => setIsTransitioning(false), 500);
+  }, [isTransitioning]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [nextSlide]);
 
   return (
-    <section>
-      <div>
-        <div className="carousel-container relative">
-          <Swiper
-            modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
-            spaceBetween={50}
-            slidesPerView={1}
-            navigation={true}
-            loop={true}
-          >
-            {images.map((img, index) => {
-              cnt++;
-              const key = `hero-slide-${index}-${img}-${cnt}`;
-
-              return (
-                <div key={`hero-${key}`}>
-                  {" "}
-                  <SwiperSlide className="slide-content w-full ">
-                    <div className="slide-content max-lg:h-[280px]">
-                      <img
-                        className="w-full  max-lg:h-full"
-                        src={img}
-                        alt="Slide 1"
-                      />
-                    </div>
-                  </SwiperSlide>
-                </div>
-              );
-            })}
-          </Swiper>
+    <section className="relative overflow-hidden">
+      <div className="relative w-full h-[500px] max-lg:h-[280px]">
+        {images.map((img, index) => (
           <div
-            className="  text-white z-30 w-1/2  space-y-[38px]
-          left-[20%] top-[20%] absolute"
+            key={`hero-slide-${index}`}
+            className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ease-in-out ${
+              currentSlide === index ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
           >
-            <h3 className=" max-lg:text-[21px] font-[600] text-[38px]">
+            <img
+              src={img}
+              alt={`Hero image ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+
+            <div className="absolute inset-0 bg-opacity-40"></div>
+          </div>
+        ))}
+
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200"
+          aria-label="Previous slide"
+        >
+          <BsChevronLeft size={24} />
+        </button>
+
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200"
+          aria-label="Next slide"
+        >
+          <BsChevronRight size={24} />
+        </button>
+
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+          {images.map((_, index) => (
+            <button
+              key={`dot-${index}`}
+              onClick={() => {
+                if (!isTransitioning) {
+                  setIsTransitioning(true);
+                  setCurrentSlide(index);
+                  setTimeout(() => setIsTransitioning(false), 500);
+                }
+              }}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                currentSlide === index
+                  ? "bg-white scale-110"
+                  : "bg-white bg-opacity-50 hover:bg-opacity-70"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="absolute top-0 left-0 w-full h-full z-20 flex items-center">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="max-w-2xl space-y-6 text-white">
+            <h1 className="text-4xl max-lg:text-2xl font-bold leading-tight">
               Find & Solve PYQs with AI Assistance
-            </h3>
-            <p className=" max-md:hidden text-[21px]">
+            </h1>
+
+            <p className="text-xl max-md:hidden">
               Get access to a vast collection of PYQs and book PDFs in one
               place.
             </p>
-            <div
-              className=" max-xl:hidden rounded-lg  flex items-center bg-[#FFFFFF] border-[1px]
-                 hover:shadow-[#69D4F3] hover:shadow-sm  "
-            >
-              <input
-                className="placeholder:text-gray-500 placeholder:text-[18px] w-full
-                 text-black px-4 py-5 hover:outline-[#69D4F3] rounded-lg outline-none bg-[#FFFFFF]"
-                placeholder="Search study resources"
-              ></input>
-              <div className=" px-4 border-l-[1px] rounded-l-none py-2">
-                <IoSearchOutline className=" font-[600] w-[21px] h-[21px] text-[#69D4F3]" />
+
+            <div className="relative mt-4 max-w-lg max-xl:hidden">
+              <div className="flex items-center bg-white rounded-lg overflow-hidden shadow-lg">
+                <input
+                  className="w-full px-6 py-4 text-gray-700 placeholder-gray-500 focus:outline-none"
+                  placeholder="Search study resources"
+                  aria-label="Search study resources"
+                />
+                <button className="px-6 py-4 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 transition-colors duration-300">
+                  <IoSearchOutline className="w-6 h-6 text-white" />
+                </button>
               </div>
             </div>
           </div>

@@ -2,89 +2,48 @@ import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asynchHandler";
 import { ApiResponse } from "../utils/ApiResponse";
-enum Difficulty {
-  Easy = "Easy",
-  Medium = "Medium",
-  Hard = "Hard",
-}
-interface ResponseProblem {
-  problemNumber: number;
-  problemId: string;
-  title: string;
-  inputText1: string;
-  inputText2?: string;
-  inputText3?: string;
-  difficulty: Difficulty;
-  likesCount: number;
-  dislikeCount: number;
-  handlerFunc: ((fn: any) => boolean) | string;
-  starterFunction: string;
-}
+import { Difficulty, Example, Problem, TestCases } from "../types/question";
 
-interface ResponseTestCases {
-  id: string;
-  problemId: string;
-  input: any;
-  output: any;
-}
+const getAnswer = asyncHandler(async (req: Request, res: Response) => {
+  const getQuestion = req.body.getQuestion as string;
+  console.log(getQuestion);
+  if (getQuestion == "") {
+    res.status(400).send(new ApiError("Provide Question", 400, getQuestion));
+    return;
+  }
+  try {
+    const api = process.env.AiAPI;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: getQuestion,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+    const data = await response.json();
 
-interface ResponseExample {
-  id: string;
-  problemId: string;
-  inputText: string;
-  outputText: string;
-  explanation?: string;
-  img?: string;
-}
-
-interface Example {
-  problemId: string;
-  inputText: string;
-  outputText: string;
-  explanation?: string;
-  img?: string;
-}
-
-interface TestCases {
-  input: any;
-  problemId: string;
-  output: any;
-}
-
-interface Problem {
-  problemNumber: string;
-  problemId: string;
-  problemTitle: string;
-  inputText1: string;
-  inputText2?: string;
-  inputText3?: string;
-  difficulty: Difficulty;
-  likesCount: number;
-  dislikeCount: number;
-  examples: Example[];
-  testCases: TestCases[];
-  handlerFunc: ((fn: any) => boolean) | string;
-  starterFunction: string;
-}
-export {
-  Problem,
-  ResponseExample,
-  ResponseTestCases,
-  ResponseProblem,
-  Example,
-  TestCases,
-  Difficulty,
-};
-
-interface GeminiProblemResponse {
-  candidates: [
-    {
-      content: {
-        parts: [{ text: string }];
-      };
-    },
-  ];
-}
+    const getAnswer = data.candidates[0].content.parts[0].text;
+    res
+      .status(200)
+      .send(new ApiResponse(200, getAnswer, "Successfully get the answer"));
+  } catch (error: any) {
+    res
+      .status(400)
+      .send(new ApiError("Something went wrong", 400, error.error));
+    return;
+  }
+});
 
 function extractJsonFromCodeBlock(text: string): string {
   const codeBlockMatch = text.match(/```(?:json)?\n([\s\S]*?)```/);
@@ -389,4 +348,4 @@ const generateProblemArray = asyncHandler(
   }
 );
 
-export { parseDSASheet, generateProblemArray };
+export { parseDSASheet, generateProblemArray, getAnswer };

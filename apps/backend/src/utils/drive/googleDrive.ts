@@ -46,30 +46,33 @@ export class Drive {
     }
   }
 
-  async getFile(authClient: any, fileId: string, destinationPath: string) {
-    const drive = google.drive({ version: "v3", auth: authClient });
-
+  async getFileUrl(auth: any, fileId: string): Promise<string | null> {
     try {
-      const file = await drive.files.get(
+      const drive = google.drive({ version: "v3", auth });
+      console.log("responseresponseresponseresponse", "response1");
+
+      await drive.files.get({
+        fileId: fileId,
+        fields: "id, name, mimeType",
+      });
+      console.log("responseresponseresponseresponse", "response2");
+
+      const response = await drive.files.get(
         {
           fileId: fileId,
           alt: "media",
         },
-        { responseType: "stream" }
+        {
+          responseType: "stream",
+        }
       );
+      console.log("responseresponseresponseresponse", response);
+      const webViewLink = `https://drive.google.com/file/d/${response}/view`;
 
-      const dest = fs.createWriteStream(destinationPath);
-      file.data.pipe(dest);
-
-      return new Promise((resolve, reject) => {
-        dest.on("finish", () =>
-          resolve(`✅ File downloaded to ${destinationPath}`)
-        );
-        dest.on("error", (err) => reject(err));
-      });
+      return webViewLink;
     } catch (error) {
-      console.error("❌ Error downloading file:", error);
-      throw error;
+      console.error("Error getting file URL:", error);
+      return null;
     }
   }
 }

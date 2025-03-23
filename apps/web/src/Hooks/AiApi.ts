@@ -1,4 +1,4 @@
-const getAIresponse = async (message: string) => {
+export const getAIresponse = async (message: string) => {
   try {
     const url = `http://localhost:8000/api/v1/ai/get-answer`;
     const response = await fetch(url, {
@@ -10,7 +10,7 @@ const getAIresponse = async (message: string) => {
         getQuestion: message,
       }),
     });
-
+    console.log("gekki", response);
     return response;
   } catch (error) {
     console.log(error);

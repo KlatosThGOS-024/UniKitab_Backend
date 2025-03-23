@@ -7,9 +7,9 @@ import { UserResponse } from "./UserMessage";
 import { AiResponse } from "./AiMessage";
 import { useSelector } from "react-redux";
 
-import { getAIresponse } from "@/Hooks/AiApi";
 import { IRootState } from "@/store/store";
 import PdfToText from "@/utils/pdfGeneration/PdfToText";
+import { getAIresponse } from "@/Hooks/AiApi";
 
 interface ResponseProp {
   response_frm: string;
@@ -115,11 +115,13 @@ export const Input = ({
         prompt += `starting page ${StartingPageNumber} to ${EndingPageNumber} this is the bookText => ${prompt}`;
       }
       console.log(prompt);
-      // let aiResponse = ''
+
       const aiResponse = await getAIresponse(prompt);
+      //@ts-ignore
       if (aiResponse.success) {
         const aiMessage: ResponseProp = {
           response_frm: "Ai",
+          //@ts-expect-error
           response: aiResponse.data,
           responseId: "12333334",
         };

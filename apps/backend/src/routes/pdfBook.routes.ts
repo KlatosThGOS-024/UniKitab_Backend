@@ -2,7 +2,8 @@ import { Router } from "express";
 
 import {
   addPdfBookToDrive,
-  getPdfBook,
+  getPdfBookName,
+  getPdfBookUrl,
 } from "../controllers/pdfBook.controller";
 import { upload } from "../middlewares/multer.middleware";
 
@@ -19,6 +20,7 @@ pdfBookRouter.route("/pdf-add").post(
   ]),
   addPdfBookToDrive
 );
-pdfBookRouter.route("/pdf-get").post(getPdfBook);
+pdfBookRouter.route("/pdf-get").post(getPdfBookName);
+pdfBookRouter.route("/url-get").post(getPdfBookUrl);
 
 export default pdfBookRouter;

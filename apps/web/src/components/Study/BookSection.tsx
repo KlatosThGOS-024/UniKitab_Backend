@@ -2,7 +2,6 @@
 import { addFileUrl } from "@/functions/docs/file";
 import React, { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import {
   cnBooks,
@@ -11,148 +10,179 @@ import {
   DSbooks,
 } from "../../../public/constants";
 
-interface bookArray {
+// Book interface
+interface Book {
   subject: string;
   title: string;
   imgSrc: string;
   pdfPath?: string;
+  description: string;
 }
-[];
-const CrousalBooks = ({ bookArray }: { bookArray: any }) => {
+
+// Book Card Component
+const BookCard = ({ book }: { book: Book }) => {
   const dispatch = useDispatch();
+
+  const handleBookClick = async () => {
+    if (book.pdfPath) {
+      const response = await fetch(book.pdfPath);
+      const blob = await response.blob();
+      const generatedUrl = URL.createObjectURL(blob);
+      dispatch(addFileUrl(generatedUrl));
+    }
+  };
+
   return (
-    <div className="relative flex flex-col gap-9">
-      {bookArray.map((value: bookArray, index: number) => (
-        <div key={index} className="flex gap-4 w-[60%]">
-          <a
-            onClick={async () => {
-              if (value.pdfPath) {
-                const response = await fetch(value.pdfPath);
-                const blob = await response.blob();
-                const generatedUrl = URL.createObjectURL(blob);
-                dispatch(addFileUrl(generatedUrl));
+    <div className="flex flex-col rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200">
+      <a
+        onClick={handleBookClick}
+        href="/pdf/pdf-ai"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="cursor-pointer overflow-hidden"
+      >
+        <img
+          className="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-300"
+          src={book.imgSrc}
+          alt={book.title}
+        />
+      </a>
+      <div className="p-4 flex-grow border-t border-gray-200 bg-white">
+        <h3 className="text-lg font-semibold mb-1 text-gray-800">
+          {book.title}
+        </h3>
+        <p className="text-sm text-gray-500 mb-2">Category: {book.subject}</p>
+        <p className="text-sm text-gray-600 line-clamp-3">{book.description}</p>
+      </div>
+    </div>
+  );
+};
+
+const SubjectTabs = ({
+  activeSubject,
+  onSubjectChange,
+}: {
+  activeSubject: string;
+  onSubjectChange: (subject: string) => void;
+}) => {
+  const subjects = [
+    { id: "ds", name: "Data Structure", data: DSbooks },
+    { id: "csa", name: "Computer Architecture", data: csaBooks },
+    { id: "cn", name: "Computer Networks", data: cnBooks },
+    { id: "dbms", name: "Database Management System", data: dbmsBooks },
+  ];
+
+  return (
+    <div className="flex justify-center mb-8">
+      <div className="inline-flex rounded-md shadow-sm">
+        {subjects.map((subject) => (
+          <button
+            key={subject.id}
+            onClick={() => onSubjectChange(subject.name)}
+            className={`
+              px-4 py-2 text-sm font-medium 
+              ${
+                activeSubject === subject.name
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
               }
-            }}
-            href="/pdf/pdf-ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className=" h-[50%] w-[50%] cursor-pointer"
+              border border-gray-300
+              first:rounded-l-lg last:rounded-r-lg
+              transition-colors duration-200
+              focus:outline-none focus:ring-2 focus:ring-blue-300
+            `}
           >
-            <img className="w-full  h-full" src={value.imgSrc} />
-          </a>
-          <div>
-            <h2 className="text-[18px]">Category: </h2>
-            <p className="text-[28px] font-[600]">By Author:</p>
-            <p className=" text-[#76787B] text-[24px]">Book Description</p>
-          </div>
-        </div>
+            {subject.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const BooksGrid = ({ books }: { books: Book[] }) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {books.map((book, index) => (
+        <BookCard key={index} book={book} />
       ))}
     </div>
   );
 };
-interface bookArray {
-  subject: string;
-  title: string;
-  imgSrc: string;
-  pdfPath?: string;
-}
-[];
+
 export const BookSection = () => {
-  const [subjectHeader, setSubjectHeader] = useState("null");
-  const [subjectArray, setSubjectArray] = useState<bookArray[]>(dbmsBooks);
+  const [activeSubject, setActiveSubject] = useState("Data Structure");
+  const [books, setBooks] = useState<Book[]>(DSbooks);
+
+  const handleSubjectChange = (subject: string) => {
+    setActiveSubject(subject);
+
+    switch (subject) {
+      case "Data Structure":
+        setBooks(DSbooks);
+        break;
+      case "Computer Architecture":
+        setBooks(csaBooks);
+        break;
+      case "Computer Networks":
+        setBooks(cnBooks);
+        break;
+      case "Database Management System":
+        setBooks(dbmsBooks);
+        break;
+      default:
+        setBooks(DSbooks);
+    }
+  };
 
   return (
-    <section className="">
-      <div className="w-full relative">
+    <section className="bg-gray-50 pb-16">
+      <div className="relative mb-16">
+        <div className="absolute inset-0 bg-gradient-to-r opacity-90"></div>
         <img
-          className="w-full xl:h-[496px]"
+          className="w-full h-96 object-cover"
           src="https://www.studypool.com/images/notebank/backgrounds/heading-bg.jpg"
+          alt="Books Banner"
         />
-        <div className="space-y-2 absolute top-[10%] left-[25%]">
-          <h3 className="text-[26px] text-[#C3EBFC]">The Notebank</h3>
-          <p className="text-[18px] text-gray-600">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            The Notebank
+          </h1>
+          <p className="text-xl text-black max-w-2xl mb-8">
             Your go-to place for Computer Science PYQs, PDFs, and
             books—everything you need to study, all in one spot!
           </p>
-        </div>
-        <div className="xl:w-[996px] mt-7 max-lg:hidden absolute top-[20%] left-[25%] rounded-lg max-xl:w-[496px] flex items-center bg-[#FFFFFF] border-[1px] hover:shadow-[#69D4F3] hover:shadow-sm">
-          <input
-            className="placeholder:text-gray-500 placeholder:text-[18px] w-full text-black px-4 py-5 hover:outline-[#69D4F3] rounded-lg outline-none bg-[#FFFFFF]"
-            placeholder="Search study resources"
-          />
-          <div className="px-4 border-l-[1px] rounded-l-none py-2">
-            <IoSearchOutline className="font-[600] w-[21px] h-[21px] text-[#69D4F3]" />
+          <div className="relative mt-4 w-2xl  max-xl:hidden">
+            <div className="flex items-center bg-white rounded-lg overflow-hidden shadow-lg">
+              <input
+                className="w-full px-6 py-4 text-gray-700 placeholder-gray-500 focus:outline-none"
+                placeholder="Search study resources"
+                aria-label="Search study resources"
+              />
+              <button className="px-6 py-4 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 transition-colors duration-300">
+                <IoSearchOutline className="w-6 h-6 text-white" />
+              </button>
+            </div>
           </div>
+          {/* Search Bar */}
         </div>
       </div>
-      <div className="absolute right-0 mt-2 w-[200px]  shadow-lg rounded-lg p-2">
-        <div className="px-4 py-2 hover:bg-gray-200 cursor-pointer">
-          <ul className=" absolute text-center left-0.5 top-7 space-y-2 bg--300 w-full bg- text-black  ">
-            <li
-              onClick={() => {
-                setSubjectHeader("Data Structure");
-                setSubjectArray(DSbooks);
-              }}
-              className="bg-gray-200 hover:opacity-90 cursor-pointer"
-            >
-              Data Structure
-            </li>
-            <li
-              onClick={() => {
-                setSubjectHeader("Computer Architecture");
-                setSubjectArray(csaBooks);
-              }}
-              className="bg-gray-200 hover:opacity-90 cursor-pointer"
-            >
-              Computer Architecture
-            </li>
-            <li
-              onClick={() => {
-                setSubjectHeader("Computer Networks");
-                setSubjectArray(cnBooks);
-              }}
-              className="bg-gray-200 hover:opacity-90 cursor-pointer"
-            >
-              Computer Networks
-            </li>
-            <li
-              onClick={() => {
-                setSubjectHeader(" Database Management System");
-                setSubjectArray(dbmsBooks);
-              }}
-              className="bg-gray-200 hover:opacity-90 cursor-pointer"
-            >
-              Database Management System
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div className="w-[1080px] max-lg:w-[700px] max-xl:w-[900px]  max-md:w-[500px] mx-auto z-30">
-        {" "}
-        <div>
-          <h2 className="text-center text-[24px] mb-6">Data Structure</h2>
-          <CrousalBooks bookArray={subjectArray} />
-        </div>
-        {/* <div>
-          <h2 className="text-center text-[24px] mb-3">
-            Database Management System
-          </h2>
-          <CrousalBooks bookArray={dbmsBooks} />
-        </div>{" "}
-        <div>
-          <h2 className="text-center text-[24px] mb-3">
-            Computer Architecture
-          </h2>
-          <CrousalBooks bookArray={csaBooks} />
-        </div>
-        <div>
-          <h2 className="text-center text-[24px] mb-3">Computer Networks</h2>
-          <CrousalBooks bookArray={cnBooks} />
-        </div>{" "} */}
+
+      <div className="container mx-auto px-4">
+        {/* Subject Tabs */}
+        <SubjectTabs
+          activeSubject={activeSubject}
+          onSubjectChange={handleSubjectChange}
+        />
+
+        {/* Section Title */}
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+          {activeSubject} Books
+        </h2>
+
+        {/* Books Grid */}
+        <BooksGrid books={books} />
       </div>
     </section>
   );
 };
-{
-  /**/
-}

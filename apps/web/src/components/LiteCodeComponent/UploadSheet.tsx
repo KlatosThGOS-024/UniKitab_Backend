@@ -134,9 +134,8 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
     }
   };
 
-  // Don't render anything on the server side
   if (!isClient) {
-    return null; // Return minimal structure for SSR to prevent hydration mismatch
+    return null;
   }
 
   return (
@@ -192,7 +191,7 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
                 </div>
                 <button className="items-center flex gap-3 rounded-lg px-[38px] hover:opacity-90 py-[12px] text-[16px]">
                   <label className="cursor-pointer px-4 py-2 text-[#e4e4e762] rounded-lg">
-                    Upload your DSA questions file (CSV, JSON, or Excel)
+                    Upload your DSA questions file (Text, Conver Excel to Text)
                     <input
                       type="file"
                       accept=".csv,.json,.xlsx,.xls,.txt"

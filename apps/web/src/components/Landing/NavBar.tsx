@@ -6,7 +6,6 @@ import { Account } from "./SignUp";
 import { useSelector } from "react-redux";
 import { IRootState } from "@/store/store";
 import { FaRegUserCircle } from "react-icons/fa";
-import { addQtoDb } from "@/Hooks/problem";
 import { getPdfBook } from "@/Hooks/pdfBook";
 import { SearchBooks } from "./SearchBooks";
 interface propType {
@@ -72,12 +71,13 @@ export const NavBar = () => {
       )}
       <div className="flex items-center relative justify-between bg-[#111111] px-2 py-[8px] ">
         <div className="flex items-center px-4 gap-5">
-          <h2
+          <a
+            href="/home"
             className=" text-[#C34326] hover:scale-110  text-[28px]
           transition-all duration-200 ease-in-out"
           >
             Uni<span className="text-[#A4A4A4]">Kitab</span>
-          </h2>
+          </a>
           <div className="">
             <SearchBar />
           </div>
@@ -148,9 +148,12 @@ export const NavBar = () => {
           {showModal && (
             <div className="bg-white z-20  absolute left-0 -bottom-[184px] right-0  ">
               <ul className="flex flex-col text-start gap-7 px-3 text-[18px]">
-                <li className="hover:text-[#69D4F3] cursor-pointer font-[500] text-[#423e3e]">
-                  Sell Docs
-                </li>
+                <a href="/document">
+                  {" "}
+                  <li className="hover:text-[#69D4F3]  cursor-pointer font-[500] text-[#423e3e]">
+                    Educators
+                  </li>
+                </a>
                 <li className="hover:text-[#69D4F3]  cursor-pointer font-[500] text-[#423e3e]">
                   Educators
                 </li>

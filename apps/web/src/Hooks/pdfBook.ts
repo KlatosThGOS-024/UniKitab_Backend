@@ -1,11 +1,9 @@
 export const addPdfBook = async ({
   file,
-
   imgSrc,
   fileId,
 }: {
   file: File;
-
   imgSrc: string;
   fileId: string;
 }) => {
@@ -40,5 +38,28 @@ export const getPdfBook = async (search: string) => {
     return data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const fetchPdfUrl = async (fileId: string) => {
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/book/url-get`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileId }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch PDF URL");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching PDF URL:", error);
+    throw error;
   }
 };

@@ -4,70 +4,33 @@ import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { FaNetworkWired } from "react-icons/fa";
 import { SiBmcsoftware } from "react-icons/si";
 import { useState } from "react";
-const allSub = [
-  "Business",
-  "Humanities",
-  "Mathematics",
-  "Programming",
-  "Science",
-  "Writing",
-  "Health & Medical",
-  "Economics",
-  "Engineering",
-  "Computer Science",
-  "Law",
-  "Foreign Languages",
-];
-const softwareEngineerSub = [
-  "Mathematics",
-  "Programming",
-  "Computer Science",
-  "Engineering",
-  "Science",
-  "Algorithms",
-  "Data Structures",
-  "Software Design",
-  "Operating Systems",
-  "Database Management",
-  "Cybersecurity",
-  "Cloud Computing",
-];
-const networkEngineerSub = [
-  "Mathematics",
-  "Engineering",
-  "Computer Science",
-  "Networking",
-  "Network Security",
-  "Telecommunications",
-  "Routing & Switching",
-  "Wireless Communication",
-  "Cloud Networking",
-  "Network Protocols",
-  "Internet of Things (IoT)",
-  "Cybersecurity",
-];
+import Link from "next/link";
+import {
+  allSub,
+  networkEngineerSub,
+  softwareEngineerSub,
+} from "../../../public/constants";
 
-const HoveredSubjects = ({
-  Subjects,
-  prefix,
-}: {
-  Subjects: string[];
-  prefix: string;
-}) => {
+interface Subject {
+  subName: string;
+  subPath: string;
+}
+const HoveredSubjects = ({ Subjects }: { Subjects: Subject[] }) => {
   return (
     <div>
       <ul>
         {Subjects.map((sub, index) => {
-          const key = `${prefix}-${index}-${sub}`;
-
           return (
-            <li
-              key={`${prefix}-${index}-${sub}`}
-              className="flex cursor-pointer items-center justify-between gap-x-[64px] my-2 hover:text-[#33BFFA] flex-nowrap"
+            <Link
+              href={`/study/${sub.subPath.replace(/\s+/g, "-")}`}
+              key={index}
             >
-              <span className="">{sub}</span>
-              <FaChevronRight />
-            </li>
+              {" "}
+              <li className="flex cursor-pointer items-center justify-between gap-x-[64px] my-2 hover:text-[#33BFFA] flex-nowrap">
+                <span className="">{sub.subName}</span>
+                <FaChevronRight />
+              </li>
+            </Link>
           );
         })}
       </ul>
@@ -119,7 +82,7 @@ export const Navigation = () => {
             {showModalOne && (
               <div className="absolute z-40 px-4 py-1 rounded-lg bg-white top-[38px] ">
                 {" "}
-                <HoveredSubjects Subjects={allSub} prefix="allSub" />
+                <HoveredSubjects Subjects={allSub} />
               </div>
             )}
           </li>
@@ -139,10 +102,7 @@ export const Navigation = () => {
             {showModalTwo && (
               <div className="absolute z-40 px-4 py-1 rounded-lg bg-white top-[38px] ">
                 {" "}
-                <HoveredSubjects
-                  Subjects={softwareEngineerSub}
-                  prefix="softwareEngineerSub"
-                />
+                <HoveredSubjects Subjects={softwareEngineerSub} />
               </div>
             )}
           </li>
@@ -162,10 +122,7 @@ export const Navigation = () => {
             {showModalThree && (
               <div className="absolute z-40 px-4 py-1 rounded-lg bg-white top-[38px] ">
                 {" "}
-                <HoveredSubjects
-                  prefix="networkEngineerSub"
-                  Subjects={networkEngineerSub}
-                />
+                <HoveredSubjects Subjects={networkEngineerSub} />
               </div>
             )}
           </li>

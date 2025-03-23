@@ -40,7 +40,7 @@ const addPdfBookToDrive = asyncHandler(async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to upload PDF", error });
   }
 });
-const getPdfBook = asyncHandler(async (req: Request, res: Response) => {
+const getPdfBookName = asyncHandler(async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
 
@@ -65,4 +65,46 @@ const getPdfBook = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-export { addPdfBookToDrive, getPdfBook };
+const getPdfBookUrl = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    const { fileId } = req.body;
+    if (!fileId) {
+      res.status(400).json({ message: "File ID parameter is required" });
+    }
+
+    const pdfBook = await prisma.pdfBook.findFirst({
+      where: {
+        fileId: fileId,
+      },
+    });
+
+    if (!pdfBook) {
+      res.status(400).json({ message: "PDF book not found" });
+    }
+
+    const drive = new Drive();
+    const authClient = await drive.authorize();
+
+    const fileUrl = await drive.getFileUrl(authClient, fileId);
+    console.log("fileUrlfileUrlfileUrl", fileUrl);
+    if (!fileUrl) {
+      res.status(400).json({ message: "Failed to get file URL" });
+    }
+    console.log("fileUrlfileUrlfileUrl", "dff");
+
+    res.json({
+      message: "PDF URL retrieved successfully!",
+      data: {
+        downloadUrl: fileUrl,
+      },
+    });
+  } catch (error) {
+    console.error("Error getting PDF URL:", error);
+    res.status(500).json({
+      message: "Failed to get PDF URL",
+      error: String(error),
+    });
+  }
+});
+
+export { addPdfBookToDrive, getPdfBookName, getPdfBookUrl };
