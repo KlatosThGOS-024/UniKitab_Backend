@@ -9,6 +9,8 @@ import {
   dbmsBooks,
   DSbooks,
 } from "../../../public/constants";
+import { getPdfBook } from "@/Hooks/pdfBook";
+import { SearchBooks } from "../Landing/SearchBooks";
 
 interface Book {
   subject: string;
@@ -107,10 +109,18 @@ const BooksGrid = ({ books }: { books: Book[] }) => {
     </div>
   );
 };
-
+interface propType {
+  id: string;
+  bookFrontImgSrc: string;
+  fileId: string;
+  name: string;
+  createdAt: Date;
+}
 export const BookSection = () => {
   const [activeSubject, setActiveSubject] = useState("Data Structure");
   const [books, setBooks] = useState<Book[]>(DSbooks);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchProp, setSearchProp] = useState<propType[]>([]);
 
   const handleSubjectChange = (subject: string) => {
     setActiveSubject(subject);
@@ -132,7 +142,10 @@ export const BookSection = () => {
         setBooks(DSbooks);
     }
   };
-
+  const onSearchHandler = async (e: any) => {
+    const data = await getPdfBook(e.target.value);
+    setSearchProp(data.getPDf);
+  };
   return (
     <section className="bg-gray-50 pb-16">
       <div className="relative mb-16">
@@ -153,10 +166,19 @@ export const BookSection = () => {
           <div className="relative mt-4 w-2xl  max-xl:hidden">
             <div className="flex items-center bg-white rounded-lg overflow-hidden shadow-lg">
               <input
+                onChange={(e) => {
+                  setShowSearch(!showSearch);
+                  return onSearchHandler(e);
+                }}
                 className="w-full px-6 py-4 text-gray-700 placeholder-gray-500 focus:outline-none"
                 placeholder="Search study resources"
                 aria-label="Search study resources"
               />
+              {showSearch && (
+                <div className=" w-full border-t-[1px]  break-words z-50  absolute top-11">
+                  <SearchBooks searchProp={searchProp} />
+                </div>
+              )}
               <button className="px-6 py-4 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 transition-colors duration-300">
                 <IoSearchOutline className="w-6 h-6 text-white" />
               </button>
@@ -184,3 +206,6 @@ export const BookSection = () => {
     </section>
   );
 };
+function setSearchProp(getPDf: any) {
+  throw new Error("Function not implemented.");
+}

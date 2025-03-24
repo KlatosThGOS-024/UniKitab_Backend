@@ -17,7 +17,7 @@ const logInUser = async (params: { username: string; password: string }) => {
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
+
     body: JSON.stringify(params),
   });
   return response.json();

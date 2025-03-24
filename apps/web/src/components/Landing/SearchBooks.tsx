@@ -37,10 +37,8 @@ export const SearchBooks = ({ searchProp }: { searchProp: propType[] }) => {
       const response = await fetchPdfUrl(fileid);
 
       const fileUrl = response.data.downloadUrl;
-      console.log(fileUrl);
-      handleBookClick(fileUrl);
 
-      router.push("/pdf/pdf-ai");
+      handleBookClick(fileUrl);
     } catch (error) {
       console.error("Error fetching PDF URL:", error);
     }

@@ -1,10 +1,8 @@
-// In AiMessage.tsx
 import { useEffect, useState } from "react";
 
 export const AiResponse = ({ message }: { message: string }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
-  console.log("message", message);
   useEffect(() => {
     let index = 0;
     setDisplayedText("");
@@ -18,7 +16,7 @@ export const AiResponse = ({ message }: { message: string }) => {
         clearInterval(interval);
         setIsTypingComplete(true);
       }
-    }, 20); // You can increase this to 30-50ms for better performance
+    }, 20);
 
     return () => clearInterval(interval);
   }, [message]);

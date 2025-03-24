@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoIosOptions } from "react-icons/io";
 import { Account } from "./SignUp";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "@/store/store";
 import { FaRegUserCircle } from "react-icons/fa";
 import { getPdfBook } from "@/Hooks/pdfBook";
 import { SearchBooks } from "./SearchBooks";
+import { logOutUser } from "@/Hooks/userApi";
+
 interface propType {
   id: string;
   bookFrontImgSrc: string;
@@ -49,19 +51,35 @@ const SearchBar = () => {
 };
 
 export const NavBar = () => {
+  const dispatch = useDispatch();
   const isLoggedIn = useSelector(
     (state: IRootState) => state.userAccountReducer.userLoggedIn
   );
 
   const [showProfile, setShowProfile] = useState(false);
-
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+
   const showModalSignUp = () => {
     setShowModal2(!showModal2);
   };
+
   const showMenuModal = () => {
     setShowModal(!showModal);
+  };
+
+  const handleLogout = () => {
+    logOutUser();
+    localStorage.removeItem("accessToken");
+
+    document.cookie =
+      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    localStorage.removeItem("user");
+
+    setShowProfile(false);
+
+    window.location.href = "/home";
   };
 
   return (
@@ -82,6 +100,7 @@ export const NavBar = () => {
             <SearchBar />
           </div>
         </div>
+
         <div className=" items-center px-4 max-md:hidden  flex gap-6 ">
           <ul className="flex gap-7 items-center text-[18px]">
             <li className="hover:text-[#69D4F3] font-[500] text-[#423e3e]">
@@ -125,12 +144,11 @@ export const NavBar = () => {
                   <span>Profile</span>
                   <span>Complaint</span>
                   <button
+                    onClick={handleLogout}
                     className=" rounded-full transition-all duration-150
-                     ease-out
-            
-              px-4 text-[18px] font-[500] 
-               py-2 bg-[#EC497D] text-white
-           hover:bg-[#645656] hover:text-[#EC497D]"
+                     ease-out px-4 text-[18px] font-[500] 
+                     py-2 bg-[#EC497D] text-white
+                     hover:bg-[#645656] hover:text-[#EC497D]"
                   >
                     LogOut
                   </button>
@@ -149,31 +167,33 @@ export const NavBar = () => {
             <div className="bg-white z-20  absolute left-0 -bottom-[184px] right-0  ">
               <ul className="flex flex-col text-start gap-7 px-3 text-[18px]">
                 <a href="/document">
-                  {" "}
-                  <li className="hover:text-[#69D4F3]  cursor-pointer font-[500] text-[#423e3e]">
-                    Educators
+                  <li className="hover:text-[#69D4F3] cursor-pointer font-[500] text-[#423e3e]">
+                    Sell Docs
                   </li>
                 </a>
-                <li className="hover:text-[#69D4F3]  cursor-pointer font-[500] text-[#423e3e]">
+                <li className="hover:text-[#69D4F3] cursor-pointer font-[500] text-[#423e3e]">
                   Educators
                 </li>
-                <li
-                  className="  transition-all duration-150 ease-out
-             max-md:block md:hidden text-[18px] font-[500] 
-              text-black cursor-pointer
-            hover:text-[#EC497D]"
-                >
-                  Sign Up
-                </li>{" "}
-                <li
-                  className="  transition-all duration-150 ease-out
-             max-md:block md:hidden text-[18px] font-[500]  cursor-pointer
-              text-black
-            hover:text-[#EC497D]"
-                >
-                  LogOut
-                </li>
-              </ul>{" "}
+                {!isLoggedIn ? (
+                  <li
+                    onClick={showModalSignUp}
+                    className="transition-all duration-150 ease-out
+                    max-md:block md:hidden text-[18px] font-[500] 
+                    text-black cursor-pointer hover:text-[#EC497D]"
+                  >
+                    Sign Up
+                  </li>
+                ) : (
+                  <li
+                    onClick={handleLogout}
+                    className="transition-all duration-150 ease-out
+                    max-md:block md:hidden text-[18px] font-[500] cursor-pointer
+                    text-black hover:text-[#EC497D]"
+                  >
+                    LogOut
+                  </li>
+                )}
+              </ul>
             </div>
           )}
         </div>

@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import { useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 
 const images = [
   "https://www.studypool.com/img/backgrounds/homepage_bg_v2/splash_4.jpg",
@@ -20,7 +22,20 @@ export const HeroSection = () => {
 
     setTimeout(() => setIsTransitioning(false), 500);
   }, [isTransitioning]);
+  const searchParams = useSearchParams();
 
+  useEffect(() => {
+    if (searchParams?.get("authRequired") === "true") {
+      toast.info("Please log in to access that page", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  }, [searchParams]);
   const prevSlide = useCallback(() => {
     if (isTransitioning) return;
 
