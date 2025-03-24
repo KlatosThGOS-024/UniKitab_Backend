@@ -3,7 +3,7 @@ import { fetchPdfUrl } from "@/Hooks/pdfBook";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addFileUrl } from "@/functions/docs/file";
-import { useRouter } from "next/navigation"; // Changed from 'next/router'
+import { useRouter } from "next/navigation";
 
 interface propType {
   id: string;
@@ -35,10 +35,10 @@ export const SearchBooks = ({ searchProp }: { searchProp: propType[] }) => {
 
     try {
       const response = await fetchPdfUrl(fileid);
-
       const fileUrl = response.data.downloadUrl;
-
-      handleBookClick(fileUrl);
+      const pdfEndpoint = `http://localhost:8000/${fileUrl}`;
+      console.log(fileUrl);
+      handleBookClick(pdfEndpoint);
     } catch (error) {
       console.error("Error fetching PDF URL:", error);
     }
@@ -52,17 +52,22 @@ export const SearchBooks = ({ searchProp }: { searchProp: propType[] }) => {
             onClick={() => {
               onClickHandler(value.fileId);
             }}
-            className="bg-white w-full cursor-pointer gap-4 rounded-lg mb-1 flex items-center px-3 py-4"
             key={index}
           >
-            <img
-              src={value.bookFrontImgSrc}
-              alt={value.name}
-              className="h-16 w-16"
-            />
-            <p className="text-black break-words text-lg overflow-hidden">
-              {value.name}
-            </p>
+            <a
+              href="/pdf/pdf-ai"
+              className="bg-white w-full cursor-pointer gap-4 rounded-lg mb-1 flex items-center px-3 py-4"
+            >
+              {" "}
+              <img
+                src={value.bookFrontImgSrc}
+                alt={value.name}
+                className="h-16 w-16"
+              />
+              <p className="text-black break-words text-lg overflow-hidden">
+                {value.name}
+              </p>
+            </a>
           </div>
         );
       })}

@@ -193,4 +193,4 @@ const loginCheck = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-export { userRegister, userLogin, userLogout, getProfile };
+export { userRegister, userLogin, userLogout, getProfile, loginCheck };

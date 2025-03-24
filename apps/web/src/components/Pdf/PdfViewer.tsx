@@ -16,20 +16,17 @@ export const PdfViewer = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fileUrl = useSelector((state: IRootState) => {
-    console.log("File URL from state:", state.fileReducer.FileUrl);
     return state.fileReducer.FileUrl;
   });
+  console.log("Loading PDF from:", fileUrl);
 
   useEffect(() => {
     if (!fileUrl) return;
 
     try {
-      // Use the full URL directly without a proxy
-      // This relies on your backend CORS being properly set up
-      const pdfEndpoint = `http://localhost:8000/${fileUrl}`;
-      console.log("Loading PDF from:", pdfEndpoint);
+      console.log("Loading PDF from2:", fileUrl);
 
-      setPdfUrl(pdfEndpoint);
+      setPdfUrl(fileUrl);
       setLoading(false);
     } catch (err) {
       console.error("Error setting up PDF viewer:", err);

@@ -9,6 +9,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { getPdfBook } from "@/Hooks/pdfBook";
 import { SearchBooks } from "./SearchBooks";
 import { logOutUser } from "@/Hooks/userApi";
+import { authenticated } from "@/functions/userAccount/User";
 
 interface propType {
   id: string;
@@ -71,6 +72,7 @@ export const NavBar = () => {
   const handleLogout = () => {
     logOutUser();
     localStorage.removeItem("accessToken");
+    dispatch(authenticated({ userLoggedIn: false }));
 
     document.cookie =
       "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -96,7 +98,7 @@ export const NavBar = () => {
           >
             Uni<span className="text-[#A4A4A4]">Kitab</span>
           </a>
-          <div className="">
+          <div>
             <SearchBar />
           </div>
         </div>

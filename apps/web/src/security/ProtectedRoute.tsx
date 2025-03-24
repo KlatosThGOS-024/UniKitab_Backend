@@ -1,30 +1,31 @@
-// // src/security/ProtectedRoute.tsx
-// "use client"; // Ensures client-side execution
+import { logInCheck } from "@/Hooks/userApi";
+import { useEffect, useState } from "react";
 
-// import { useEffect } from "react";
-// import { useRouter } from "next/router";
-// import { useSelector } from "react-redux";
-// import { IRootState } from "@/store/store";
+const useAuthCheck = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-// const withAuth = (WrappedComponent: React.FC) => {
-//   return (props: any) => {
-//     const router = useRouter();
-//     const isLoggedIn = useSelector(
-//       (state: IRootState) => state.userAccountSlice.userLoggedIn
-//     );
+  useEffect(() => {
+    const checkUserLogin = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
 
-//     useEffect(() => {
-//       if (!isLoggedIn) {
-//         router.push("/home"); // Redirect to home if not logged in
-//       }
-//     }, [isLoggedIn]);
+      try {
+        const response = await logInCheck(token);
+        if (response.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Login check failed:", error);
+        setIsAuthenticated(false);
+      }
+    };
 
-//     if (!isLoggedIn) {
-//       return <div>Loading...</div>;
-//     }
+    checkUserLogin();
+  }, []);
 
-//     return <WrappedComponent {...props} />;
-//   };
-// };
+  return isAuthenticated;
+};
 
-// export default withAuth;
+export default useAuthCheck;

@@ -1,5 +1,5 @@
 "use client";
-import { addAccount } from "@/functions/userAccount/User";
+import { addAccount, authenticated } from "@/functions/userAccount/User";
 import { createAccount, logInUser } from "@/Hooks/userApi";
 import React, { useState } from "react";
 import { MdEmail, MdOutlineCancel, MdLock, MdPerson } from "react-icons/md";
@@ -82,6 +82,7 @@ export const Account = ({
               userLoggedIn: true,
             })
           );
+          dispatch(authenticated({ userLoggedIn: true }));
 
           toast.success("Successfully logged in", {
             position: "top-right",

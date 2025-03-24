@@ -54,7 +54,7 @@ export const fetchPdfUrl = async (fileId: string) => {
     }
 
     const data = await response.json();
-    console.log(data);
+    console.log(data.data.downloadUrl);
     return data;
   } catch (error) {
     console.error("Error fetching PDF URL:", error);

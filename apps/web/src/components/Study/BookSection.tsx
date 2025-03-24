@@ -9,7 +9,7 @@ import {
   dbmsBooks,
   DSbooks,
 } from "../../../public/constants";
-import { getPdfBook } from "@/Hooks/pdfBook";
+import { fetchPdfUrl, getPdfBook } from "@/Hooks/pdfBook";
 import { SearchBooks } from "../Landing/SearchBooks";
 
 interface Book {
@@ -121,7 +121,22 @@ export const BookSection = () => {
   const [books, setBooks] = useState<Book[]>(DSbooks);
   const [showSearch, setShowSearch] = useState(false);
   const [searchProp, setSearchProp] = useState<propType[]>([]);
+  const [mounted, setMounted] = useState(false);
+  const handleBookClick = (url: string) => {
+    dispatch(addFileUrl(url));
+  };
+  const onClickHandler = async (fileid: string) => {
+    if (!mounted) return;
 
+    try {
+      const response = await fetchPdfUrl(fileid);
+      const fileUrl = response.data.downloadUrl;
+      const pdfEndpoint = `http://localhost:8000/${fileUrl}`;
+      handleBookClick(pdfEndpoint);
+    } catch (error) {
+      console.error("Error fetching PDF URL:", error);
+    }
+  };
   const handleSubjectChange = (subject: string) => {
     setActiveSubject(subject);
 
@@ -207,5 +222,8 @@ export const BookSection = () => {
   );
 };
 function setSearchProp(getPDf: any) {
+  throw new Error("Function not implemented.");
+}
+function dispatch(arg0: { payload: any; type: "File/addFileUrl" }) {
   throw new Error("Function not implemented.");
 }

@@ -38,12 +38,20 @@ const createAccount = async (params: {
   });
   return response;
 };
-const logInCheck = async () => {
-  const response = await fetch("http://localhost:8000/api/v1/user/loginCheck", {
-    method: "GET",
-    credentials: "include",
-  });
-  return response;
+const logInCheck = async (token: string) => {
+  const response = await fetch(
+    "http://localhost:8000/api/v1/user//login-check",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.json();
 };
 const getUserProfile = async () => {
   const token = localStorage.getItem("accessToken");

@@ -19,9 +19,7 @@ import { QuestionReducer } from "@/functions/dsaQuestions/question";
 import { codeTestResultsReducer } from "@/functions/code/code";
 
 const logger = (store: any) => (next: any) => (action: any) => {
-  // console.log("dispatching", action);
   let result = next(action);
-  //.log("next state", store.getState());
   return result;
 };
 
@@ -29,7 +27,6 @@ const indexedDBStorage = createIndexedDBStorage("myIndexedDB", "myDataStore");
 
 const debugStorage = {
   getItem: async (key: any) => {
-    //.log("Getting from storage:", key);
     try {
       const result = await indexedDBStorage.getItem(key);
       return result;
@@ -39,10 +36,8 @@ const debugStorage = {
     }
   },
   setItem: async (key: any, value: any) => {
-    // console.log("Setting to storage:", key, value);
     try {
       const result = await indexedDBStorage.setItem(key, value);
-      //   console.log("Set to storage successfully:", key);
       return result;
     } catch (error) {
       console.error("Error setting to storage:", key, error);
@@ -50,10 +45,8 @@ const debugStorage = {
     }
   },
   removeItem: async (key: any) => {
-    //  console.log("Removing from storage:", key);
     try {
       const result = await indexedDBStorage.removeItem(key);
-      //   console.log("Removed from storage successfully:", key);
       return result;
     } catch (error) {
       console.error("Error removing from storage:", key, error);
@@ -89,10 +82,6 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }).concat(logger),
-});
-
-export const persistor = persistStore(store, null, () => {
-  console.log("Rehydration complete. Current state:", store.getState());
 });
 
 export type IRootState = ReturnType<typeof store.getState>;

@@ -1,8 +1,11 @@
 import { createSlice, PayloadAction, nanoid } from "@reduxjs/toolkit";
 interface UserAccount {
-  username: string;
+  username?: string;
   userLoggedIn: boolean;
-  email: string;
+  email?: string;
+}
+interface auth {
+  userLoggedIn: boolean;
 }
 
 const initialStateOfUserAccount: UserAccount = {
@@ -24,9 +27,13 @@ export const userAccountSlicer = createSlice({
       state.username = "";
       state.userLoggedIn = false;
     },
+    authenticated: (state, action: PayloadAction<UserAccount>) => {
+      state.userLoggedIn = action.payload.userLoggedIn;
+    },
   },
 });
 
-export const { addAccount, removeAccount } = userAccountSlicer.actions;
+export const { addAccount, authenticated, removeAccount } =
+  userAccountSlicer.actions;
 
 export const userAccountReducer = userAccountSlicer.reducer;
