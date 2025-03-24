@@ -4,16 +4,22 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addFileUrl } from "@/functions/docs/file";
 import { useRouter } from "next/navigation";
+import {
+  cnBooks,
+  csaBooks,
+  dbmsBooks,
+  DSbooks,
+} from "../../../public/constants";
 
-interface propType {
-  id: string;
-  bookFrontImgSrc: string;
+interface Book {
   fileId: string;
-  name: string;
-  createdAt: Date;
-}
+  subject: string;
+  title: string;
+  imgSrc: string;
 
-export const SearchBooks = ({ searchProp }: { searchProp: propType[] }) => {
+  description: string;
+}
+export const SearchBooks = ({ searchProp }: { searchProp: Book[] }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -22,55 +28,40 @@ export const SearchBooks = ({ searchProp }: { searchProp: propType[] }) => {
     setMounted(true);
   }, []);
 
-  const handleBookClick = (url: string) => {
-    dispatch(addFileUrl(url));
-  };
-
-  if (!searchProp?.length) {
-    return null;
-  }
-
-  const onClickHandler = async (fileid: string) => {
+  const handleBookClick = async (fileid: string) => {
     if (!mounted) return;
 
     try {
       const response = await fetchPdfUrl(fileid);
       const fileUrl = response.data.downloadUrl;
       const pdfEndpoint = `http://localhost:8000/${fileUrl}`;
-      console.log(fileUrl);
-      handleBookClick(pdfEndpoint);
+
+      dispatch(addFileUrl(pdfEndpoint));
+
+      router.push("/pdf/pdf-ai");
     } catch (error) {
       console.error("Error fetching PDF URL:", error);
     }
   };
 
+  if (!searchProp?.length) {
+    return null;
+  }
+
   return (
     <div className="border-b-[1px] rounded-lg break-words">
-      {searchProp.map((value: propType, index: number) => {
-        return (
-          <div
-            onClick={() => {
-              onClickHandler(value.fileId);
-            }}
-            key={index}
-          >
-            <a
-              href="/pdf/pdf-ai"
-              className="bg-white w-full cursor-pointer gap-4 rounded-lg mb-1 flex items-center px-3 py-4"
-            >
-              {" "}
-              <img
-                src={value.bookFrontImgSrc}
-                alt={value.name}
-                className="h-16 w-16"
-              />
-              <p className="text-black break-words text-lg overflow-hidden">
-                {value.name}
-              </p>
-            </a>
-          </div>
-        );
-      })}
+      {searchProp.map((value: Book, index: number) => (
+        <div
+          key={index}
+          onClick={() => handleBookClick(value.fileId)}
+          className="bg-white w-full cursor-pointer gap-4 rounded-lg mb-1 flex items-center px-3 py-4"
+        >
+          <img src={value.imgSrc} alt={value.title} className="h-16 w-16" />
+          <p className="text-black break-words text-lg overflow-hidden">
+            {value.title}
+          </p>
+        </div>
+      ))}
     </div>
   );
 };

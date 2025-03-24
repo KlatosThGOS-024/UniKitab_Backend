@@ -11,16 +11,17 @@ import { SearchBooks } from "./SearchBooks";
 import { logOutUser } from "@/Hooks/userApi";
 import { authenticated } from "@/functions/userAccount/User";
 
-interface propType {
-  id: string;
-  bookFrontImgSrc: string;
+interface Book {
   fileId: string;
-  name: string;
-  createdAt: Date;
+  subject: string;
+  title: string;
+  imgSrc: string;
+
+  description: string;
 }
 const SearchBar = () => {
   const [showSearch, setShowSearch] = useState(false);
-  const [searchProp, setSearchProp] = useState<propType[]>([]);
+  const [searchProp, setSearchProp] = useState<Book[]>([]);
   const onSearchHandler = async (e: any) => {
     const data = await getPdfBook(e.target.value);
     console.log(data.getPDf);

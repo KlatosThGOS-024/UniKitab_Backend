@@ -1,6 +1,6 @@
 "use client";
 import { addFileUrl } from "@/functions/docs/file";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import {
@@ -11,6 +11,7 @@ import {
 } from "../../../public/constants";
 import { fetchPdfUrl, getPdfBook } from "@/Hooks/pdfBook";
 import { SearchBooks } from "../Landing/SearchBooks";
+import router from "next/router";
 
 interface Book {
   subject: string;
@@ -19,24 +20,75 @@ interface Book {
   pdfPath?: string;
   description: string;
 }
-
 const BookCard = ({ book }: { book: Book }) => {
+  const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleBookClick = async () => {
-    if (book.pdfPath) {
-      const response = await fetch(book.pdfPath);
-      const blob = await response.blob();
-      const generatedUrl = URL.createObjectURL(blob);
-      dispatch(addFileUrl(generatedUrl));
+    // Check if book has a fileId
+    if (!book.fileId) {
+      console.warn("No fileId available for this book");
+      return;
+    }
+
+    if (!mounted) return;
+
+    try {
+      // Start loading
+      setIsLoading(true);
+
+      const response = await fetchPdfUrl(book.fileId);
+      const fileUrl = response.data.downloadUrl;
+      const pdfEndpoint = `http://localhost:8000/${fileUrl}`;
+
+      dispatch(addFileUrl(pdfEndpoint));
+
+      // Navigate after a short delay to ensure loading state is visible
+      setTimeout(() => {
+        router.push("/pdf/pdf-ai");
+      }, 500);
+    } catch (error) {
+      console.error("Error fetching PDF URL:", error);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200">
+    <div
+      className="flex flex-col rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200 relative"
+      onClick={handleBookClick}
+    >
+      {/* Loader Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div role="status">
+            <svg
+              aria-hidden="true"
+              className="w-10 h-10 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      )}
+
       <a
-        onClick={handleBookClick}
-        href="/pdf/pdf-ai"
         target="_blank"
         rel="noopener noreferrer"
         className="cursor-pointer overflow-hidden"
@@ -109,34 +161,54 @@ const BooksGrid = ({ books }: { books: Book[] }) => {
     </div>
   );
 };
-interface propType {
-  id: string;
-  bookFrontImgSrc: string;
+interface Book {
   fileId: string;
-  name: string;
-  createdAt: Date;
+  subject: string;
+  title: string;
+  imgSrc: string;
+
+  description: string;
 }
 export const BookSection = () => {
   const [activeSubject, setActiveSubject] = useState("Data Structure");
   const [books, setBooks] = useState<Book[]>(DSbooks);
   const [showSearch, setShowSearch] = useState(false);
-  const [searchProp, setSearchProp] = useState<propType[]>([]);
-  const [mounted, setMounted] = useState(false);
-  const handleBookClick = (url: string) => {
-    dispatch(addFileUrl(url));
-  };
-  const onClickHandler = async (fileid: string) => {
-    if (!mounted) return;
-
-    try {
-      const response = await fetchPdfUrl(fileid);
-      const fileUrl = response.data.downloadUrl;
-      const pdfEndpoint = `http://localhost:8000/${fileUrl}`;
-      handleBookClick(pdfEndpoint);
-    } catch (error) {
-      console.error("Error fetching PDF URL:", error);
+  const [searchProp, setSearchProp] = useState<Book[]>([]);
+  const searchBook = (inputWord: string) => {
+    setShowSearch(!true);
+    if (inputWord !== "") {
+      const allBooks = [...DSbooks, ...dbmsBooks, ...cnBooks, ...csaBooks];
+      setShowSearch(true);
+      const result = allBooks.filter((book) =>
+        book.title.toLowerCase().startsWith(inputWord.toLowerCase())
+      );
+      setSearchProp(result);
+      return (
+        <div className="flex h-screen relative justify-center items-center">
+          <div role="status" className=" z-50  absolute ">
+            <svg
+              aria-hidden="true"
+              className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      );
     }
   };
+
   const handleSubjectChange = (subject: string) => {
     setActiveSubject(subject);
 
@@ -157,10 +229,7 @@ export const BookSection = () => {
         setBooks(DSbooks);
     }
   };
-  const onSearchHandler = async (e: any) => {
-    const data = await getPdfBook(e.target.value);
-    setSearchProp(data.getPDf);
-  };
+
   return (
     <section className="bg-gray-50 pb-16">
       <div className="relative mb-16">
@@ -182,8 +251,7 @@ export const BookSection = () => {
             <div className="flex items-center bg-white rounded-lg overflow-hidden shadow-lg">
               <input
                 onChange={(e) => {
-                  setShowSearch(!showSearch);
-                  return onSearchHandler(e);
+                  searchBook(e.target.value);
                 }}
                 className="w-full px-6 py-4 text-gray-700 placeholder-gray-500 focus:outline-none"
                 placeholder="Search study resources"
@@ -199,31 +267,21 @@ export const BookSection = () => {
               </button>
             </div>
           </div>
-          {/* Search Bar */}
         </div>
       </div>
 
       <div className="container mx-auto px-4">
-        {/* Subject Tabs */}
         <SubjectTabs
           activeSubject={activeSubject}
           onSubjectChange={handleSubjectChange}
         />
 
-        {/* Section Title */}
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
           {activeSubject} Books
         </h2>
 
-        {/* Books Grid */}
         <BooksGrid books={books} />
       </div>
     </section>
   );
 };
-function setSearchProp(getPDf: any) {
-  throw new Error("Function not implemented.");
-}
-function dispatch(arg0: { payload: any; type: "File/addFileUrl" }) {
-  throw new Error("Function not implemented.");
-}
