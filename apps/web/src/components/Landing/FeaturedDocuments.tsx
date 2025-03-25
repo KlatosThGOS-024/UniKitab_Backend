@@ -1,31 +1,32 @@
+import Image from "next/image";
 import React from "react";
 
 const services = [
   {
     imgSrc:
-      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=005e3e68365fe460000000003%252F20250323%252Fus-east-005%252Fs3%252Faws4_request&X-Amz-Date=20250323T122109Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=d6de487e0b4c2f4466756d07e7605170cb31529b6f8c97d77989f71065e6895c",
+      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png",
     title: "Featured Document 1",
   },
   {
     imgSrc:
-      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=005e3e68365fe460000000003%252F20250323%252Fus-east-005%252Fs3%252Faws4_request&X-Amz-Date=20250323T122109Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=d6de487e0b4c2f4466756d07e7605170cb31529b6f8c97d77989f71065e6895c",
+      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png",
     title: "Featured Document 2",
   },
   {
     imgSrc:
-      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=005e3e68365fe460000000003%252F20250323%252Fus-east-005%252Fs3%252Faws4_request&X-Amz-Date=20250323T122109Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=d6de487e0b4c2f4466756d07e7605170cb31529b6f8c97d77989f71065e6895c",
+      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png",
     title: "Featured Document 3",
   },
   {
     imgSrc:
-      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=005e3e68365fe460000000003%252F20250323%252Fus-east-005%252Fs3%252Faws4_request&X-Amz-Date=20250323T122109Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=d6de487e0b4c2f4466756d07e7605170cb31529b6f8c97d77989f71065e6895c",
+      "https://s3.us-east-005.backblazeb2.com/sp-uploads/uploads/services/588776/20191203163751revised_simulations_thumbnail.png",
     title: "Featured Document 4",
   },
 ];
 
 export const FeaturedDocuments = () => {
   return (
-    <div className="py-12 bg-gray-5">
+    <div className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
@@ -42,11 +43,13 @@ export const FeaturedDocuments = () => {
               key={index}
               className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1"
             >
-              <div className="h-48 w-full overflow-hidden">
-                <img
+              <div className="h-48 w-full relative overflow-hidden">
+                <Image
                   src={document.imgSrc}
                   alt={document.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
                 />
               </div>
               <div className="p-4">

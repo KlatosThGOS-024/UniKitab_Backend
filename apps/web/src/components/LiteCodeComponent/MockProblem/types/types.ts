@@ -8,15 +8,15 @@ export interface ResponseProblem {
   difficulty: Difficulty;
   likesCount: number;
   dislikeCount: number;
-  handlerFunc: ((fn: any) => boolean) | string;
+  handlerFunc: ((fn: string) => boolean) | string;
   starterFunction: string;
 }
 
 export interface ResponseTestCases {
   id: string;
   problemId: string;
-  input: any;
-  output: any;
+  input: string;
+  output: string;
 }
 
 export interface ResponseExample {
@@ -37,9 +37,9 @@ export interface Example {
 }
 
 export interface TestCases {
-  input: any;
+  input: string;
   problemId: string;
-  output: any;
+  output: string;
 }
 
 export enum Difficulty {
@@ -60,6 +60,6 @@ export interface Problem {
   dislikeCount: number;
   examples: Example[];
   testCases: TestCases[];
-  handlerFunc: ((fn: any) => boolean) | string;
+  handlerFunc: ((fn: string) => boolean) | string;
   starterFunction: string;
 }

@@ -17,13 +17,10 @@ import { IoIosSettings } from "react-icons/io";
 import { TfiControlPlay } from "react-icons/tfi";
 import { FaCloudArrowUp } from "react-icons/fa6";
 import { Example, Problem, TestCases } from "./MockProblem/types/types";
-import { useSearchParams } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, IRootState } from "@/store/store";
-import { testCodeRunner } from "@/Hooks/codeRunner";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
 import { runCodeTest } from "@/functions/code/code";
 
-// Add a loading component to display during initial load
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center w-full h-full">
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -206,6 +203,7 @@ export const RightSideCodeEditor = ({
       );
 
       const formattedTargets = ResponseTestCasesProp.map((testCase) =>
+        //@ts-expect-error
         JSON.stringify(testCase.input.target || testCase.output, null, 2)
       );
 
@@ -230,7 +228,6 @@ export const RightSideCodeEditor = ({
       const cb = new Function(`return ${userCode}`)();
       console.log(cb, testCases, targetCases);
 
-      // Dispatch the Redux action instead of directly calling testCodeRunner
       dispatch(
         runCodeTest({
           code: cb,

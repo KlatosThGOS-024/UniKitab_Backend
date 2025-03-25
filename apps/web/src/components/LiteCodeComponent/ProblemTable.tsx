@@ -14,7 +14,6 @@ import { addQtoDb, createQuestion, getQuestions } from "@/Hooks/problem";
 
 import FileUpload from "./UploadSheet";
 
-// Fix: Remove duplicate interface definition
 export interface ProblemType {
   id: string;
   questionTitle: string;
@@ -22,14 +21,12 @@ export interface ProblemType {
   category: string;
 }
 
-// Add a loading spinner component
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center p-8">
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
   </div>
 );
 
-// Create a client-only wrapper component for Redux interactions
 const ClientSideProblems = ({
   arrayOfQs,
 }: {
@@ -45,7 +42,6 @@ const ClientSideProblems = ({
   const [categoryFilter, setCategoryFilter] =
     useState<string>("All Categories");
 
-  // Call useSelector at the top level of the component
   const storeQuestions = useSelector(
     (state: IRootState) => state.QuestionReducer
   );
@@ -56,7 +52,6 @@ const ClientSideProblems = ({
       setLoading(true);
       setError(null);
 
-      // Now we can safely use storeQuestions
       const questionInStore = storeQuestions.find(
         (item: Problem) => item.problemId === id
       );
@@ -245,7 +240,7 @@ const ClientSideProblems = ({
               <tbody>
                 {filteredProblems.map((value: ProblemType, index: number) => (
                   <tr
-                    key={value.id || index} // Use unique ID for key if available
+                    key={value.id || index}
                     className={`${index % 2 === 0 ? "bg-[#2C2C2D]" : "bg-[#111]"} text-white hover:bg-gray-700 transition-colors`}
                   >
                     <td className="text-[18px] font-[500] px-4 py-4">
@@ -300,7 +295,6 @@ const ClientSideProblems = ({
   );
 };
 
-// Create a server-safe wrapper component that delays rendering the client component
 const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -308,24 +302,21 @@ const Problems = ({ arrayOfQs }: { arrayOfQs: ProblemType[] | string }) => {
     setIsMounted(true);
   }, []);
 
-  // Server-side rendering placeholder
   if (!isMounted) {
     return <div className="min-h-[400px] bg-[#1A1A1A]"></div>;
   }
 
-  // Client-side rendering with Redux
   return <ClientSideProblems arrayOfQs={arrayOfQs} />;
 };
 
 const LiteCodeBody = () => {
   const [arrayOfQs, setArrayOfQs] = useState<ProblemType[]>([]);
   const [isMounted, setIsMounted] = useState(false);
-
+  console.log(arrayOfQs);
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Return minimal structure during SSR
   if (!isMounted) {
     return (
       <section className="min-h-screen bg-[#1A1A1A]">

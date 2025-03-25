@@ -4,6 +4,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 const images = [
   "https://www.studypool.com/img/backgrounds/homepage_bg_v2/splash_4.jpg",
@@ -63,10 +64,12 @@ export const HeroSection = () => {
               currentSlide === index ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
-            <img
+            <Image
+              priority
               src={img}
-              alt={`Hero image ${index + 1}`}
-              className="w-full h-full object-cover"
+              alt="Hero Image"
+              fill
+              className="object-cover"
             />
 
             <div className="absolute inset-0 bg-opacity-40"></div>

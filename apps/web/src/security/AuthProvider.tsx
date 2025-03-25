@@ -9,7 +9,6 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(true);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -27,7 +26,6 @@ export default function AuthProvider({
     const checkAuth = async () => {
       const token = getCookie("accessToken");
       if (!token) {
-        setIsAuthenticated(false);
         dispatch(authenticated({ userLoggedIn: false }));
         setLoading(false);
         return;
@@ -35,7 +33,6 @@ export default function AuthProvider({
 
       const isAuth = await logInCheck(token);
 
-      setIsAuthenticated(isAuth.data.isValid);
       dispatch(authenticated({ userLoggedIn: isAuth.data.isValid }));
       setLoading(false);
     };

@@ -3,8 +3,7 @@ export const DSbooks = [
     fileId: "dsbook1",
     subject: "Data Structures",
     title: "Data Structures and Algorithms in C++",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/61stE86UPFL._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img1.jpg", // Updated imgSrc
     description:
       "A comprehensive guide to data structures and algorithms, implemented in C++, with practical examples and exercises to solidify the understanding of key concepts.",
   },
@@ -12,7 +11,7 @@ export const DSbooks = [
     fileId: "dsbook2",
     subject: "Data Structures",
     title: "Introduction to Algorithms",
-    imgSrc: "https://m.media-amazon.com/images/I/714+tgyHDRL.jpg",
+    imgSrc: "/images/img2.jpg", // Updated imgSrc
     pdfPath: "/booksPdf/Data.pdf",
     description:
       "A widely used textbook on algorithms, providing deep insights into fundamental concepts and advanced algorithmic techniques, widely considered a standard reference.",
@@ -21,7 +20,7 @@ export const DSbooks = [
     fileId: "18Kl4SLDcqg8ZS6HuFDdDLAVpDqApV14i",
     subject: "Data Structures",
     title: "Algorithms",
-    imgSrc: "https://m.media-amazon.com/images/I/61-8ZU7X3UL.jpg",
+    imgSrc: "/images/img3.jpg", // Updated imgSrc
     description:
       "This book presents a thorough introduction to algorithms, covering essential topics and practical strategies for solving real-world problems with efficient algorithmic techniques.",
   },
@@ -29,20 +28,18 @@ export const DSbooks = [
     fileId: "dsbook4",
     subject: "Data Structures",
     title: "Data Structures and Algorithms Made Easy",
-    imgSrc: "https://m.media-amazon.com/images/I/91s8Z6lR87L.jpg",
+    imgSrc: "/images/img4.jpg", // Updated imgSrc
     description:
       "A user-friendly guide to mastering data structures and algorithms, aimed at students and professionals, offering a simplified explanation and numerous examples.",
   },
 ];
-
 export const dbmsBooks = [
   {
     fileId: "dbmsbook1",
     subject: "Database Management System",
     title:
       "Database System Concepts by Abraham Silberschatz, Henry F. Korth, and S. Sudarshan",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/51dC4E2S+qL._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img5.jpg", // Updated imgSrc
     description:
       "A comprehensive guide on database concepts, from the basics to advanced topics, including relational databases, transaction management, and system architectures.",
   },
@@ -51,8 +48,7 @@ export const dbmsBooks = [
     subject: "Database Management System",
     title:
       "Database Management Systems by Raghu Ramakrishnan and Johannes Gehrke",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/61CUat-cJJL._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img6.jpg", // Updated imgSrc
     description:
       "A textbook providing clear explanations of database management systems, emphasizing both theory and practical applications in modern database environments.",
   },
@@ -60,8 +56,7 @@ export const dbmsBooks = [
     fileId: "dbmsbook3",
     subject: "Database Management System",
     title: "SQL and Relational Theory",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/B1yEDMHnQqS._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img7.jpg", // Updated imgSrc
     description:
       "Explores the principles of SQL and relational theory, with a focus on how these concepts are applied in real-world database systems.",
   },
@@ -69,7 +64,7 @@ export const dbmsBooks = [
     fileId: "dbmsbook4",
     subject: "Database Management System",
     title: "Database Design for Mere Mortals",
-    imgSrc: "https://m.media-amazon.com/images/I/813ONy6mBWL.jpg",
+    imgSrc: "/images/img8.jpg", // Updated imgSrc
     description:
       "An easy-to-understand guide for database design, ideal for beginners and professionals looking to improve their database architecture skills.",
   },
@@ -80,8 +75,7 @@ export const cnBooks = [
     fileId: "cnbook1",
     subject: "Computer Networks",
     title: "Computer Networking: A Top-Down Approach",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/81ewUnANZPL._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img9.jpg", // Updated imgSrc
     description:
       "A top-down approach to learning computer networking, covering topics like application layer protocols, transport layer protocols, and network design.",
   },
@@ -89,7 +83,7 @@ export const cnBooks = [
     fileId: "cnbook2",
     subject: "Computer Networks",
     title: "Data and Computer Communications",
-    imgSrc: "https://m.media-amazon.com/images/I/91GnNujhNlL.jpg",
+    imgSrc: "/images/img10.jpg", // Updated imgSrc
     description:
       "A comprehensive resource on data communication and computer networks, addressing network fundamentals, protocol design, and the role of networks in the modern world.",
   },
@@ -97,8 +91,7 @@ export const cnBooks = [
     fileId: "cnbook3",
     subject: "Computer Networks",
     title: "Networking All-in-One For Dummies",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/81YookAqQdL._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img11.jpg", // Updated imgSrc
     description:
       "An accessible guide to networking, covering everything from the basics of networking to advanced technologies and troubleshooting techniques.",
   },
@@ -106,7 +99,7 @@ export const cnBooks = [
     fileId: "1vkiPENB0Fwic7qkGM3o5LbEZWdoaCC5B",
     subject: "Computer Networks",
     title: "The TCP/IP Guide",
-    imgSrc: "https://m.media-amazon.com/images/I/71lRYzwNqDL.jpg",
+    imgSrc: "/images/img12.jpg", // Updated imgSrc
     description:
       "A detailed resource for understanding TCP/IP protocols, offering a thorough explanation of each protocol in the suite and its real-world applications.",
   },
@@ -117,8 +110,7 @@ export const csaBooks = [
     fileId: "1dKcuFaEj0KP1_N7c0iMPBksfzmt2Dwa_",
     subject: "Computer Architecture",
     title: "Computer Architecture: A Quantitative Approach",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/71zrCDfb73S._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img13.jpg", // Updated imgSrc
     description:
       "A deep dive into computer architecture, covering the performance aspects of modern systems and how quantitative analysis can be applied to design efficient architectures.",
   },
@@ -126,8 +118,7 @@ export const csaBooks = [
     fileId: "1_9ymnpUmUCivjDlWO3yo_01OAyIGrr6L",
     subject: "Computer Architecture",
     title: "Computer Organization and Design: The Hardware/Software Interface",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/71UfLO8-cqS._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img14.jpg", // Updated imgSrc
     description:
       "A practical introduction to computer organization, focusing on the hardware/software interface, and providing detailed explanations of CPU design and instruction sets.",
   },
@@ -135,8 +126,7 @@ export const csaBooks = [
     fileId: "1ptaixFxe71InpoqW6fo2WtJCrOaX-yfT",
     subject: "Computer Architecture",
     title: "Structured Computer Organization",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/91YUUkF+lJL._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img15.jpg", // Updated imgSrc
     description:
       "An introduction to computer organization, emphasizing the structured approach to designing and implementing computer systems, with a focus on hardware and software integration.",
   },
@@ -144,8 +134,7 @@ export const csaBooks = [
     fileId: "csabook4",
     subject: "Computer Architecture",
     title: "The Art of Computer Systems Performance Analysis",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/61paYArml3L._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img16.jpg", // Updated imgSrc
     description:
       "A guide to analyzing the performance of computer systems, focusing on techniques for evaluating hardware, software, and system design decisions.",
   },
@@ -153,13 +142,11 @@ export const csaBooks = [
     fileId: "1myjUzrfVGOn7C6jmBHKBMKeSf86qLJ7U",
     subject: "Computer Architecture",
     title: "Digital Design and Computer Architecture",
-    imgSrc:
-      "https://m.media-amazon.com/images/I/81WAkMmUD5L._AC_UF1000,1000_QL80_.jpg",
+    imgSrc: "/images/img17.jpg", // Updated imgSrc
     description:
       "A comprehensive book on digital design and computer architecture, offering insights into digital circuits, computer systems, and the integration of hardware and software.",
   },
 ];
-
 export const allSub = [
   // { subName: "Business", subPath: "Business" },
   // { subName: "Humanities", subPath: "Humanities" },

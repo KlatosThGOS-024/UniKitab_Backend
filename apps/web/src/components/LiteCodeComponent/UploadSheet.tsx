@@ -11,7 +11,6 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
-  // Add suppression for hydration warnings during development
   const [suppressHydrationWarning, setSuppressHydrationWarning] =
     useState(false);
   const [files, setFiles] = useState<File | null>(null);
@@ -23,7 +22,6 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   >([]);
   const [isClient, setIsClient] = useState(false);
 
-  // Fix for hydration: Only run client-side code after component mounts
   useEffect(() => {
     setIsClient(true);
     setSuppressHydrationWarning(true);
@@ -56,6 +54,7 @@ const FileUpload = ({ setArrayOfQs }: { setArrayOfQs: any }) => {
   const documentHandler = async (id: string) => {
     try {
       const response = await getQuestionsByDocumentId(id);
+
       setArrayOfQs(response);
     } catch (error) {
       console.log(error);

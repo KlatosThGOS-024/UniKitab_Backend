@@ -3,15 +3,17 @@ import { addFileUrl } from "@/functions/docs/file";
 import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { useDispatch } from "react-redux";
+
+import { fetchPdfUrl, getPdfBook } from "@/Hooks/pdfBook";
+import { SearchBooks } from "../Landing/SearchBooks";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   cnBooks,
   csaBooks,
   dbmsBooks,
   DSbooks,
 } from "../../../public/constants";
-import { fetchPdfUrl, getPdfBook } from "@/Hooks/pdfBook";
-import { SearchBooks } from "../Landing/SearchBooks";
-import { useRouter } from "next/navigation";
 
 interface Book {
   subject: string;
@@ -42,13 +44,17 @@ const BookCard = ({ book }: { book: Book }) => {
 
       const response = await fetchPdfUrl(book.fileId);
       const fileUrl = response.data.downloadUrl;
-      const pdfEndpoint = `http://localhost:8000/${fileUrl}`;
+      console.log(fileUrl);
+      try {
+        dispatch(addFileUrl("pdfUrl"));
 
-      dispatch(addFileUrl(pdfEndpoint));
-
-      setTimeout(() => {
-        router.push("/pdf/pdf-ai");
-      }, 2000);
+        setTimeout(() => {
+          router.push("/pdf/pdf-ai");
+        }, 2000);
+      } catch (urlError) {
+        console.error("Invalid URL construction:", urlError);
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error("Error fetching PDF URL:", error);
       setIsLoading(false);
@@ -57,7 +63,7 @@ const BookCard = ({ book }: { book: Book }) => {
 
   return (
     <div
-      className="flex flex-col rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200 relative"
+      className="flex flex-col rounded-lg  shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200 relative"
       onClick={handleBookClick}
     >
       {isLoading && (
@@ -89,11 +95,18 @@ const BookCard = ({ book }: { book: Book }) => {
         rel="noopener noreferrer"
         className="cursor-pointer overflow-hidden"
       >
-        <img
-          className="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-300"
-          src={book.imgSrc}
-          alt={book.title}
-        />
+        <div className="h-48 relative w-full">
+          <Image
+            className=" object-cover transform 
+            hover:scale-105 transition-transform 
+            duration-300"
+            fill
+            sizes="5"
+            loading="lazy"
+            src={book.imgSrc}
+            alt={book.title}
+          />
+        </div>
       </a>
       <div className="p-4 flex-grow border-t border-gray-200 bg-white">
         <h3 className="text-lg font-semibold mb-1 text-gray-800">
@@ -162,7 +175,6 @@ interface Book {
   subject: string;
   title: string;
   imgSrc: string;
-
   description: string;
 }
 export const BookSection = () => {
@@ -178,7 +190,9 @@ export const BookSection = () => {
       const result = allBooks.filter((book) =>
         book.title.toLowerCase().startsWith(inputWord.toLowerCase())
       );
-      setSearchProp(result);
+      result.length >= 4
+        ? setSearchProp(result.slice(0, 4))
+        : setSearchProp(result);
       return (
         <div className="flex h-screen relative justify-center items-center">
           <div role="status" className=" z-50  absolute ">
@@ -230,11 +244,16 @@ export const BookSection = () => {
     <section className="bg-gray-50 pb-16">
       <div className="relative mb-16">
         <div className="absolute inset-0 bg-gradient-to-r opacity-90"></div>
-        <img
-          className="w-full h-96 object-cover"
-          src="https://www.studypool.com/images/notebank/backgrounds/heading-bg.jpg"
-          alt="Books Banner"
-        />
+        <div className="w-full h-96 relative">
+          {" "}
+          <Image
+            priority
+            fill
+            className=" object-cover"
+            src="/images/heading-bg.jpg"
+            alt="Books Banner"
+          />
+        </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             The Notebank
@@ -249,7 +268,9 @@ export const BookSection = () => {
                 onChange={(e) => {
                   searchBook(e.target.value);
                 }}
-                className="w-full px-6 py-4 text-gray-700 placeholder-gray-500 focus:outline-none"
+                className="w-full px-6 py-4  text-xl
+                 text-gray-700 placeholder-gray-500
+                  focus:outline-none"
                 placeholder="Search study resources"
                 aria-label="Search study resources"
               />

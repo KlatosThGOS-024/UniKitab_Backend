@@ -48,17 +48,11 @@ const CodeTestResults: React.FC = () => {
         </div>
       </div>
 
-      {/* Failed Test Cases */}
       {summary.failed > 0 && results && (
         <div>
           <h3 className="font-bold text-lg mb-2">Failed Test Cases:</h3>
           {results
-            .filter(
-              //@ts-ignore
-
-              (test) => !test.passed
-            )
-            //@ts-ignore
+            .filter((test) => !test.passed)
 
             .map((test, index) => (
               <div
@@ -91,13 +85,9 @@ const CodeTestResults: React.FC = () => {
                   <div>
                     <span className="font-semibold">Console Output:</span>
                     <pre className="bg-gray-800 text-white p-2 rounded mt-1 overflow-x-auto">
-                      {test.consoleOutput.map(
-                        //@ts-ignore
-
-                        (log, i) => (
-                          <div key={i}>{log}</div>
-                        )
-                      )}
+                      {test.consoleOutput.map((log, i) => (
+                        <div key={i}>{log}</div>
+                      ))}
                     </pre>
                   </div>
                 )}

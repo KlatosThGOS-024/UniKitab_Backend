@@ -35,7 +35,6 @@ const ProblemPageSekeleton = () => {
 
   const [selectedProblem, setSelectedProblem] =
     useState<Problem>(defaultProblem);
-  const [isLoading, setIsLoading] = useState(false);
 
   const selectQuestionById = useSelector(
     (state: IRootState) => state.QuestionReducer
@@ -52,10 +51,6 @@ const ProblemPageSekeleton = () => {
       setSelectedProblem(foundProblem);
     }
   }, [problemId, selectQuestionById]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (!selectedProblem) {
     return <div>Problem data not available.</div>;

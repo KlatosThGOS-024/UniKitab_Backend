@@ -1,15 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoIosOptions } from "react-icons/io";
 import { Account } from "./SignUp";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "@/store/store";
 import { FaRegUserCircle } from "react-icons/fa";
-import { getPdfBook } from "@/Hooks/pdfBook";
 import { SearchBooks } from "./SearchBooks";
 import { logOutUser } from "@/Hooks/userApi";
 import { authenticated } from "@/functions/userAccount/User";
+import {
+  cnBooks,
+  csaBooks,
+  dbmsBooks,
+  DSbooks,
+} from "../../../public/constants";
 
 interface Book {
   fileId: string;
@@ -22,10 +27,19 @@ interface Book {
 const SearchBar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchProp, setSearchProp] = useState<Book[]>([]);
-  const onSearchHandler = async (e: any) => {
-    const data = await getPdfBook(e.target.value);
-    console.log(data.getPDf);
-    setSearchProp(data.getPDf);
+
+  const searchBook = (inputWord: string) => {
+    setShowSearch(!true);
+    if (inputWord !== "") {
+      const allBooks = [...DSbooks, ...dbmsBooks, ...cnBooks, ...csaBooks];
+      setShowSearch(true);
+      const result = allBooks.filter((book) =>
+        book.title.toLowerCase().startsWith(inputWord.toLowerCase())
+      );
+      result.length >= 4
+        ? setSearchProp(result.slice(0, 4))
+        : setSearchProp(result);
+    }
   };
   return (
     <div
@@ -35,7 +49,7 @@ const SearchBar = () => {
       <input
         onChange={(e) => {
           setShowSearch(!showSearch);
-          return onSearchHandler(e);
+          return searchBook(e.target.value);
         }}
         className="placeholder:text-gray-500 px-4 py-3 rounded-lg outline-none bg-[#FFFFFF]"
         placeholder="Search study resources"

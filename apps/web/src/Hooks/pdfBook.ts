@@ -61,3 +61,19 @@ export const fetchPdfUrl = async (fileId: string) => {
     throw error;
   }
 };
+// const handleBookClick = async () => {
+//   try {
+//     const response = await fetchPdfUrl("18Kl4SLDcqg8ZS6HuFDdDLAVpDqApV14i");
+//     const fileUrl = response.data.downloadUrl;
+//     console.log(fileUrl);
+//     try {
+//       const pdfUrl = new URL(fileUrl, "http://localhost:8000").toString();
+//    console.log(pdf)
+//     } catch (urlError) {
+//       console.error("Invalid URL construction:", urlError);
+//     }
+//   } catch (error) {
+//     console.error("Error fetching PDF URL:", error);
+//   }
+// };
+// handleBookClick();
