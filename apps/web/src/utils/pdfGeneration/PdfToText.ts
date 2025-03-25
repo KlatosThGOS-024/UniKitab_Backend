@@ -47,42 +47,6 @@ class PdfToText {
       throw new Error("Failed to load PDF");
     }
   }
-
-  async generateThumbnail(
-    pageNumber: number = 1,
-    scale: number = 1.5
-  ): Promise<string> {
-    try {
-      const pdf = await this.pdf;
-      const page = await pdf.getPage(pageNumber);
-
-      const viewport = page.getViewport({ scale });
-
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-
-      if (!context) {
-        throw new Error("Unable to create canvas context");
-      }
-
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      };
-
-      await page.render(renderContext).promise;
-
-      const thumbnailUrl = canvas.toDataURL("image/jpeg", 0.8);
-
-      return thumbnailUrl;
-    } catch (error) {
-      console.error("Error generating thumbnail:", error);
-      throw new Error("Failed to generate thumbnail from PDF");
-    }
-  }
 }
 
 export default PdfToText;
