@@ -64,7 +64,6 @@ const getPdfBookUrl = asyncHandler(async (req: Request, res: Response) => {
     if (!fileId) {
       res.status(400).json({ message: "File ID parameter is required" });
     }
-    console.log("proxyUrlproxyUrlproxyUrlproxyUrl1");
     const pdfBook = await prisma.pdfBook.findFirst({
       where: {
         fileId: fileId,
@@ -74,13 +73,10 @@ const getPdfBookUrl = asyncHandler(async (req: Request, res: Response) => {
     if (!pdfBook) {
       res.status(400).json({ message: "PDF book not found" });
     }
-    console.log("proxyUrlproxyUrlproxyUrlproxyUrl2");
     const drive = new Drive();
     const authClient = await drive.authorize();
-    console.log("proxyUrlproxyUrlproxyUrlproxyUrl3");
 
     const proxyUrl = `api/v1/book/pdf-stream/${fileId}`;
-    console.log("proxyUrlproxyUrlproxyUrlproxyUrl", proxyUrl);
     res.json({
       message: "PDF URL retrieved successfully!",
       data: {
@@ -104,7 +100,6 @@ const streamPdfFile = asyncHandler(async (req: Request, res: Response) => {
     if (!fileId) {
       res.status(400).json({ message: "File ID parameter is required" });
     }
-    console.log("ssddsdsdsdddsddsdsdsdsdsds", fileId);
 
     const drive = new Drive();
     const authClient = await drive.authorize();

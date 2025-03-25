@@ -11,7 +11,7 @@ import {
 } from "../../../public/constants";
 import { fetchPdfUrl, getPdfBook } from "@/Hooks/pdfBook";
 import { SearchBooks } from "../Landing/SearchBooks";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 interface Book {
   subject: string;
@@ -24,13 +24,12 @@ const BookCard = ({ book }: { book: Book }) => {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-
+  const router = useRouter();
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleBookClick = async () => {
-    // Check if book has a fileId
     if (!book.fileId) {
       console.warn("No fileId available for this book");
       return;
@@ -39,7 +38,6 @@ const BookCard = ({ book }: { book: Book }) => {
     if (!mounted) return;
 
     try {
-      // Start loading
       setIsLoading(true);
 
       const response = await fetchPdfUrl(book.fileId);
@@ -48,10 +46,9 @@ const BookCard = ({ book }: { book: Book }) => {
 
       dispatch(addFileUrl(pdfEndpoint));
 
-      // Navigate after a short delay to ensure loading state is visible
       setTimeout(() => {
         router.push("/pdf/pdf-ai");
-      }, 500);
+      }, 2000);
     } catch (error) {
       console.error("Error fetching PDF URL:", error);
       setIsLoading(false);
@@ -63,7 +60,6 @@ const BookCard = ({ book }: { book: Book }) => {
       className="flex flex-col rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200 relative"
       onClick={handleBookClick}
     >
-      {/* Loader Overlay */}
       {isLoading && (
         <div className="absolute inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div role="status">

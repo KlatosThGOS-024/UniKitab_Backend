@@ -54,7 +54,8 @@ export const SearchBooks = ({ searchProp }: { searchProp: Book[] }) => {
         <div
           key={index}
           onClick={() => handleBookClick(value.fileId)}
-          className="bg-white w-full cursor-pointer gap-4 rounded-lg mb-1 flex items-center px-3 py-4"
+          className="bg-white w-full border-y-[1px] border-black cursor-pointer gap-3
+           rounded-lg  flex items-center px-3 py-4"
         >
           <img src={value.imgSrc} alt={value.title} className="h-16 w-16" />
           <p className="text-black break-words text-lg overflow-hidden">

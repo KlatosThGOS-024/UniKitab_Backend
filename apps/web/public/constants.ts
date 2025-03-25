@@ -18,7 +18,7 @@ export const DSbooks = [
       "A widely used textbook on algorithms, providing deep insights into fundamental concepts and advanced algorithmic techniques, widely considered a standard reference.",
   },
   {
-    fileId: "dsbook3",
+    fileId: "18Kl4SLDcqg8ZS6HuFDdDLAVpDqApV14i",
     subject: "Data Structures",
     title: "Algorithms",
     imgSrc: "https://m.media-amazon.com/images/I/61-8ZU7X3UL.jpg",
@@ -114,7 +114,7 @@ export const cnBooks = [
 
 export const csaBooks = [
   {
-    fileId: "csabook1",
+    fileId: "1dKcuFaEj0KP1_N7c0iMPBksfzmt2Dwa_",
     subject: "Computer Architecture",
     title: "Computer Architecture: A Quantitative Approach",
     imgSrc:
@@ -123,7 +123,7 @@ export const csaBooks = [
       "A deep dive into computer architecture, covering the performance aspects of modern systems and how quantitative analysis can be applied to design efficient architectures.",
   },
   {
-    fileId: "csabook2",
+    fileId: "1_9ymnpUmUCivjDlWO3yo_01OAyIGrr6L",
     subject: "Computer Architecture",
     title: "Computer Organization and Design: The Hardware/Software Interface",
     imgSrc:
@@ -132,7 +132,7 @@ export const csaBooks = [
       "A practical introduction to computer organization, focusing on the hardware/software interface, and providing detailed explanations of CPU design and instruction sets.",
   },
   {
-    fileId: "csabook3",
+    fileId: "1ptaixFxe71InpoqW6fo2WtJCrOaX-yfT",
     subject: "Computer Architecture",
     title: "Structured Computer Organization",
     imgSrc:
@@ -150,7 +150,7 @@ export const csaBooks = [
       "A guide to analyzing the performance of computer systems, focusing on techniques for evaluating hardware, software, and system design decisions.",
   },
   {
-    fileId: "csabook5",
+    fileId: "1myjUzrfVGOn7C6jmBHKBMKeSf86qLJ7U",
     subject: "Computer Architecture",
     title: "Digital Design and Computer Architecture",
     imgSrc:
