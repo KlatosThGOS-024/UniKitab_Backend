@@ -1,10 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { User } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asynchHandler";
-import prisma from "@repo/db";
+import { prisma } from "@repo/db";
 
 export const comparePassword = async (
   plainPassword: string,
@@ -12,7 +9,15 @@ export const comparePassword = async (
 ) => {
   return plainPassword === hashedPassword;
 };
-
+type User = {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  token: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 declare global {
   namespace Express {
     interface Request {
