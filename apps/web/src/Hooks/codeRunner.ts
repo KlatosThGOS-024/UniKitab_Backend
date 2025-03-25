@@ -10,9 +10,13 @@ async function runCodeWithGemini(options: any) {
   } = options;
 
   try {
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/codeRunner/gemini-format-run`
+      : "http://localhost:8000/api/v1/codeRunner/gemini-format-run";
+
     const response = await axios({
       method: "post",
-      url: "http://localhost:8000/api/v1/codeRunner/gemini-format-run",
+      url: apiUrl,
       headers: {
         "Content-Type": "application/json",
       },

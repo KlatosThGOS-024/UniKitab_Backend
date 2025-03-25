@@ -1,7 +1,9 @@
 export const getAIresponse = async (message: string) => {
   try {
-    const url = `http://localhost:8000/api/v1/ai/get-answer`;
-    const response = await fetch(url, {
+    const apiUrl = process.env.REACT_APP_API_URL
+      ? `${process.env.REACT_APP_API_URL}/api/v1/ai/get-answer`
+      : "http://localhost:8000/api/v1/ai/get-answer";
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -10,7 +12,7 @@ export const getAIresponse = async (message: string) => {
         getQuestion: message,
       }),
     });
-    const data = response.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     console.log(error);

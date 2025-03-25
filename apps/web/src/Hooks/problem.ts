@@ -2,15 +2,16 @@ import { Problem } from "@/components/LiteCodeComponent/MockProblem/types/types"
 
 export const getQuestions = async (problemId: string) => {
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/questions/question-get?problemId=${problemId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/questions/question-get?problemId=${problemId}`
+      : `http://localhost:8000/api/v1/questions/question-get?problemId=${problemId}`;
+
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     const data = await response.json();
     return data.data;
@@ -42,30 +43,31 @@ export async function addQtoDb(problem: Problem) {
 
     const handler = handlerFunc.toString();
 
-    const response = await fetch(
-      "http://localhost:8000/api/v1/questions/question-add",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          problemNumber,
-          problemId,
-          problemTitle,
-          inputText1,
-          inputText2,
-          inputText3,
-          difficulty,
-          likesCount,
-          dislikeCount,
-          handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""),
-          starterFunction,
-          examples,
-          testCases,
-        }),
-      }
-    );
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/questions/question-add`
+      : `http://localhost:8000/api/v1/questions/question-add`;
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        problemNumber,
+        problemId,
+        problemTitle,
+        inputText1,
+        inputText2,
+        inputText3,
+        difficulty,
+        likesCount,
+        dislikeCount,
+        handlerFunc: handler.replace(/[^\x00-\x7F]/g, ""),
+        starterFunction,
+        examples,
+        testCases,
+      }),
+    });
 
     console.log(response);
     console.log("New Problem created:");
@@ -73,11 +75,14 @@ export async function addQtoDb(problem: Problem) {
     console.error("Error while adding problem:", error);
   }
 }
+
 export const createQuestionArray = async (message: string) => {
   try {
-    const url = `http://localhost:8000/api/v1/ai/generate-Qarray
-`;
-    const response = await fetch(url, {
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/ai/generate-Qarray`
+      : `http://localhost:8000/api/v1/ai/generate-Qarray`;
+
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -93,11 +98,14 @@ export const createQuestionArray = async (message: string) => {
     console.log(error);
   }
 };
+
 export const createQuestion = async (question: string, id: string) => {
   try {
-    const url = `http://localhost:8000/api/v1/ai/get-answer-bysheet
-`;
-    const response = await fetch(url, {
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/ai/get-answer-bysheet`
+      : `http://localhost:8000/api/v1/ai/get-answer-bysheet`;
+
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -115,6 +123,7 @@ export const createQuestion = async (question: string, id: string) => {
     return error;
   }
 };
+
 export const saveQuestionArray = async (
   documentId: string,
   questions: {
@@ -127,10 +136,11 @@ export const saveQuestionArray = async (
   }[]
 ) => {
   try {
-    console.log(documentId, questions);
-    const url = "http://localhost:8000/api/v1/questions/question-addArray";
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/questions/question-addArray`
+      : `http://localhost:8000/api/v1/questions/question-addArray`;
 
-    const response = await fetch(url, {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -148,11 +158,14 @@ export const saveQuestionArray = async (
     return { success: false, message: "Failed to save questions", error };
   }
 };
+
 export const getQuestionsByDocumentId = async (documentId: string) => {
   try {
-    const url = `http://localhost:8000/api/v1/questions/getQuestionArray?documentId=${documentId}`;
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/questions/getQuestionArray?documentId=${documentId}`
+      : `http://localhost:8000/api/v1/questions/getQuestionArray?documentId=${documentId}`;
 
-    const response = await fetch(url, {
+    const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -170,11 +183,14 @@ export const getQuestionsByDocumentId = async (documentId: string) => {
     return { success: false, message: "Failed to fetch questions", error };
   }
 };
+
 export const getAllDocs = async () => {
   try {
-    const url = "http://localhost:8000/api/v1/questions/documents";
+    const apiUrl = process.env.NEXT_APP_API_URL
+      ? `${process.env.NEXT_APP_API_URL}/api/v1/questions/documents`
+      : `http://localhost:8000/api/v1/questions/documents`;
 
-    const response = await fetch(url, {
+    const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

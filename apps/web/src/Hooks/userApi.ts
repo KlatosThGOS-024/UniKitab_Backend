@@ -1,6 +1,9 @@
 const logOutUser = async () => {
+  const apiUrl = process.env.NEXT_APP_API_URL
+    ? `${process.env.NEXT_APP_API_URL}/api/v1/user/logout`
+    : `http://localhost:8000/api/v1/user/logout`;
   const token = localStorage.getItem("accessToken");
-  const response = await fetch("http://localhost:8000/api/v1/user/logout", {
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -11,8 +14,12 @@ const logOutUser = async () => {
   localStorage.clear();
   return response;
 };
+
 const logInUser = async (params: { username: string; password: string }) => {
-  const response = await fetch("http://localhost:8000/api/v1/user/login", {
+  const apiUrl = process.env.NEXT_APP_API_URL
+    ? `${process.env.NEXT_APP_API_URL}/api/v1/user/login`
+    : `http://localhost:8000/api/v1/user/login`;
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,11 +32,13 @@ const logInUser = async (params: { username: string; password: string }) => {
 
 const createAccount = async (params: {
   username: string;
-
   email: string;
   password: string;
 }) => {
-  const response = await fetch("http://localhost:8000/api/v1/user/signUp", {
+  const apiUrl = process.env.NEXT_APP_API_URL
+    ? `${process.env.NEXT_APP_API_URL}/api/v1/user/signUp`
+    : `http://localhost:8000/api/v1/user/signUp`;
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,34 +47,37 @@ const createAccount = async (params: {
   });
   return response;
 };
-const logInCheck = async (token: string) => {
-  const response = await fetch(
-    "http://localhost:8000/api/v1/user//login-check",
-    {
-      method: "POST",
 
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    }
-  );
+const logInCheck = async (token: string) => {
+  const apiUrl = process.env.NEXT_APP_API_URL
+    ? `${process.env.NEXT_APP_API_URL}/api/v1/user/login-check`
+    : `http://localhost:8000/api/v1/user/login-check`;
+  console.log(apiUrl);
+  const response = await fetch(apiUrl, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.json();
 };
-const getUserProfile = async () => {
-  const token = localStorage.getItem("accessToken");
-  const response = await fetch(
-    "http://localhost:8000/api/v1/user/user-profile",
 
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    }
-  );
+const getUserProfile = async () => {
+  const apiUrl = process.env.NEXT_APP_API_URL
+    ? `${process.env.NEXT_APP_API_URL}/api/v1/user/user-profile`
+    : `http://localhost:8000/api/v1/user/user-profile`;
+
+  const token = localStorage.getItem("accessToken");
+  const response = await fetch(apiUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  });
   return response;
 };
 
