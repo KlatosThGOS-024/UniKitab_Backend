@@ -2,14 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import {
   runTimeUserSchemaSignUp,
   runTimeUserSchemaLogin,
+  User,
 } from "../types/user.types";
 import { ApiError } from "../utils/ApiError";
 import prismaClient from "@repo/db";
 import { asyncHandler } from "../utils/asynchHandler";
 import { ApiResponse } from "../utils/ApiResponse";
 import { comparePassword } from "../middlewares/auth";
-import { User } from "@prisma/client";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 const generateAuthToken = (user: User): string => {
   return jwt.sign(

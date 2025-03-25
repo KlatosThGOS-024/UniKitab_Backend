@@ -15,5 +15,13 @@ const runTimeUserSchemaLogin = z.object({
   username: z.string(),
   password: z.string(),
 });
-
+export type User = {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  token: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 export { IUser, runTimeUserSchemaSignUp, runTimeUserSchemaLogin };
