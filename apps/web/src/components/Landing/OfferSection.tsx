@@ -1,5 +1,9 @@
 import Image from "next/image";
 import React from "react";
+interface subType {
+  imgSrc: string;
+  name: string;
+}
 const subjects = [
   {
     name: "Javascript",
@@ -38,17 +42,7 @@ const tutoringSteps = [
       "Engage in discussions with other students and tutors to understand concepts better.",
   },
 ];
-const Secsubjects = [
-  {
-    imgSrc: "https://www.studypool.com/img/icons/topNavbar/mat.png",
-    subject: "Mathematics",
-  },
-  { imgSrc: "path-to-image/science.png", subject: "Science" },
-  { imgSrc: "path-to-image/business.png", subject: "Business" },
-  { imgSrc: "path-to-image/programming.png", subject: "Programming" },
-  { imgSrc: "path-to-image/humanities.png", subject: "Humanities" },
-  { imgSrc: "path-to-image/writing.png", subject: "Writing" },
-];
+
 const companyLogos = [
   {
     imgSrc: "https://www.studypool.com/img/mediaLogos/yahoo-min.png",
@@ -96,11 +90,11 @@ const Company = () => {
   );
 };
 
-const FeaturedSubjects = ({ sub }: { sub: any }) => {
+const FeaturedSubjects = ({ sub }: { sub: subType[] }) => {
   return (
     <div>
       <div className="flex items-center max-md:grid bg- grid-cols-2 max-md:px-3 ml-9 gap-[21px]">
-        {subjects.map((value, index) => {
+        {sub.map((value: subType, index: number) => {
           return (
             <div
               key={index}

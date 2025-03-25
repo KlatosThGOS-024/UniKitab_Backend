@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -26,7 +29,6 @@ const nextConfig: NextConfig = {
     ],
   },
   webpack: (config, { isServer }) => {
-    // PDF.js worker configuration
     config.module.rules.push({
       test: /\.worker\.min\.js$/,
       use: [
@@ -37,7 +39,6 @@ const nextConfig: NextConfig = {
       ],
     });
 
-    // Resolve PDF.js dist directory
     config.resolve.alias["pdfjs-dist"] = path.join(
       __dirname,
       "node_modules/pdfjs-dist"

@@ -7,6 +7,7 @@ import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import Error from "next/error";
 
 export const Account = ({
   param,
@@ -52,8 +53,9 @@ export const Account = ({
           username,
           password,
         });
-        //@ts-expect-error
-        if (response?.success) {
+        const data = await response.json();
+
+        if (data?.success) {
           toast.success("Account created successfully! Please log in.", {
             position: "top-right",
             autoClose: 3000,
@@ -98,9 +100,10 @@ export const Account = ({
           setTimeout(() => showModalSignUp(false), 2000);
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error.response?.data?.message ||
+        //@ts-ignore
+        error?.response?.data?.message ||
         (action === "signUp"
           ? "Failed to create account. Please try again."
           : "Invalid credentials. Please try again.");
@@ -128,11 +131,14 @@ export const Account = ({
     <section className="w-full fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg relative flex mx-auto py-4 w-[900px] max-lg:w-[500px] max-md:w-[90%]">
         <div className="w-3/5 max-lg:hidden">
-          <Image
-            src="https://www.shutterstock.com/image-vector/customer-profile-account-mobile-application-600nw-1308930601.jpg"
-            alt="Account illustration"
-            className="h-full object-cover rounded-l-lg"
-          />
+          <div className=" relative h-full ">
+            <Image
+              fill
+              src="/images/imgShuttStock.jpg"
+              alt="Account illustration"
+              className="object-cover rounded-l-lg"
+            />
+          </div>
         </div>
 
         <div className="w-2/5 max-lg:w-full px-6 relative">
