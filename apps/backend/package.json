@@ -4,8 +4,8 @@
   "description": "UniKitabBackend",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npx prisma generate",
-    "build": "npx prisma generate && tsc -b",
+    "preinstall": "npx prisma generate --schema=../../packages/db/prisma/schema.prisma",
+    "build": "npx prisma generate --schema=../../packages/db/prisma/schema.prisma && tsc -b",
     "node": "nodemon dist/index.js",
     "dev": "npm run build && npm run node",
     "start": "node dist/index.js"
