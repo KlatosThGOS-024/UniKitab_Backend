@@ -1,12 +1,13 @@
 {
   "name": "unikitabbackend",
   "version": "1.0.0",
-  "description": "UniKitabBackend ",
+  "description": "UniKitabBackend",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -b",
+    "build": "prisma generate && tsc -b",
     "node": "nodemon dist/index.js",
-    "dev": "npm run build && npm run node"
+    "dev": "npm run build && npm run node",
+    "start": "node dist/index.js"
   },
   "keywords": [
     "Uber",
