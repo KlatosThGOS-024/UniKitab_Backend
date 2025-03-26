@@ -72,7 +72,7 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
     const databaseUrl = process.env.AiAPI;
     console.log("process.env.NODE_ENV", process.env.NODE_ENV);
     console.log("databaseUrldatabaseUrldatabaseUrl", databaseUrl);
-    if (process.env.NODE_ENV === "Production") {
+    if (process.env.NODE_ENV == "Production") {
       const app = require("/etc/secrets/apiKeys.json");
       console.log(app);
     }
