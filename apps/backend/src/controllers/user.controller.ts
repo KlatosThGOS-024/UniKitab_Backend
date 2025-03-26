@@ -10,6 +10,7 @@ import { asyncHandler } from "../utils/asynchHandler";
 import { ApiResponse } from "../utils/ApiResponse";
 import { comparePassword } from "../middlewares/auth";
 import jwt from "jsonwebtoken";
+
 const generateAuthToken = (user: User): string => {
   return jwt.sign(
     { id: user.id, username: user.username },
@@ -68,6 +69,14 @@ const userRegister = asyncHandler(async (req: Request, res: Response) => {
 const userLogin = asyncHandler(async (req: Request, res: Response) => {
   try {
     const userDetails = runTimeUserSchemaLogin.safeParse(req.body);
+    const databaseUrl = process.env.AiAPI;
+
+    console.log("databaseUrldatabaseUrldatabaseUrl", databaseUrl);
+    if (process.env.NODE_ENV === "Production") {
+      const app = require("/etc/secrets/apiKeys.json");
+      console.log(app);
+    }
+
     if (!userDetails.success) {
       res.json(
         ApiError.badRequest(
