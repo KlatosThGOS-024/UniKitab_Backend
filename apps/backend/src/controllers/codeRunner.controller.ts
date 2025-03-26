@@ -108,8 +108,8 @@ async function formatCodeWithGemini(
   code: string,
   problemDescription?: string
 ): Promise<string> {
-  const api = process.env.AiAPI;
-
+  // const api = process.env.AiAPI;
+  const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
   if (!api) {
     throw new Error("AI API key is not configured");
   }
@@ -199,8 +199,8 @@ async function generateTestCasesWithGemini(
   description: string,
   problemId: string
 ): Promise<TestCase[]> {
-  const api = process.env.AiAPI;
-
+  //  const api = process.env.AiAPI;
+  const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
   if (!api) {
     throw new Error("AI API key is not configured");
   }

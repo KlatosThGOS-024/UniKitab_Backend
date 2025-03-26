@@ -12,7 +12,8 @@ const getAnswer = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
   try {
-    const api = process.env.AiAPI;
+    //const api = process.env.AiAPI;
+    const api = "";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
     const response = await fetch(url, {
       method: "POST",
@@ -123,8 +124,8 @@ export async function processProblemDescription(
     throw new Error("Problem description is required");
   }
 
-  const api = process.env.AiAPI;
-
+  // const api = process.env.AiAPI;
+  const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
   if (!api) {
     throw new Error("AI API key is not configured");
   }
@@ -264,7 +265,8 @@ const generateProblemArray = asyncHandler(
     if (problemDescriptions == "") {
       throw new ApiError("Problem description is required", 400);
     }
-    const api = process.env.AiAPI;
+    //   const api = process.env.AiAPI;
+    const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
 
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
