@@ -1,31 +1,53 @@
 import fs from "fs";
 import { google } from "googleapis";
-const apiKeys = require(
-  process.env.GOOGLE_APPLICATION_CREDENTIALS || "./apiKeys.json"
-);
 
+let apiKeys: any;
+if (process.env.NODE_ENV === "Production") {
+  const keyPath = "/etc/secrets/apiKeys.json";
+
+  if (fs.existsSync(keyPath)) {
+    apiKeys = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
+  } else {
+    throw new Error("Google API key file not found in Production.");
+  }
+} else {
+  const keyPath = "./apiKeys.json";
+
+  if (fs.existsSync(keyPath)) {
+    apiKeys = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
+  } else {
+    throw new Error("Google API key file not found in Development.");
+  }
+}
 export class Drive {
   constructor() {}
   async authorize() {
     let authClient;
 
-    if (process.env.NODE_ENV === "Production") {
-      authClient = new google.auth.GoogleAuth({
-        keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-        scopes: ["https://www.googleapis.com/auth/drive.file"],
-      });
+    // authClient = new google.auth.GoogleAuth({
+    //   email: apiKey?.client_email,
+    //   scopes: ["https://www.googleapis.com/auth/drive.file"],
+    // });
 
-      return await authClient.getClient();
-    } else {
-      authClient = new google.auth.JWT(
-        apiKeys.client_email,
-        undefined,
-        apiKeys.private_key,
-        ["https://www.googleapis.com/auth/drive.file"]
-      );
+    // return await authClient.getClient();
+    authClient = new google.auth.JWT(
+      apiKeys.client_email,
+      undefined,
+      apiKeys.private_key.replace(/\\n/g, "\n"),
+      ["https://www.googleapis.com/auth/drive.file"]
+    );
 
-      return authClient;
-    }
+    return authClient;
+    // } else {
+    //   authClient = new google.auth.JWT(
+    //     apiKeys.client_email,
+    //     undefined,
+    //     apiKeys.private_key,
+    //     ["https://www.googleapis.com/auth/drive.file"]
+    //   );
+
+    //   return authClient;
+    // }
   }
 
   async uploadFile(authClient: any, filePath: string, fileName: string) {
