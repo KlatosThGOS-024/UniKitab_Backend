@@ -69,9 +69,10 @@ const userRegister = asyncHandler(async (req: Request, res: Response) => {
 const userLogin = asyncHandler(async (req: Request, res: Response) => {
   try {
     const userDetails = runTimeUserSchemaLogin.safeParse(req.body);
-    const databaseUrl = process.env.AiAPI;
-    console.log("process.env.NODE_ENV", process.env.NODE_ENV);
-    console.log("databaseUrldatabaseUrldatabaseUrl", databaseUrl);
+    console.log("All Environment Variables:", process.env);
+    console.log("AiAPI:", process.env.AiAPI);
+    console.log("NODE_ENV:", process.env.NODE_ENV);
+
     if (process.env.NODE_ENV == "Production") {
       const app = require("/etc/secrets/apiKeys.json");
       console.log(app);
