@@ -1,5 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
 import express, { NextFunction, Request, Response } from "express";
 import { ApiError } from "./utils/ApiError";
 import { ApiResponse } from "./utils/ApiResponse";
@@ -25,5 +23,6 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/questions", QuestionDbRouter);
 app.use("/api/v1/book", pdfBookRouter);
 app.use("/api/v1/ai", aiRouter);
+
 app.use("/api/v1/codeRunner", codeRouter);
 export default app;
