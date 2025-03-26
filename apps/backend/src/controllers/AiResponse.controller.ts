@@ -13,7 +13,7 @@ const getAnswer = asyncHandler(async (req: Request, res: Response) => {
   }
   try {
     //const api = process.env.AiAPI;
-    const api = "";
+    const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
     const response = await fetch(url, {
       method: "POST",
