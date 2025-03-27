@@ -6,7 +6,6 @@ import { Difficulty, Example, Problem, TestCases } from "../types/question";
 
 const getAnswer = asyncHandler(async (req: Request, res: Response) => {
   const getQuestion = req.body.getQuestion as string;
-  console.log(getQuestion);
   if (getQuestion == "") {
     res.status(400).send(new ApiError("Provide Question", 400, getQuestion));
     return;
@@ -116,40 +115,35 @@ function processGeminiResponse(responseText: string): Problem {
   }
 }
 
-export async function processProblemDescription(
-  problemDescription: string,
-  id: string
-): Promise<Problem> {
-  if (!problemDescription || problemDescription.trim() === "") {
-    throw new Error("Problem description is required");
-  }
+const generateProblem = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    const { dsaQ, id } = req.body as any;
 
-  // const api = process.env.AiAPI;
-  const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
-  if (!api) {
-    throw new Error("AI API key is not configured");
-  }
+    const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
+    if (!api) {
+      throw new Error("AI API key is not configured");
+    }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api}`;
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              text: `Convert the following DSA problem description into a structured coding problem:
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: `Convert the following DSA problem description into a structured coding problem:
               
-              ${problemDescription}
+              ${dsaQ}
               
               Please format it as a JSON object with the following structure:
               {
                 "problemMetadata": {
-                  "problemNumber": number,
+                  "problemNumber": number(should be string),
                   "problemId": ${id},
                   "problemTitle": "Problem Title",
                   "inputText1": "Main problem description",
@@ -185,87 +179,40 @@ export async function processProblemDescription(
               5. starterFunction should be good like a real starterFunction so i can easily run my codeRunner like with params, function name and like a real function
               dont write solution i want starterFunction not solution  
               `,
-            },
-          ],
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 2048,
         },
-      ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 2048,
-      },
-    }),
-  });
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`AI service error: ${JSON.stringify(errorData)}`);
-  }
+      }),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (
-    !data.candidates ||
-    !data.candidates[0] ||
-    !data.candidates[0].content ||
-    !data.candidates[0].content.parts[0]
-  ) {
-    throw new Error("Invalid response from AI service");
-  }
-
-  const rawProblemData = data.candidates[0].content.parts[0].text;
-
-  return processGeminiResponse(rawProblemData);
-}
-
-const parseDSASheet = asyncHandler(async (req: Request, res: Response) => {
-  const { dsaQ, id } = req.body;
-
-  if (!dsaQ || dsaQ.trim() == "") {
-    throw new ApiError("Sheet content is required", 400);
-  }
-
-  try {
-    const problems: Problem[] = [];
-
-    try {
-      const problem = await processProblemDescription(dsaQ, id);
-      problems.push(problem);
-    } catch (err) {
-      console.error(`Error processing problem "${dsaQ}...":`, err);
-    }
-
+    const rawProblemData = data.candidates[0].content.parts[0].text;
     res.send(
       new ApiResponse(
         200,
         true,
-        `Successfully parsed ${dsaQ} problems from the request`,
-        problems
+        "Successfull generated the question",
+        processGeminiResponse(rawProblemData)
       )
     );
-  } catch (error: any) {
-    console.error("Error parsing DSA sheet:", error);
-
-    if (error instanceof ApiError) {
-      throw error;
-    }
-
-    res.send(
-      new ApiError(
-        error.message || "Failed to parse DSA sheet",
-        error.statusCode || 500,
-        false
-      )
-    );
+  } catch (error) {
+    res.send(new ApiError("Successfull generated the question", 400, false));
   }
 });
 
 const generateProblemArray = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { problemDescriptions } = req.body as any;
+    const { dsaQ, id } = req.body as any;
 
-    if (problemDescriptions == "") {
+    if (dsaQ == "") {
       throw new ApiError("Problem description is required", 400);
     }
-    //   const api = process.env.AiAPI;
     const api = "AIzaSyBvCHs7Hl_GKc9JhTugUVDT-ulTxNOCwV0";
 
     try {
@@ -283,7 +230,7 @@ const generateProblemArray = asyncHandler(
                 {
                   text: `Here in this text some garbage and some questions of dsa are included:
                    
-                  ${problemDescriptions}
+                  ${dsaQ}
                    
                   Please format it as a Array of objects with the following structure:
                   [{
@@ -350,4 +297,4 @@ const generateProblemArray = asyncHandler(
   }
 );
 
-export { parseDSASheet, generateProblemArray, getAnswer };
+export { generateProblemArray, generateProblem, getAnswer };
